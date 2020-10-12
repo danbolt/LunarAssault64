@@ -1,10 +1,6 @@
-# 	NuSYSTEM samples nu1 Makefile
-#       Copyright (C) 1997-1999, NINTENDO Co,Ltd.
 
 include $(ROOT)/usr/include/make/PRdefs
 
-# The directory which has the include file and library of NuSYSTEM
-#
 N64KITDIR    = c:\nintendo\n64kit
 NUSYSINCDIR  = $(N64KITDIR)/nusys/include
 NUSYSLIBDIR  = $(N64KITDIR)/nusys/lib

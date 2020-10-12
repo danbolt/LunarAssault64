@@ -1,17 +1,8 @@
-/*
-   graphic.c
-
-   The general graphic routine (the initialization and clear the frame 
-   buffer) and the definition of the external variable 
-   
-   Copyright (C) 1997-1999, NINTENDO Co,Ltd.
-*/
-
 #include <nusys.h>
 #include "graphic.h"
 
 Gfx          gfx_glist[2][GFX_GLIST_LEN];
-Dynamic      gfx_dynamic[2];
+DisplayData  gfx_dynamic[2];
 Gfx*         glistp;
 u32          gfx_gtask_no = 0;
 
