@@ -32,6 +32,6 @@ beginseg
 endseg
 
 beginwave
-	name	"nu1"
+	name	"jam"
 	include	"code"
 endwave

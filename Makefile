@@ -19,9 +19,9 @@ LDFLAGS = $(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) -lnusys_d -lgultra_d -L$(GCCDIR)
 
 OPTIMIZER =	-g
 
-APP =		nu1.out
+APP =		jam.out
 
-TARGETS =	nu1.n64
+TARGETS =	jam.n64
 
 HFILES =	main.h graphic.h
 
