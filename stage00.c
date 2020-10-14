@@ -29,6 +29,25 @@
 #define JUMP_VELOCITY 3.f
 #define STEP_HEIGHT_CUTOFF 0.15f
 
+static Vtx player_geo[] = {
+  {  1,  1,  2, 0, 0, 0, 0xff, 0, 0xff, 0xff },
+  { -1,  1,  2, 0, 0, 0, 0, 0, 0xff, 0xff },
+  { -1, -1,  2, 0, 0, 0, 0, 0, 0xff, 0xff },
+  {  1, -1,  2, 0, 0, 0, 0, 0, 0xff, 0xff },
+  {  1,  1,  0, 0, 0, 0, 0, 0, 0x33, 0xff },
+  { -1,  1,  0, 0, 0, 0, 0, 0, 0x33, 0xff },
+  { -1, -1,  0, 0, 0, 0, 0, 0, 0xf3, 0xff },
+  {  1, -1,  0, 0, 0, 0, 0, 0, 0x33, 0xff },
+};
+
+static Gfx player_commands[] = {
+  gsSPVertex(&player_geo, 8, 0),
+  gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+  gsSP2Triangles(3, 2, 6, 0, 3, 6, 7, 0),
+  gsSP2Triangles(1, 0, 4, 0, 1, 4, 5, 0),
+  gsSPEndDisplayList()
+};
+
 static Gfx mapSetionsPreable[] = {
   gsSPTexture(0x8000, 0x8000, 0, 0, G_ON),
   gsDPPipeSync(),
@@ -172,6 +191,20 @@ void makeDL00(void) {
   gDPSetRenderMode(glistp++, G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
   gSPClearGeometryMode(glistp++, 0xFFFFFFFF);
   gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK | G_ZBUFFER);
+
+
+  guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
+  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
+
+  guRotate(&(dynamicp->playerRotation), (cameraRotation.z + M_PI * 0.5f) * RAD_TO_DEG, 0.f, 0.f, 1.f);
+  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerRotation)), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+
+  guScale(&(dynamicp->playerScale), 0.25f, 0.25f, 0.25f);
+  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH);
+
+  gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(player_commands));
+
+  gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
 
   guScale(&dynamicp->mapScale, 0.01f, 0.01f, 0.01f);
   gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
