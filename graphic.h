@@ -13,6 +13,10 @@ typedef struct {
   Mtx     camera;
   Mtx     projection;
 
+  Mtx     playerTranslation;
+  Mtx     playerScale;
+  Mtx     playerRotation;
+
   Mtx     mapScale;
 
   Mtx     orthoHudProjection;

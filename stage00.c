@@ -15,12 +15,19 @@
 #define CAMERA_MOVE_SPEED 10.f
 #define CAMERA_TURN_SPEED_X 2.373f
 #define CAMERA_TURN_SPEED_Y 2.373f
+#define CAMERA_DISTANCE 3.f
+#define CAMERA_LIFT 1.f
 
 #define FOCUS_HIGH_DETAIL_CUTOFF 36.f
 #define FOCUS_HIGH_DETAIL_CUTOFF_SQ (FOCUS_HIGH_DETAIL_CUTOFF * FOCUS_HIGH_DETAIL_CUTOFF)
 
 #define HIGH_DETAIL_CUTOFF 20.f
 #define HIGH_DETAIL_CUTOFF_SQ (HIGH_DETAIL_CUTOFF * HIGH_DETAIL_CUTOFF)
+
+#define PLAYER_MOVE_SPEED 10.f
+#define GRAVITY -3.2f
+#define JUMP_VELOCITY 3.f
+#define STEP_HEIGHT_CUTOFF 0.15f
 
 static Gfx mapSetionsPreable[] = {
   gsSPTexture(0x8000, 0x8000, 0, 0, G_ON),
@@ -74,6 +81,18 @@ static Gfx hud_dl[] = {
 static vec3 cameraPos;
 static vec3 cameraTarget;
 static vec3 cameraRotation;
+
+static vec3 playerPos;
+static vec3 playerVelocity;
+static int playerIsOnTheGround;
+
+static vec3 cameraPos;
+static vec3 cameraTarget;
+static vec3 cameraRotation;
+static const s8 cameraYInvert = 1;
+
+static OSTime time;
+static OSTime delta;
 
 void initStage00(void) {
   int i;
@@ -220,11 +239,118 @@ void makeDL00(void) {
   gfx_gtask_no ^= 1;
 }
 
+float getHeight(float x, float y) {
+  const float fractionX = x - ((int)x);
+  const float fractionY = y - ((int)y);
+
+  const int mid = sampleHeight(x, y);
+
+  const int n = sampleHeight(x, y-1);
+  const int s = sampleHeight(x, y+1);
+  const int e = sampleHeight(x+1, y);
+  const int w = sampleHeight(x-1, y);
+
+  const int ne = sampleHeight(x+1, y-1);
+  const int se = sampleHeight(x+1, y+1);
+  const int nw = sampleHeight(x-1, y-1);
+  const int sw = sampleHeight(x-1, y+1);
+
+  const float heightA = (((nw + n + mid + w) * 0.25f) / 256.f) * 20.f;
+  const float heightB = (((n + ne + e + mid) * 0.25f) / 256.f) * 20.f;
+  const float heightC = (((mid + e + se + s) * 0.25f) / 256.f) * 20.f;
+  const float heightD = (((w + mid + s + sw) * 0.25f) / 256.f) * 20.f;
+
+  return bilinear(heightA, heightB, heightC, heightD, fractionX,  fractionY);
+}
+
+void updatePlayer(float deltaSeconds) {
+  float stepX;
+  float stepY;
+  float stepZ;
+  float groundHeightStepX;
+  float groundHeightStepY;
+  float currentAltitude;
+  float groundHeight;
+  float inputDirectionX = contdata->stick_x / 255.f;
+  float inputDirectionY = contdata->stick_y / 255.f;
+  float inputDirectionXRotated;
+  float inputDirectionYRotated;
+  float cosCameraRot, sinCameraRot;
+
+  if (contdata->button & L_CBUTTONS) {
+    cameraRotation.z += CAMERA_TURN_SPEED_X * deltaSeconds;
+  }
+  else if (contdata->button & R_CBUTTONS) {
+    cameraRotation.z -= CAMERA_TURN_SPEED_X * deltaSeconds;
+  }
+
+  if (contdata->button & D_CBUTTONS) {
+    cameraRotation.y = MAX(-0.3f, cameraRotation.y - (CAMERA_TURN_SPEED_Y * deltaSeconds * cameraYInvert));
+  }
+  else if (contdata->button & U_CBUTTONS) {
+    cameraRotation.y = MIN(1.3f, cameraRotation.y + (CAMERA_TURN_SPEED_Y * deltaSeconds * cameraYInvert));
+  }
+
+  cosCameraRot = cosf(cameraRotation.z + M_PI * 0.5f);
+  sinCameraRot = sinf(cameraRotation.z + M_PI * 0.5f);
+  inputDirectionXRotated = (cosCameraRot * inputDirectionX) - (sinCameraRot * inputDirectionY);
+  inputDirectionYRotated = (sinCameraRot * inputDirectionX) + (cosCameraRot * inputDirectionY);
+
+  playerVelocity.x = inputDirectionXRotated * PLAYER_MOVE_SPEED;
+  playerVelocity.y = inputDirectionYRotated * PLAYER_MOVE_SPEED;
+  playerVelocity.z += GRAVITY * deltaSeconds;
+
+  if (playerIsOnTheGround && (contdata->button & A_BUTTON)) {
+    playerIsOnTheGround = 0;
+    playerVelocity.z = JUMP_VELOCITY;
+  }
+
+  stepX = playerPos.x + (playerVelocity.x * deltaSeconds);
+  stepY = playerPos.y + (playerVelocity.y * deltaSeconds);
+  stepZ = playerPos.z + (playerVelocity.z * deltaSeconds);
+
+  groundHeight = MAX(stepZ, getHeight(stepX, stepY));
+  currentAltitude = MAX(stepZ, getHeight(playerPos.x, playerPos.y));
+
+  if ((groundHeight - currentAltitude) > STEP_HEIGHT_CUTOFF) {
+    stepX = playerPos.x;
+    stepY = playerPos.y;
+  }
+
+  playerPos.x = stepX;
+  playerPos.y = stepY;
+  playerPos.z = stepZ;
+
+  if (playerPos.z < currentAltitude) {
+    playerPos.z = currentAltitude;
+    playerVelocity.z = 0.f;
+
+    if ((groundHeight - currentAltitude) < STEP_HEIGHT_CUTOFF) {
+      playerIsOnTheGround = 1;
+    }
+  } else if (playerPos.z > currentAltitude + 0.1f) {
+    playerIsOnTheGround = 0;
+  }
+
+  cameraTarget.x = lerp( cameraTarget.x, playerPos.x, 0.12f);
+  cameraTarget.y = lerp( cameraTarget.y, playerPos.y, 0.12f);
+  cameraTarget.z = lerp( cameraTarget.z, playerPos.z + (CAMERA_LIFT * 0.5f) + cameraRotation.y, 0.12f);
+  cameraPos.x = cameraTarget.x + (cosf(cameraRotation.z) * CAMERA_DISTANCE);
+  cameraPos.y = cameraTarget.y + (sinf(cameraRotation.z) * CAMERA_DISTANCE);
+  cameraPos.z = cameraTarget.z + CAMERA_LIFT - cameraRotation.y;
+}
+
 void updateGame00(void)
-{  
-  static float vel = 1.0;
+{ 
+  float deltaInSeconds = 0.f;
+  OSTime newTime = OS_CYCLES_TO_USEC(osGetTime());
+
+  delta = (newTime - time);
+  time = newTime;
+  deltaInSeconds = delta * 0.000001f;
 
   /* Data reading of controller 1 */
   nuContDataGetEx(contdata,0);
 
+  updatePlayer(deltaInSeconds);
 }

@@ -18,6 +18,10 @@ float fabs_d(float x);
 
 float lerp(float v0, float v1, float t);
 
+// Copied from:
+// https://math.stackexchange.com/questions/3230376/interpolate-between-4-points-on-a-2d-plane
+float bilinear(float v00, float v10, float v11, float v01, float x, float y);
+
 float clamp(float value, float min, float max);
 
 float distanceSq(const vec3* a, const vec3* b);

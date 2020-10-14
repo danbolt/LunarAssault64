@@ -16,6 +16,16 @@ float lerp(float v0, float v1, float t) {
   return (1 - t) * v0 + t * v1;
 }
 
+float bilinear(float v00, float v10, float v11, float v01, float x, float y) {
+  const float invX = (1.f - x);
+  const float invY = (1.f - y);
+
+  return (invX * invY * v00)
+       + (x * invY * v10)
+       + (x * y * v11)
+       + (invX * y * v01);
+}
+
 float clamp(float value, float min, float max) {
 	if (value < min) {
 		return min;
