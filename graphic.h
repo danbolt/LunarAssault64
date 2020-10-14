@@ -10,9 +10,10 @@
 
 
 typedef struct {
+  Mtx     camera;
   Mtx     projection;
 
-  Mtx     modeling;
+  Mtx     mapScale;
 } DisplayData;
 
 /*-------------------------------- parameter---------------------------------*/
