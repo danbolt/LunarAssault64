@@ -18,6 +18,9 @@
 #define CAMERA_DISTANCE 3.f
 #define CAMERA_LIFT 1.f
 
+#define FAR_PLANE_DETAIL_CUTOFF 80.f
+#define FAR_PLANE_DETAIL_CUTOFF_SQ (FAR_PLANE_DETAIL_CUTOFF * FAR_PLANE_DETAIL_CUTOFF)
+
 #define FOCUS_HIGH_DETAIL_CUTOFF 36.f
 #define FOCUS_HIGH_DETAIL_CUTOFF_SQ (FOCUS_HIGH_DETAIL_CUTOFF * FOCUS_HIGH_DETAIL_CUTOFF)
 
@@ -180,11 +183,7 @@ void makeDL00(void) {
   /* Clear the frame and Z-buffer */
   gfxClearCfb();
 
-  guPerspective(&dynamicp->projection, &perspNorm, CAMERA_FOV, (float)SCREEN_WD/(float)SCREEN_HT, 1.0f, 1000.0f, 1.0f);
-  gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->projection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-  guLookAt(&dynamicp->camera, cameraPos.x ,cameraPos.y, cameraPos.z, cameraTarget.x, cameraTarget.y, cameraTarget.z, 0, 0, 1);
-  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-
+  // Initial setup
   gDPPipeSync(glistp++);
   gDPSetScissor(glistp++, G_SC_NON_INTERLACE, SCISSOR_SIDES, SCISSOR_LOW, SCREEN_WD - SCISSOR_SIDES, SCREEN_HT - SCISSOR_HIGH);
   gDPSetCycleType(glistp++, G_CYC_1CYCLE);
@@ -192,57 +191,74 @@ void makeDL00(void) {
   gSPClearGeometryMode(glistp++, 0xFFFFFFFF);
   gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK | G_ZBUFFER);
 
-
-  guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
-  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
-
-  guRotate(&(dynamicp->playerRotation), (cameraRotation.z + M_PI * 0.5f) * RAD_TO_DEG, 0.f, 0.f, 1.f);
-  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerRotation)), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-
-  guScale(&(dynamicp->playerScale), 0.25f, 0.25f, 0.25f);
-  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH);
-
-  gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(player_commands));
-
-  gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
-
-  guScale(&dynamicp->mapScale, 0.01f, 0.01f, 0.01f);
-  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
-  gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(mapSetionsPreable));
-
-  for (i = 0; i < SECTIONS_PER_MAP; i++) {
-    float distanceToSectionSq;
-    const vec3 centroidDirection = { sections[i].centroid.x - cameraPos.x, sections[i].centroid.y - cameraPos.y, sections[i].centroid.z - cameraPos.z };
-    const vec3 cameraDirection = { cameraTarget.x - cameraPos.x, cameraTarget.y - cameraPos.y, cameraTarget.z - cameraPos.z };
-    float dotProductFromCamera = dotProduct(&cameraDirection, &centroidDirection);
-    if (dotProductFromCamera < 0.4f) {
-      continue;
-    }
-
-    distanceToSectionSq = distanceSq(&(sections[i].centroid), &cameraPos);
-
-    if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8375f))) {
-      gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[i].commands));
-    } else {
-      gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[i].commands));
-    }
+  // The camera
+  {
+    guPerspective(&dynamicp->projection, &perspNorm, CAMERA_FOV, (float)SCREEN_WD/(float)SCREEN_HT, 1.0f, 1000.0f, 1.0f);
+    gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->projection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+    guLookAt(&dynamicp->camera, cameraPos.x ,cameraPos.y, cameraPos.z, cameraTarget.x, cameraTarget.y, cameraTarget.z, 0, 0, 1);
+    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+  
   }
 
-  gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(mapSectionsPostamble));
-  gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+  // The player
+  {
+    guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
+    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
 
-  gDPPipeSync(glistp++);
-  gDPSetScissor(glistp++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
-  gDPSetRenderMode(glistp++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-  gDPSetCombineMode(glistp++, G_CC_SHADE, G_CC_SHADE);
-  gSPClearGeometryMode(glistp++,0xFFFFFFFF);
-  gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
+    guRotate(&(dynamicp->playerRotation), (cameraRotation.z + M_PI * 0.5f) * RAD_TO_DEG, 0.f, 0.f, 1.f);
+    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerRotation)), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
 
-  guOrtho(&(dynamicp->orthoHudProjection), 0, SCREEN_WD - 1, 0, SCREEN_HT - 1, 0.f, 10.f, 1.f);
-  gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudProjection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-  guMtxIdent(&(dynamicp->orthoHudModelling));
-  gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudModelling)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-  gSPDisplayList(glistp++, hud_dl);
+    guScale(&(dynamicp->playerScale), 0.25f, 0.25f, 0.25f);
+    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH);
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(player_commands));
+    gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+  }
+
+  // The map
+  {
+    guScale(&dynamicp->mapScale, 0.01f, 0.01f, 0.01f);
+    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(mapSetionsPreable));
+
+    for (i = 0; i < SECTIONS_PER_MAP; i++) {
+      float distanceToSectionSq = distanceSq(&(sections[i].centroid), &cameraPos);
+      const vec3 centroidDirection = { sections[i].centroid.x - cameraPos.x, sections[i].centroid.y - cameraPos.y, sections[i].centroid.z - cameraPos.z };
+      const vec3 cameraDirection = { cameraTarget.x - cameraPos.x, cameraTarget.y - cameraPos.y, cameraTarget.z - cameraPos.z };
+      float dotProductFromCamera = dotProduct(&cameraDirection, &centroidDirection);
+      if (dotProductFromCamera < 0.4f) {
+        continue;
+      }
+
+      if (distanceToSectionSq > FAR_PLANE_DETAIL_CUTOFF_SQ) {
+        continue;
+      }
+
+      if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8375f))) {
+        gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[i].commands));
+      } else {
+        gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[i].commands));
+      }
+    }
+
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(mapSectionsPostamble));
+    gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+  }
+
+  // HUD
+  {
+    gDPPipeSync(glistp++);
+    gDPSetScissor(glistp++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
+    gDPSetRenderMode(glistp++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+    gDPSetCombineMode(glistp++, G_CC_SHADE, G_CC_SHADE);
+    gSPClearGeometryMode(glistp++,0xFFFFFFFF);
+    gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
+
+    guOrtho(&(dynamicp->orthoHudProjection), 0, SCREEN_WD - 1, 0, SCREEN_HT - 1, 0.f, 10.f, 1.f);
+    gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudProjection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+    guMtxIdent(&(dynamicp->orthoHudModelling));
+    gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudModelling)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(glistp++, hud_dl);
+  }
 
   gDPFullSync(glistp++);
   gSPEndDisplayList(glistp++);
@@ -264,6 +280,8 @@ void makeDL00(void) {
       nuDebConTextPos(0,4,4);
       nuDebConCPuts(0, "Connect controller #1, kid!");
     }
+
+    nuDebTaskPerfBar1(1, 200, NU_SC_NOSWAPBUFFER);
     
   /* Display characters on the frame buffer */
   nuDebConDisp(NU_SC_SWAPBUFFER);
