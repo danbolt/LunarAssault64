@@ -2,6 +2,7 @@
 #include <nusys.h>
 #include "main.h"
 #include "graphic.h"
+#include "gamemath.h"
 
 static Vtx shade_vtx[] =  {
         {  32, 32, 5, 0, 0, 0, 0, 0xff, 0, 0xff  },
@@ -24,6 +25,7 @@ void initStage00(void) {
 void makeDL00(void) {
   DisplayData* dynamicp;
   char conbuf[20]; 
+  int i;
 
   /* Specify the display list buffer */
   dynamicp = &gfx_dynamic[gfx_gtask_no];

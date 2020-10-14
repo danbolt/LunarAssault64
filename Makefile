@@ -23,9 +23,9 @@ APP =		jam.out
 
 TARGETS =	jam.n64
 
-HFILES =	main.h graphic.h
+HFILES =	main.h graphic.h gamemath.h
 
-CODEFILES   = 	main.c stage00.c graphic.c gfxinit.c
+CODEFILES   = 	main.c stage00.c graphic.c gfxinit.c gamemath.c
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
 
