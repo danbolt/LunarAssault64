@@ -27,7 +27,6 @@ Gfx setup_rdpstate[] = {
 Gfx setup_rspstate[] = {
   gsSPViewport(&vp),
   gsSPClearGeometryMode(0xFFFFFFFF),
-  gsSPSetGeometryMode(G_ZBUFFER | G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK),
   gsSPTexture(0, 0, 0, 0, G_OFF),
   gsSPEndDisplayList(),
 };

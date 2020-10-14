@@ -14,6 +14,9 @@ typedef struct {
   Mtx     projection;
 
   Mtx     mapScale;
+
+  Mtx     orthoHudProjection;
+  Mtx     orthoHudModelling;
 } DisplayData;
 
 /*-------------------------------- parameter---------------------------------*/

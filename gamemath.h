@@ -2,6 +2,8 @@
 #ifndef _GAME_MATH_H_
 #define _GAME_MATH_H_
 
+#define RAD_TO_DEG 57.2958f
+
 typedef struct {
   float x;
   float y;
