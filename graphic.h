@@ -19,6 +19,8 @@ typedef struct {
 
   Mtx     mapScale;
 
+  Mtx     octaTransform;
+
   Mtx     orthoHudProjection;
   Mtx     orthoHudModelling;
 } DisplayData;

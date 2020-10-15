@@ -23,7 +23,7 @@ APP =		jam.out
 
 TARGETS =	jam.n64
 
-HFILES =	main.h graphic.h gamemath.h terraintex.h
+HFILES =	main.h graphic.h gamemath.h terraintex.h map.h hitboxes.h
 
 CODEFILES   = 	main.c stage00.c graphic.c gfxinit.c gamemath.c map.c
 

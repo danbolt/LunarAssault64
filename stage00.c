@@ -6,6 +6,7 @@
 #include "graphic.h"
 #include "gamemath.h"
 #include "terraintex.h"
+#include "hitboxes.h"
 
 #define SCISSOR_HIGH 64
 #define SCISSOR_LOW 24
@@ -41,6 +42,26 @@ static Vtx player_geo[] = {
   { -1,  1,  0, 0, 0, 0, 0, 0, 0x33, 0xff },
   { -1, -1,  0, 0, 0, 0, 0, 0, 0xf3, 0xff },
   {  1, -1,  0, 0, 0, 0, 0, 0, 0x33, 0xff },
+};
+
+static Vtx red_octahedron_geo[] = {
+  {  1,  0,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
+  { -1,  0,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
+
+  {  0,  1,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
+  {  0, -1,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
+
+  {  0,  0,  1, 0, 0, 0, 0xff, 0, 0x00, 0xff },
+  {  0,  0, -1, 0, 0, 0, 0x55, 0, 0x00, 0xff },
+};
+
+static Gfx red_octahedron_commands[] = {
+  gsSPVertex(&red_octahedron_geo, 6, 0),
+  gsSP2Triangles(0, 2, 4, 0, 0, 5, 2, 0),
+  gsSP2Triangles(0, 4, 3, 0, 0, 3, 5, 0),
+  gsSP2Triangles(1, 3, 4, 0, 1, 5, 3, 0),
+  gsSP2Triangles(1, 4, 2, 0, 1, 2, 5, 0),
+  gsSPEndDisplayList()
 };
 
 static Gfx player_commands[] = {
@@ -116,12 +137,21 @@ static const s8 cameraYInvert = 1;
 static OSTime time;
 static OSTime delta;
 
+KaijuHitbox testHitbox;
+
 void initStage00(void) {
   int i;
 
   cameraPos = (vec3){4, 0, 20};
   cameraTarget = (vec3){10.f, 10.f, 0.f};
   cameraRotation = (vec3){0.f, 0.f, 0.f};
+
+  testHitbox.alive = 1;
+  testHitbox.position = (vec3){ 8.f, 2.f, 8.f };
+  testHitbox.rotation = (vec3){ 45.f, 0.f, 0.f };
+  testHitbox.scale = (vec3){ 2.f, 0.4f, 2.f };
+  guMtxIdentF(testHitbox.computedTransform.data);
+  testHitbox.displayCommands = red_octahedron_commands;
 
   // Fill the map with sinewave-based data
   // TODO: make this load from a file
@@ -211,6 +241,16 @@ void makeDL00(void) {
     guScale(&(dynamicp->playerScale), 0.25f, 0.25f, 0.25f);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH);
     gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(player_commands));
+    gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+  }
+
+  // The kaiju
+  {
+    guMtxF2L(testHitbox.computedTransform.data, &(dynamicp->octaTransform));
+    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->octaTransform)), G_MTX_MODELVIEW | G_MTX_PUSH);
+
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(red_octahedron_commands));
+
     gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
   }
 
@@ -391,6 +431,20 @@ void updatePlayer(float deltaSeconds) {
   cameraPos.z = cameraTarget.z + CAMERA_LIFT - cameraRotation.y;
 }
 
+// TODO: make this an array of boxes
+void updateKaijuHitboxes(float delta) {
+  mat4 positionMatrix;
+  mat4 rotationMatrix;
+  mat4 scaleMatrix;
+
+  guTranslateF(positionMatrix.data, testHitbox.position.x, testHitbox.position.y, testHitbox.position.z);
+  guRotateRPYF(rotationMatrix.data, testHitbox.rotation.x, testHitbox.rotation.y, testHitbox.rotation.z);
+  guScaleF(scaleMatrix.data, testHitbox.scale.x, testHitbox.scale.y, testHitbox.scale.z);
+  
+  guMtxCatF(scaleMatrix.data, rotationMatrix.data, testHitbox.computedTransform.data);
+  guMtxCatF(testHitbox.computedTransform.data, positionMatrix.data, testHitbox.computedTransform.data);
+}
+
 void updateGame00(void)
 { 
   float deltaInSeconds = 0.f;
@@ -400,8 +454,15 @@ void updateGame00(void)
   time = newTime;
   deltaInSeconds = delta * 0.000001f;
 
+  nuDebPerfMarkSet(0);
+
   /* Data reading of controller 1 */
   nuContDataGetEx(contdata,0);
 
+  testHitbox.rotation.x += 0.1f;
+
   updatePlayer(deltaInSeconds);
+  nuDebPerfMarkSet(1);
+  updateKaijuHitboxes(deltaInSeconds);
+  nuDebPerfMarkSet(2);
 }

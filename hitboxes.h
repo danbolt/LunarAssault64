@@ -1,0 +1,18 @@
+#ifndef _HITBOXES_H_
+#define _HITBOXES_H_
+
+#include "gamemath.h"
+
+typedef struct {
+	u8 alive;
+	
+	vec3 position;
+	vec3 rotation;
+	vec3 scale;
+
+	mat4 computedTransform;
+
+	Gfx* displayCommands;
+} KaijuHitbox;
+
+#endif
