@@ -1,6 +1,8 @@
 #ifndef _GRAPHIC_H_
 #define _GRAPHIC_H_
 
+#include "hitboxes.h"
+
 /* The screen size  */
 #define SCREEN_HT        240
 #define SCREEN_WD        320
@@ -19,7 +21,7 @@ typedef struct {
 
   Mtx     mapScale;
 
-  Mtx     octaTransform;
+  Mtx     hitboxTransform[NUMBER_OF_KAIJU_HITBOXES];
 
   Mtx     orthoHudProjection;
   Mtx     orthoHudModelling;

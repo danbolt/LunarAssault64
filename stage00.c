@@ -33,6 +33,7 @@
 #define JUMP_VELOCITY 3.f
 #define STEP_HEIGHT_CUTOFF 0.15f
 
+
 static Vtx player_geo[] = {
   {  1,  1,  2, 0, 0, 0, 0xff, 0, 0xff, 0xff },
   { -1,  1,  2, 0, 0, 0, 0, 0, 0xff, 0xff },
@@ -137,7 +138,7 @@ static const s8 cameraYInvert = 1;
 static OSTime time;
 static OSTime delta;
 
-KaijuHitbox testHitbox;
+KaijuHitbox hitboxes[NUMBER_OF_KAIJU_HITBOXES];
 
 void initStage00(void) {
   int i;
@@ -146,14 +147,16 @@ void initStage00(void) {
   cameraTarget = (vec3){10.f, 10.f, 0.f};
   cameraRotation = (vec3){0.f, 0.f, 0.f};
 
-  testHitbox.alive = 1;
-  testHitbox.isTransformDirty = 1;
-  testHitbox.position = (vec3){ 8.f, 2.f, 8.f };
-  testHitbox.rotation = (vec3){ 45.f, 0.f, 0.f };
-  testHitbox.scale = (vec3){ 2.f, 0.4f, 2.f };
-  guMtxIdentF(testHitbox.computedTransform.data);
-  testHitbox.displayCommands = red_octahedron_commands;
-
+  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+    hitboxes[i].alive = 1;
+    hitboxes[i].isTransformDirty = 1;
+    hitboxes[i].position = (vec3){ 8.f + (4.f * i), 2.f, 8.f };
+    hitboxes[i].rotation = (vec3){ 45.f, 0.f, 0.f };
+    hitboxes[i].scale = (vec3){ 2.f, 0.4f, 2.f };
+    guMtxIdentF(hitboxes[i].computedTransform.data);
+    hitboxes[i].displayCommands = red_octahedron_commands;
+  }
+  
   // Fill the map with sinewave-based data
   // TODO: make this load from a file
   for (i = 0; i < MAP_LENGTH; i++) {
@@ -245,13 +248,17 @@ void makeDL00(void) {
     gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
   }
 
-  // The kaiju
+  // The kaiju hitboxes
   {
-    if (testHitbox.alive) {
-      guMtxF2L(testHitbox.computedTransform.data, &(dynamicp->octaTransform));
-      gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->octaTransform)), G_MTX_MODELVIEW | G_MTX_PUSH);
+    for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+      if (!(hitboxes[i].alive)) {
+        continue;
+      }
 
-      gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(red_octahedron_commands));
+      guMtxF2L(hitboxes[i].computedTransform.data, &(dynamicp->hitboxTransform[i]));
+      gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->hitboxTransform[i])), G_MTX_MODELVIEW | G_MTX_PUSH);
+
+      gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(hitboxes[i].displayCommands));
 
       gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
     }
@@ -436,42 +443,56 @@ void updatePlayer(float deltaSeconds) {
 
 // TODO: make this an array of boxes
 void updateKaijuHitboxes(float delta) {
+  int i;
   mat4 positionMatrix;
   mat4 rotationMatrix;
   mat4 scaleMatrix;
 
-  if (!(testHitbox.alive)) {
-    return;
-  }
+  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+    KaijuHitbox* hitbox = &(hitboxes[i]);
 
-  if (testHitbox.isTransformDirty) {
-    guTranslateF(positionMatrix.data, testHitbox.position.x, testHitbox.position.y, testHitbox.position.z);
-    guRotateRPYF(rotationMatrix.data, testHitbox.rotation.x, testHitbox.rotation.y, testHitbox.rotation.z);
-    guScaleF(scaleMatrix.data, testHitbox.scale.x, testHitbox.scale.y, testHitbox.scale.z);
-    
-    guMtxCatF(scaleMatrix.data, rotationMatrix.data, testHitbox.computedTransform.data);
-    guMtxCatF(testHitbox.computedTransform.data, positionMatrix.data, testHitbox.computedTransform.data);
+    if (!(hitbox->alive)) {
+      continue;
+    }
 
-    mat4x4_invert(&(testHitbox.computedInverse), &(testHitbox.computedTransform));
+    if (hitbox->isTransformDirty) {
+      guTranslateF(positionMatrix.data, hitbox->position.x, hitbox->position.y, hitbox->position.z);
+      guRotateRPYF(rotationMatrix.data, hitbox->rotation.x, hitbox->rotation.y, hitbox->rotation.z);
+      guScaleF(scaleMatrix.data, hitbox->scale.x, hitbox->scale.y, hitbox->scale.z);
+      
+      guMtxCatF(scaleMatrix.data, rotationMatrix.data, hitbox->computedTransform.data);
+      guMtxCatF(hitbox->computedTransform.data, positionMatrix.data, hitbox->computedTransform.data);
 
-    testHitbox.isTransformDirty = 0;
-  }
-}
+      mat4x4_invert(&(hitbox->computedInverse), &(hitbox->computedTransform));
 
-void testPlayerAgainstHitbox() {
-  vec3 hitboxSpacePlayerPos;
-  float distance;
-
-  guMtxXFMF(testHitbox.computedInverse.data, playerPos.x, playerPos.y, playerPos.z, &(hitboxSpacePlayerPos.x), &(hitboxSpacePlayerPos.y), &(hitboxSpacePlayerPos.z));
-  distance = sdOctahedron(&(hitboxSpacePlayerPos));
-
-  if (distance <= 0.f) {
-    testHitbox.alive = 0;
+      hitbox->isTransformDirty = 0;
+    }
   }
 }
 
-void updateGame00(void)
-{ 
+void testPlayerAgainstHitboxes() {
+  int i;
+
+  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+    KaijuHitbox* hitbox = &(hitboxes[i]);
+    float distance = 99999.f;
+    vec3 hitboxSpacePlayerPos;
+
+    if (!(hitbox->alive)) {
+      continue;
+    }
+
+    guMtxXFMF(hitbox->computedInverse.data, playerPos.x, playerPos.y, playerPos.z, &(hitboxSpacePlayerPos.x), &(hitboxSpacePlayerPos.y), &(hitboxSpacePlayerPos.z));
+    distance = sdOctahedron(&(hitboxSpacePlayerPos));
+
+    if (distance <= 0.f) {
+      hitbox->alive = 0;
+    }
+  }
+}
+
+void updateGame00(void) {
+  int i;
   float deltaInSeconds = 0.f;
   OSTime newTime = OS_CYCLES_TO_USEC(osGetTime());
 
@@ -484,16 +505,16 @@ void updateGame00(void)
   /* Data reading of controller 1 */
   nuContDataGetEx(contdata,0);
 
-  testHitbox.rotation.x += 0.1f;
-  testHitbox.isTransformDirty = 1;
+  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+    hitboxes[i].rotation.x += 0.05f * i;
+    hitboxes[i].isTransformDirty = 1;
+  }
+  
 
   updatePlayer(deltaInSeconds);
   nuDebPerfMarkSet(1);
   updateKaijuHitboxes(deltaInSeconds);
   nuDebPerfMarkSet(2);
-
-  // test the player against a hitbox
-  testPlayerAgainstHitbox();
-
+  testPlayerAgainstHitboxes();
   nuDebPerfMarkSet(3);
 }

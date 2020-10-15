@@ -3,6 +3,8 @@
 
 #include "gamemath.h"
 
+#define NUMBER_OF_KAIJU_HITBOXES 16
+
 typedef struct {
 	u8 alive;
 
