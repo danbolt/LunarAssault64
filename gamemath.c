@@ -5,6 +5,53 @@
 
 const vec3 zeroVector = { 0.f, 0.f, 0.f };
 
+// Copied and adapted from exezin's exengine:
+// Hoisted the variables and changed the row-column ordering
+// https://github.com/exezin/exengine/blob/master/src/exengine/math/mathlib.h
+void mat4x4_invert(mat4* T, const mat4* M)
+{
+  float s[6];
+  float c[6];
+  float idet;
+
+  s[0] = M->data[0][0]*M->data[1][1] - M->data[0][1]*M->data[1][0];
+  s[1] = M->data[0][0]*M->data[2][1] - M->data[0][1]*M->data[2][0];
+  s[2] = M->data[0][0]*M->data[3][1] - M->data[0][1]*M->data[3][0];
+  s[3] = M->data[1][0]*M->data[2][1] - M->data[1][1]*M->data[2][0];
+  s[4] = M->data[1][0]*M->data[3][1] - M->data[1][1]*M->data[3][0];
+  s[5] = M->data[2][0]*M->data[3][1] - M->data[2][1]*M->data[3][0];
+
+  c[0] = M->data[0][2]*M->data[1][3] - M->data[0][3]*M->data[1][2];
+  c[1] = M->data[0][2]*M->data[2][3] - M->data[0][3]*M->data[2][2];
+  c[2] = M->data[0][2]*M->data[3][3] - M->data[0][3]*M->data[3][2];
+  c[3] = M->data[1][2]*M->data[2][3] - M->data[1][3]*M->data[2][2];
+  c[4] = M->data[1][2]*M->data[3][3] - M->data[1][3]*M->data[3][2];
+  c[5] = M->data[2][2]*M->data[3][3] - M->data[2][3]*M->data[3][2];
+  
+  /* Assumes it is invertible */
+  idet = 1.0f/( s[0]*c[5]-s[1]*c[4]+s[2]*c[3]+s[3]*c[2]-s[4]*c[1]+s[5]*c[0] );
+  
+  T->data[0][0] = ( M->data[1][1] * c[5] - M->data[2][1] * c[4] + M->data[3][1] * c[3]) * idet;
+  T->data[1][0] = (-M->data[1][0] * c[5] + M->data[2][0] * c[4] - M->data[3][0] * c[3]) * idet;
+  T->data[2][0] = ( M->data[1][3] * s[5] - M->data[2][3] * s[4] + M->data[3][3] * s[3]) * idet;
+  T->data[3][0] = (-M->data[1][2] * s[5] + M->data[2][2] * s[4] - M->data[3][2] * s[3]) * idet;
+  
+  T->data[0][1] = (-M->data[0][1] * c[5] + M->data[2][1] * c[2] - M->data[3][1] * c[1]) * idet;
+  T->data[1][1] = ( M->data[0][0] * c[5] - M->data[2][0] * c[2] + M->data[3][0] * c[1]) * idet;
+  T->data[2][1] = (-M->data[0][3] * s[5] + M->data[2][3] * s[2] - M->data[3][3] * s[1]) * idet;
+  T->data[3][1] = ( M->data[0][2] * s[5] - M->data[2][2] * s[2] + M->data[3][2] * s[1]) * idet;
+  
+  T->data[0][2] = ( M->data[0][1] * c[4] - M->data[1][1] * c[2] + M->data[3][1] * c[0]) * idet;
+  T->data[1][2] = (-M->data[0][0] * c[4] + M->data[1][0] * c[2] - M->data[3][0] * c[0]) * idet;
+  T->data[2][2] = ( M->data[0][3] * s[4] - M->data[1][3] * s[2] + M->data[3][3] * s[0]) * idet;
+  T->data[3][2] = (-M->data[0][2] * s[4] + M->data[1][2] * s[2] - M->data[3][2] * s[0]) * idet;
+  
+  T->data[0][3] = (-M->data[0][1] * c[3] + M->data[1][1] * c[1] - M->data[2][1] * c[0]) * idet;
+  T->data[1][3] = ( M->data[0][0] * c[3] - M->data[1][0] * c[1] + M->data[2][0] * c[0]) * idet;
+  T->data[2][3] = (-M->data[0][3] * s[3] + M->data[1][3] * s[1] - M->data[2][3] * s[0]) * idet;
+  T->data[3][3] = ( M->data[0][2] * s[3] - M->data[1][2] * s[1] + M->data[2][2] * s[0]) * idet;
+}
+
 float fabs_d(float x) {
   if (x < 0.f) {
     return -x;

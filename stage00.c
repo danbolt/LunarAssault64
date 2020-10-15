@@ -147,6 +147,7 @@ void initStage00(void) {
   cameraRotation = (vec3){0.f, 0.f, 0.f};
 
   testHitbox.alive = 1;
+  testHitbox.isTransformDirty = 1;
   testHitbox.position = (vec3){ 8.f, 2.f, 8.f };
   testHitbox.rotation = (vec3){ 45.f, 0.f, 0.f };
   testHitbox.scale = (vec3){ 2.f, 0.4f, 2.f };
@@ -246,12 +247,14 @@ void makeDL00(void) {
 
   // The kaiju
   {
-    guMtxF2L(testHitbox.computedTransform.data, &(dynamicp->octaTransform));
-    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->octaTransform)), G_MTX_MODELVIEW | G_MTX_PUSH);
+    if (testHitbox.alive) {
+      guMtxF2L(testHitbox.computedTransform.data, &(dynamicp->octaTransform));
+      gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->octaTransform)), G_MTX_MODELVIEW | G_MTX_PUSH);
 
-    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(red_octahedron_commands));
+      gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(red_octahedron_commands));
 
-    gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+      gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+    }
   }
 
   // The map
@@ -437,12 +440,34 @@ void updateKaijuHitboxes(float delta) {
   mat4 rotationMatrix;
   mat4 scaleMatrix;
 
-  guTranslateF(positionMatrix.data, testHitbox.position.x, testHitbox.position.y, testHitbox.position.z);
-  guRotateRPYF(rotationMatrix.data, testHitbox.rotation.x, testHitbox.rotation.y, testHitbox.rotation.z);
-  guScaleF(scaleMatrix.data, testHitbox.scale.x, testHitbox.scale.y, testHitbox.scale.z);
-  
-  guMtxCatF(scaleMatrix.data, rotationMatrix.data, testHitbox.computedTransform.data);
-  guMtxCatF(testHitbox.computedTransform.data, positionMatrix.data, testHitbox.computedTransform.data);
+  if (!(testHitbox.alive)) {
+    return;
+  }
+
+  if (testHitbox.isTransformDirty) {
+    guTranslateF(positionMatrix.data, testHitbox.position.x, testHitbox.position.y, testHitbox.position.z);
+    guRotateRPYF(rotationMatrix.data, testHitbox.rotation.x, testHitbox.rotation.y, testHitbox.rotation.z);
+    guScaleF(scaleMatrix.data, testHitbox.scale.x, testHitbox.scale.y, testHitbox.scale.z);
+    
+    guMtxCatF(scaleMatrix.data, rotationMatrix.data, testHitbox.computedTransform.data);
+    guMtxCatF(testHitbox.computedTransform.data, positionMatrix.data, testHitbox.computedTransform.data);
+
+    mat4x4_invert(&(testHitbox.computedInverse), &(testHitbox.computedTransform));
+
+    testHitbox.isTransformDirty = 0;
+  }
+}
+
+void testPlayerAgainstHitbox() {
+  vec3 hitboxSpacePlayerPos;
+  float distance;
+
+  guMtxXFMF(testHitbox.computedInverse.data, playerPos.x, playerPos.y, playerPos.z, &(hitboxSpacePlayerPos.x), &(hitboxSpacePlayerPos.y), &(hitboxSpacePlayerPos.z));
+  distance = sdOctahedron(&(hitboxSpacePlayerPos));
+
+  if (distance <= 0.f) {
+    testHitbox.alive = 0;
+  }
 }
 
 void updateGame00(void)
@@ -460,9 +485,15 @@ void updateGame00(void)
   nuContDataGetEx(contdata,0);
 
   testHitbox.rotation.x += 0.1f;
+  testHitbox.isTransformDirty = 1;
 
   updatePlayer(deltaInSeconds);
   nuDebPerfMarkSet(1);
   updateKaijuHitboxes(deltaInSeconds);
   nuDebPerfMarkSet(2);
+
+  // test the player against a hitbox
+  testPlayerAgainstHitbox();
+
+  nuDebPerfMarkSet(3);
 }

@@ -14,6 +14,8 @@ typedef struct {
 	float data[4][4];
 } mat4;
 
+void mat4x4_invert(mat4* T, const mat4* M);
+
 float fabs_d(float x);
 
 float lerp(float v0, float v1, float t);
