@@ -72,9 +72,10 @@ static Gfx player_commands[] = {
 };
 
 static Gfx mapSetionsPreable[] = {
+  gsSPSetGeometryMode(G_CULL_BACK),
   gsSPTexture(0x8000, 0x8000, 0, 0, G_ON),
   gsDPPipeSync(),
-  gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+  gsDPSetCombineLERP(NOISE, 0, ENVIRONMENT, TEXEL0, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, TEXEL0, 0, 0, 0, SHADE),
   gsDPSetTextureFilter(G_TF_POINT),
   gsDPLoadTextureBlock(tex_terrain_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
   gsSPEndDisplayList(),
@@ -218,6 +219,8 @@ void makeDL00(void) {
 
   // Initial setup
   gDPPipeSync(glistp++);
+  gDPSetEnvColor(glistp++, 9, 9, 9, 255);
+  gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
   gDPSetScissor(glistp++, G_SC_NON_INTERLACE, SCISSOR_SIDES, SCISSOR_LOW, SCREEN_WD - SCISSOR_SIDES, SCREEN_HT - SCISSOR_HIGH);
   gDPSetCycleType(glistp++, G_CYC_1CYCLE);
   gDPSetRenderMode(glistp++, G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
@@ -296,9 +299,9 @@ void makeDL00(void) {
   // HUD
   {
     gDPPipeSync(glistp++);
+    gDPSetCombineMode(glistp++, G_CC_SHADE, G_CC_SHADE);
     gDPSetScissor(glistp++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
     gDPSetRenderMode(glistp++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-    gDPSetCombineMode(glistp++, G_CC_SHADE, G_CC_SHADE);
     gSPClearGeometryMode(glistp++,0xFFFFFFFF);
     gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
 
