@@ -21,7 +21,7 @@
 #define FAR_PLANE_DETAIL_CUTOFF 80.f
 #define FAR_PLANE_DETAIL_CUTOFF_SQ (FAR_PLANE_DETAIL_CUTOFF * FAR_PLANE_DETAIL_CUTOFF)
 
-#define FOCUS_HIGH_DETAIL_CUTOFF 36.f
+#define FOCUS_HIGH_DETAIL_CUTOFF 29.f
 #define FOCUS_HIGH_DETAIL_CUTOFF_SQ (FOCUS_HIGH_DETAIL_CUTOFF * FOCUS_HIGH_DETAIL_CUTOFF)
 
 #define HIGH_DETAIL_CUTOFF 20.f
@@ -233,7 +233,7 @@ void makeDL00(void) {
         continue;
       }
 
-      if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8375f))) {
+      if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8975f))) {
         gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[i].commands));
       } else {
         gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[i].commands));

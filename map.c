@@ -80,10 +80,10 @@ void generateLowDetailDLPerSection(SectionData* section, int originX, int origin
   heightC = (sampleHeight(originX + 4, originY + 4) / 256.f) * 20.f * 100.f;
   heightD = (sampleHeight(originX - 1 , originY + 4) / 256.f) * 20.f * 100.f;
 
-  *(verts++) = (Vtx){(originX) -   50, (originY) -   50, heightA - 1.f, 0, ((texIndex % 4) * 8) << 6,     (((texIndex / 4) % 4) * 8) << 6, 0x11, (u8)(0xff * heightA / 2000.f), 0x13, 0xff };
-  *(verts++) = (Vtx){(originX) + 450, (originY) -   50, heightB - 1.f, 0, ((texIndex % 4) * 8 + 7) << 6, (((texIndex / 4) % 4) * 8) << 6, 0x11, (u8)(0xff * heightB / 2000.f), 0x13, 0xff };
-  *(verts++) = (Vtx){(originX) + 450, (originY) + 450, heightC - 1.f, 0, ((texIndex % 4) * 8 + 7) << 6, (((texIndex / 4) % 4) * 8 + 7) << 6, 0x11, (u8)(0xff * heightC / 2000.f), 0x13, 0xff };
-  *(verts++) = (Vtx){(originX) -   50, (originY) + 450, heightD - 1.f, 0, ((texIndex % 4) * 8) << 6,     (((texIndex / 4) % 4) * 8 + 7) << 6, 0x11, (u8)(0xff * heightD / 2000.f), 0x13, 0xff };
+  *(verts++) = (Vtx){(originX) -   100, (originY) -   100, heightA - 1.f, 0, ((texIndex % 4) * 8) << 6,     (((texIndex / 4) % 4) * 8) << 6, 0x11, (u8)(0xff * heightA / 2000.f), 0x13, 0xff };
+  *(verts++) = (Vtx){(originX) + 500, (originY) -   100, heightB - 1.f, 0, ((texIndex % 4) * 8 + 7) << 6, (((texIndex / 4) % 4) * 8) << 6, 0x11, (u8)(0xff * heightB / 2000.f), 0x13, 0xff };
+  *(verts++) = (Vtx){(originX) + 500, (originY) + 500, heightC - 1.f, 0, ((texIndex % 4) * 8 + 7) << 6, (((texIndex / 4) % 4) * 8 + 7) << 6, 0x11, (u8)(0xff * heightC / 2000.f), 0x13, 0xff };
+  *(verts++) = (Vtx){(originX) -   100, (originY) + 500, heightD - 1.f, 0, ((texIndex % 4) * 8) << 6,     (((texIndex / 4) % 4) * 8 + 7) << 6, 0x11, (u8)(0xff * heightD / 2000.f), 0x13, 0xff };
 
   gSPMatrix(commands++, OS_K0_TO_PHYSICAL(&(section->transform)), G_MTX_MODELVIEW | G_MTX_PUSH);
   gSPVertex(commands++, section->verts, 4, 0);
