@@ -157,4 +157,10 @@ float sdOctahedron(const vec3* point) {
   return length(&qp); 
 }
 
+float sdBox(const vec3* p) {
+  const vec3 q = { MAX(0.f, fabs_d(p->x) - 1.f), MAX(0.f, fabs_d(p->y) - 1.f), MAX(0.f, fabs_d(p->z) - 1.f) };
+  const float longest = MIN( MAX( q.x, MAX( q.y, q.z ) ), 0.f);
+
+  return length(&q) + longest;
+}
 

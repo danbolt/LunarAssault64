@@ -34,24 +34,22 @@
 #define STEP_HEIGHT_CUTOFF 0.15f
 
 
-static Vtx player_geo[] = {
-  {  1,  1,  2, 0, 0, 0, 0xff, 0, 0xff, 0xff },
-  { -1,  1,  2, 0, 0, 0, 0, 0, 0xff, 0xff },
-  { -1, -1,  2, 0, 0, 0, 0, 0, 0xff, 0xff },
-  {  1, -1,  2, 0, 0, 0, 0, 0, 0xff, 0xff },
-  {  1,  1,  0, 0, 0, 0, 0, 0, 0x33, 0xff },
-  { -1,  1,  0, 0, 0, 0, 0, 0, 0x33, 0xff },
-  { -1, -1,  0, 0, 0, 0, 0, 0, 0xf3, 0xff },
-  {  1, -1,  0, 0, 0, 0, 0, 0, 0x33, 0xff },
+static Vtx cube_geo[] = {
+  {  1,  1,  1, 0, 0, 0, 0xff, 0, 0xff, 0xff },
+  { -1,  1,  1, 0, 0, 0, 0, 0, 0xff, 0xff },
+  { -1, -1,  1, 0, 0, 0, 0, 0, 0xff, 0xff },
+  {  1, -1,  1, 0, 0, 0, 0, 0, 0xff, 0xff },
+  {  1,  1,  -1, 0, 0, 0, 0, 0, 0x33, 0xff },
+  { -1,  1,  -1, 0, 0, 0, 0, 0, 0x33, 0xff },
+  { -1, -1,  -1, 0, 0, 0, 0, 0, 0xf3, 0xff },
+  {  1, -1,  -1, 0, 0, 0, 0, 0, 0x33, 0xff },
 };
 
 static Vtx red_octahedron_geo[] = {
   {  1,  0,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
   { -1,  0,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
-
   {  0,  1,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
   {  0, -1,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
-
   {  0,  0,  1, 0, 0, 0, 0xff, 0, 0x00, 0xff },
   {  0,  0, -1, 0, 0, 0, 0x55, 0, 0x00, 0xff },
 };
@@ -66,7 +64,7 @@ static Gfx red_octahedron_commands[] = {
 };
 
 static Gfx player_commands[] = {
-  gsSPVertex(&player_geo, 8, 0),
+  gsSPVertex(&cube_geo, 8, 0),
   gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
   gsSP2Triangles(3, 2, 6, 0, 3, 6, 7, 0),
   gsSP2Triangles(1, 0, 4, 0, 1, 4, 5, 0),
@@ -154,7 +152,8 @@ void initStage00(void) {
     hitboxes[i].rotation = (vec3){ 45.f, 0.f, 0.f };
     hitboxes[i].scale = (vec3){ 2.f, 0.4f, 2.f };
     guMtxIdentF(hitboxes[i].computedTransform.data);
-    hitboxes[i].displayCommands = red_octahedron_commands;
+    hitboxes[i].displayCommands = (i % 2 == 0) ? player_commands : red_octahedron_commands;
+    hitboxes[i].check = (i % 2 == 0) ? sdBox : sdOctahedron;
   }
   
   // Fill the map with sinewave-based data
@@ -483,7 +482,7 @@ void testPlayerAgainstHitboxes() {
     }
 
     guMtxXFMF(hitbox->computedInverse.data, playerPos.x, playerPos.y, playerPos.z, &(hitboxSpacePlayerPos.x), &(hitboxSpacePlayerPos.y), &(hitboxSpacePlayerPos.z));
-    distance = sdOctahedron(&(hitboxSpacePlayerPos));
+    distance = hitbox->check(&(hitboxSpacePlayerPos));
 
     if (distance <= 0.f) {
       hitbox->alive = 0;

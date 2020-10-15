@@ -5,6 +5,8 @@
 
 #define NUMBER_OF_KAIJU_HITBOXES 16
 
+typedef float (*SDFCallback)(const vec3*);
+
 typedef struct {
 	u8 alive;
 
@@ -17,6 +19,7 @@ typedef struct {
 	u8 isTransformDirty;
 
 	Gfx* displayCommands;
+	SDFCallback check;
 } KaijuHitbox;
 
 #endif

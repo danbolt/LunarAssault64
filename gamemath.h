@@ -34,5 +34,6 @@ float dotProduct(const vec3* a, const vec3* b);
 // https://iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float sdSphere(const vec3* p);
 float sdOctahedron(const vec3* p);
+float sdBox(const vec3* p);
 
 #endif
