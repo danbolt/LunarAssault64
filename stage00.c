@@ -33,6 +33,8 @@
 #define JUMP_VELOCITY 3.f
 #define STEP_HEIGHT_CUTOFF 0.15f
 
+#define MAX_STEP_COUNT 64
+#define INITIAL_STEP_DISTANCE 0.01f
 
 static Vtx cube_geo[] = {
   {  1,  1,  1, 0, 0, 0, 0xff, 0, 0xff, 0xff },
@@ -118,6 +120,12 @@ static Gfx hud_dl[] = {
   gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
   gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
   gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
+
+  // reticule
+  gsDPPipeSync(),
+  gsDPSetCycleType(G_CYC_FILL),
+  gsDPSetFillColor((GPACK_RGBA5551(255, 0, 0, 1) << 16 |  GPACK_RGBA5551(255, 0, 0, 1))),
+  gsDPFillRectangle((SCREEN_WD >> 1) - 1, (SCREEN_HT >> 1) - 1, (SCREEN_WD >> 1) + 1, (SCREEN_HT >> 1) + 1),
   gsSPEndDisplayList()
 };
 
@@ -143,15 +151,18 @@ void initStage00(void) {
   int i;
 
   cameraPos = (vec3){4, 0, 20};
-  cameraTarget = (vec3){10.f, 10.f, 0.f};
+  cameraTarget = (vec3){10.f, 10.f, 10.f};
   cameraRotation = (vec3){0.f, 0.f, 0.f};
+
+  playerPos = (vec3){10.f, 10.f, 10.f};
 
   for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
     hitboxes[i].alive = 1;
+    hitboxes[i].destroyable = (i % 2 == 1);
     hitboxes[i].isTransformDirty = 1;
     hitboxes[i].position = (vec3){ 8.f + (4.f * i), 2.f, 8.f };
     hitboxes[i].rotation = (vec3){ 45.f, 0.f, 0.f };
-    hitboxes[i].scale = (vec3){ 2.f, 0.4f, 2.f };
+    hitboxes[i].scale = (i % 2 == 1) ? (vec3){1.f, 1.f, 1.f} : (vec3){ 2.f, 0.4f, 2.f };
     guMtxIdentF(hitboxes[i].computedTransform.data);
     hitboxes[i].displayCommands = (i % 2 == 0) ? player_commands : red_octahedron_commands;
     hitboxes[i].check = (i % 2 == 0) ? sdBox : sdOctahedron;
@@ -333,7 +344,7 @@ void makeDL00(void) {
       nuDebConCPuts(0, "Connect controller #1, kid!");
     }
 
-    nuDebTaskPerfBar1(1, 200, NU_SC_NOSWAPBUFFER);
+    nuDebTaskPerfBar1(5, 200, NU_SC_NOSWAPBUFFER);
     
   /* Display characters on the frame buffer */
   nuDebConDisp(NU_SC_SWAPBUFFER);
@@ -472,24 +483,46 @@ void updateKaijuHitboxes(float delta) {
   }
 }
 
-void testPlayerAgainstHitboxes() {
-  int i;
+void raymarchAimLineAgainstHitboxes() {
+  int stepI;
+  vec3 checkPoint = cameraPos;
+  float nextStepDistance = INITIAL_STEP_DISTANCE;
+  const vec3 aimDirection = { cameraTarget.x - cameraPos.x, cameraTarget.y - cameraPos.y, cameraTarget.z - cameraPos.z };
+  const float aimDirLengthSq = distanceSq(&aimDirection, &zeroVector);
+  const float invAimDirLengthSq = Q_rsqrt(aimDirLengthSq);
+  const vec3 normalizedAimDirection = { aimDirection.x * invAimDirLengthSq, aimDirection.y * invAimDirLengthSq, aimDirection.z * invAimDirLengthSq };
 
-  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
-    KaijuHitbox* hitbox = &(hitboxes[i]);
-    float distance = 99999.f;
-    vec3 hitboxSpacePlayerPos;
+  for (stepI = 0; stepI < MAX_STEP_COUNT; stepI++) {
+    int i;
+    float closestDistance = 9999999.f; // TODO: make this a special max-float
+    KaijuHitbox* closestHitbox = NULL;
 
-    if (!(hitbox->alive)) {
-      continue;
+    checkPoint = (vec3){ checkPoint.x + (nextStepDistance * normalizedAimDirection.x), checkPoint.y + (nextStepDistance * normalizedAimDirection.y), checkPoint.z + (nextStepDistance * normalizedAimDirection.z) };
+    for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+      KaijuHitbox* hitbox = &(hitboxes[i]);
+      vec3 checkPointInHitboxSpace;
+      float distanceToHitbox = 9999999.f; // TODO: make this a special max-float
+      if (!(hitbox->alive)) {
+        continue;
+      }
+
+      guMtxXFMF(hitbox->computedInverse.data, checkPoint.x, checkPoint.y, checkPoint.z, &(checkPointInHitboxSpace.x), &(checkPointInHitboxSpace.y), &(checkPointInHitboxSpace.z));
+      distanceToHitbox = hitbox->check(&checkPointInHitboxSpace);
+      if (distanceToHitbox < closestDistance) {
+        closestDistance = distanceToHitbox;
+        closestHitbox = hitbox; // TODO: let the player hit multiple hitboxes simultaneously
+      }
     }
 
-    guMtxXFMF(hitbox->computedInverse.data, playerPos.x, playerPos.y, playerPos.z, &(hitboxSpacePlayerPos.x), &(hitboxSpacePlayerPos.y), &(hitboxSpacePlayerPos.z));
-    distance = hitbox->check(&(hitboxSpacePlayerPos));
-
-    if (distance <= 0.f) {
-      hitbox->alive = 0;
+    // If the SDF distance is less than zero to something, we've hit it
+    if ((closestDistance <= 0) && (closestHitbox != NULL)) {
+      if (closestHitbox->destroyable) {
+        closestHitbox->alive = 0;
+      }
+      break;
     }
+
+    nextStepDistance = closestDistance;
   }
 }
 
@@ -517,6 +550,8 @@ void updateGame00(void) {
   nuDebPerfMarkSet(1);
   updateKaijuHitboxes(deltaInSeconds);
   nuDebPerfMarkSet(2);
-  testPlayerAgainstHitboxes();
+  if ((contdata->button & R_TRIG) && (contdata->trigger & Z_TRIG)) {
+    raymarchAimLineAgainstHitboxes();
+  }
   nuDebPerfMarkSet(3);
 }

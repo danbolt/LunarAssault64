@@ -9,6 +9,7 @@ typedef float (*SDFCallback)(const vec3*);
 
 typedef struct {
 	u8 alive;
+	u8 destroyable;
 
 	vec3 position;
 	vec3 rotation;

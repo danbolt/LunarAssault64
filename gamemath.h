@@ -10,6 +10,8 @@ typedef struct {
   float z;
 } vec3;
 
+extern const vec3 zeroVector;
+
 typedef struct {
 	float data[4][4];
 } mat4;
@@ -17,6 +19,8 @@ typedef struct {
 void mat4x4_invert(mat4* T, const mat4* M);
 
 float fabs_d(float x);
+
+float Q_rsqrt( float number );
 
 float lerp(float v0, float v1, float t);
 
