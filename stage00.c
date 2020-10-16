@@ -158,6 +158,8 @@ static const s8 cameraYInvert = 1;
 static OSTime time;
 static OSTime delta;
 
+static float noiseFactor;
+
 KaijuHitbox hitboxes[NUMBER_OF_KAIJU_HITBOXES];
 
 void initStage00(void) {
@@ -225,14 +227,17 @@ void initStage00(void) {
   GroundMapping[(MAP_WIDTH * 5) + 6] = 200;
   GroundMapping[(MAP_WIDTH * 6) + 6] = 200;
 
+  noiseFactor = 0.035f;
+
   generateSectionDLs();
 }
 
 void makeDL00(void) {
+  int i;
   DisplayData* dynamicp;
   char conbuf[20]; 
   u16 perspNorm;
-  int i;
+  u8 envVal = (u8)(noiseFactor * 255);
 
   /* Specify the display list buffer */
   dynamicp = &gfx_dynamic[gfx_gtask_no];
@@ -246,7 +251,7 @@ void makeDL00(void) {
 
   // Initial setup
   gDPPipeSync(glistp++);
-  gDPSetEnvColor(glistp++, 9, 9, 9, 255);
+  gDPSetEnvColor(glistp++, envVal, envVal, envVal, 255);
   gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
   gDPSetScissor(glistp++, G_SC_NON_INTERLACE, SCISSOR_SIDES, SCISSOR_LOW, SCREEN_WD - SCISSOR_SIDES, SCREEN_HT - SCISSOR_HIGH);
   gDPSetCycleType(glistp++, G_CYC_1CYCLE);
@@ -440,7 +445,7 @@ void updatePlayer(float deltaSeconds) {
   playerVelocity.y = inputDirectionYRotated * PLAYER_MOVE_SPEED;
   playerVelocity.z += GRAVITY * deltaSeconds;
 
-  if (playerIsOnTheGround && (contdata->button & A_BUTTON)) {
+  if (playerIsOnTheGround && (contdata->trigger & A_BUTTON)) {
     playerIsOnTheGround = 0;
     playerVelocity.z = JUMP_VELOCITY;
   }
@@ -512,6 +517,10 @@ void updateKaijuHitboxes(float delta) {
   }
 }
 
+void fireLaser(const vec3* location) {
+  laserChargeFactor = 0.f;
+}
+
 void raymarchAimLineAgainstHitboxes() {
   int stepI;
   vec3 checkPoint = cameraPos;
@@ -545,10 +554,8 @@ void raymarchAimLineAgainstHitboxes() {
 
     // If the SDF distance is less than zero to something, we've hit it
     if ((closestDistance <= 0) && (closestHitbox != NULL)) {
+      fireLaser(&(checkPoint));
 
-      // Fire
-      laserChargeFactor = 0.f;
-      
       if (closestHitbox->destroyable) {
         closestHitbox->alive = 0;
       }
