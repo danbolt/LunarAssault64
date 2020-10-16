@@ -12,12 +12,14 @@
 #define SCISSOR_LOW 24
 #define SCISSOR_SIDES 22
 
-#define CAMERA_FOV 60
+#define CAMERA_BASE_FOV 60
+#define CAMERA_ZOOM_FOV_CHANGE -45
 #define CAMERA_MOVE_SPEED 10.f
 #define CAMERA_TURN_SPEED_X 2.373f
 #define CAMERA_TURN_SPEED_Y 2.373f
+#define CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED -2.2f
 #define CAMERA_DISTANCE 3.f
-#define CAMERA_LIFT 1.f
+#define CAMERA_LIFT 0.4f
 
 #define FAR_PLANE_DETAIL_CUTOFF 80.f
 #define FAR_PLANE_DETAIL_CUTOFF_SQ (FAR_PLANE_DETAIL_CUTOFF * FAR_PLANE_DETAIL_CUTOFF)
@@ -32,6 +34,10 @@
 #define GRAVITY -3.2f
 #define JUMP_VELOCITY 3.f
 #define STEP_HEIGHT_CUTOFF 0.15f
+
+#define NOT_ZOOMED_IN -1
+#define ZOOMED_IN 1
+#define ZOOM_IN_OUT_SPEED 4.f
 
 #define MAX_STEP_COUNT 64
 #define INITIAL_STEP_DISTANCE 0.01f
@@ -137,6 +143,9 @@ static vec3 playerPos;
 static vec3 playerVelocity;
 static int playerIsOnTheGround;
 
+static float playerZoomFactor;
+static s8 zoomState;
+
 static vec3 cameraPos;
 static vec3 cameraTarget;
 static vec3 cameraRotation;
@@ -155,6 +164,9 @@ void initStage00(void) {
   cameraRotation = (vec3){0.f, 0.f, 0.f};
 
   playerPos = (vec3){10.f, 10.f, 10.f};
+
+  playerZoomFactor = 0.f;
+  zoomState = NOT_ZOOMED_IN;
 
   for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
     hitboxes[i].alive = 1;
@@ -240,7 +252,7 @@ void makeDL00(void) {
 
   // The camera
   {
-    guPerspective(&dynamicp->projection, &perspNorm, CAMERA_FOV, (float)SCREEN_WD/(float)SCREEN_HT, 1.0f, 1000.0f, 1.0f);
+    guPerspective(&dynamicp->projection, &perspNorm, CAMERA_BASE_FOV + (CAMERA_ZOOM_FOV_CHANGE * playerZoomFactor), (float)SCREEN_WD/(float)SCREEN_HT, 1.0f, 1000.0f, 1.0f);
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->projection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
     guLookAt(&dynamicp->camera, cameraPos.x ,cameraPos.y, cameraPos.z, cameraTarget.x, cameraTarget.y, cameraTarget.z, 0, 0, 1);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -248,7 +260,7 @@ void makeDL00(void) {
   }
 
   // The player
-  {
+  if (zoomState != ZOOMED_IN) {
     guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
 
@@ -336,7 +348,13 @@ void makeDL00(void) {
 
   if(contPattern & 0x1)
     {
-      
+      nuDebConTextPos(0,4,4);
+      sprintf(conbuf, "zoomState: %3d", zoomState);
+      nuDebConCPuts(0, conbuf);
+
+      nuDebConTextPos(0,4,5);
+      sprintf(conbuf, "zoomFactor: %3.4f", playerZoomFactor);
+      nuDebConCPuts(0, conbuf);
     }
   else
     {
@@ -392,17 +410,17 @@ void updatePlayer(float deltaSeconds) {
   float cosCameraRot, sinCameraRot;
 
   if (contdata->button & L_CBUTTONS) {
-    cameraRotation.z += CAMERA_TURN_SPEED_X * deltaSeconds;
+    cameraRotation.z += (CAMERA_TURN_SPEED_X + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds;
   }
   else if (contdata->button & R_CBUTTONS) {
-    cameraRotation.z -= CAMERA_TURN_SPEED_X * deltaSeconds;
+    cameraRotation.z -= (CAMERA_TURN_SPEED_X + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds;
   }
 
   if (contdata->button & D_CBUTTONS) {
-    cameraRotation.y = MAX(-0.3f, cameraRotation.y - (CAMERA_TURN_SPEED_Y * deltaSeconds * cameraYInvert));
+    cameraRotation.y = MAX(M_PI * -0.5f, cameraRotation.y - ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert));
   }
   else if (contdata->button & U_CBUTTONS) {
-    cameraRotation.y = MIN(1.3f, cameraRotation.y + (CAMERA_TURN_SPEED_Y * deltaSeconds * cameraYInvert));
+    cameraRotation.y = MIN(M_PI * 0.5f, cameraRotation.y + ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert));
   }
 
   cosCameraRot = cosf(cameraRotation.z + M_PI * 0.5f);
@@ -448,10 +466,13 @@ void updatePlayer(float deltaSeconds) {
 
   cameraTarget.x = lerp( cameraTarget.x, playerPos.x, 0.12f);
   cameraTarget.y = lerp( cameraTarget.y, playerPos.y, 0.12f);
-  cameraTarget.z = lerp( cameraTarget.z, playerPos.z + (CAMERA_LIFT * 0.5f) + cameraRotation.y, 0.12f);
-  cameraPos.x = cameraTarget.x + (cosf(cameraRotation.z) * CAMERA_DISTANCE);
-  cameraPos.y = cameraTarget.y + (sinf(cameraRotation.z) * CAMERA_DISTANCE);
+  cameraTarget.z = lerp( cameraTarget.z, playerPos.z + cameraRotation.y, 0.12f);
+  cameraPos.x = cameraTarget.x + (cosf(cameraRotation.z) * (CAMERA_DISTANCE));
+  cameraPos.y = cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE));
   cameraPos.z = cameraTarget.z + CAMERA_LIFT - cameraRotation.y;
+
+  zoomState = (contdata->button & R_TRIG) ? ZOOMED_IN : NOT_ZOOMED_IN;
+  playerZoomFactor = clamp(playerZoomFactor + (ZOOM_IN_OUT_SPEED * deltaSeconds * zoomState), 0.f, 1.f);
 }
 
 // TODO: make this an array of boxes
@@ -522,7 +543,7 @@ void raymarchAimLineAgainstHitboxes() {
       break;
     }
 
-    nextStepDistance = closestDistance;
+    nextStepDistance = closestDistance + 0.001f;
   }
 }
 
@@ -545,12 +566,11 @@ void updateGame00(void) {
     hitboxes[i].isTransformDirty = 1;
   }
   
-
   updatePlayer(deltaInSeconds);
   nuDebPerfMarkSet(1);
   updateKaijuHitboxes(deltaInSeconds);
   nuDebPerfMarkSet(2);
-  if ((contdata->button & R_TRIG) && (contdata->trigger & Z_TRIG)) {
+  if ((zoomState == ZOOMED_IN) && (contdata->trigger & Z_TRIG)) {
     raymarchAimLineAgainstHitboxes();
   }
   nuDebPerfMarkSet(3);
