@@ -44,6 +44,8 @@
 #define MAX_STEP_COUNT 64
 #define INITIAL_STEP_DISTANCE 0.01f
 
+#define DEFAULT_NOISE_LEVEL 0.035f
+
 static Vtx cube_geo[] = {
   {  1,  1,  1, 0, 0, 0, 0xff, 0, 0xff, 0xff },
   { -1,  1,  1, 0, 0, 0, 0, 0, 0xff, 0xff },
@@ -227,7 +229,7 @@ void initStage00(void) {
   GroundMapping[(MAP_WIDTH * 5) + 6] = 200;
   GroundMapping[(MAP_WIDTH * 6) + 6] = 200;
 
-  noiseFactor = 0.035f;
+  noiseFactor = DEFAULT_NOISE_LEVEL;
 
   generateSectionDLs();
 }
@@ -555,6 +557,7 @@ void raymarchAimLineAgainstHitboxes() {
     // If the SDF distance is less than zero to something, we've hit it
     if ((closestDistance <= 0) && (closestHitbox != NULL)) {
       fireLaser(&(checkPoint));
+      noiseFactor = 1.00f;
 
       if (closestHitbox->destroyable) {
         closestHitbox->alive = 0;
@@ -574,6 +577,8 @@ void updateGame00(void) {
   delta = (newTime - time);
   time = newTime;
   deltaInSeconds = delta * 0.000001f;
+
+  noiseFactor = lerp(noiseFactor, DEFAULT_NOISE_LEVEL, 0.04f);
 
   nuDebPerfMarkSet(0);
 
