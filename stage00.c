@@ -19,7 +19,7 @@
 #define CAMERA_TURN_SPEED_Y 2.373f
 #define CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED -2.2f
 #define CAMERA_DISTANCE 3.f
-#define CAMERA_LIFT 0.4f
+#define CAMERA_LIFT 1.f
 
 #define FAR_PLANE_DETAIL_CUTOFF 80.f
 #define FAR_PLANE_DETAIL_CUTOFF_SQ (FAR_PLANE_DETAIL_CUTOFF * FAR_PLANE_DETAIL_CUTOFF)
@@ -38,6 +38,8 @@
 #define NOT_ZOOMED_IN -1
 #define ZOOMED_IN 1
 #define ZOOM_IN_OUT_SPEED 4.f
+
+#define LASER_CHARGE_SPEED 0.5f
 
 #define MAX_STEP_COUNT 64
 #define INITIAL_STEP_DISTANCE 0.01f
@@ -145,6 +147,8 @@ static int playerIsOnTheGround;
 
 static float playerZoomFactor;
 static s8 zoomState;
+
+static float laserChargeFactor;
 
 static vec3 cameraPos;
 static vec3 cameraTarget;
@@ -355,6 +359,10 @@ void makeDL00(void) {
       nuDebConTextPos(0,4,5);
       sprintf(conbuf, "zoomFactor: %3.4f", playerZoomFactor);
       nuDebConCPuts(0, conbuf);
+
+      nuDebConTextPos(0,4,6);
+      sprintf(conbuf, "laserChargeFactor: %3.4f", laserChargeFactor);
+      nuDebConCPuts(0, conbuf);
     }
   else
     {
@@ -473,9 +481,9 @@ void updatePlayer(float deltaSeconds) {
 
   zoomState = (contdata->button & R_TRIG) ? ZOOMED_IN : NOT_ZOOMED_IN;
   playerZoomFactor = clamp(playerZoomFactor + (ZOOM_IN_OUT_SPEED * deltaSeconds * zoomState), 0.f, 1.f);
+  laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * zoomState * ((zoomState == ZOOMED_IN) ? playerZoomFactor : 1.f)), 0.f, 1.f);
 }
 
-// TODO: make this an array of boxes
 void updateKaijuHitboxes(float delta) {
   int i;
   mat4 positionMatrix;
@@ -537,6 +545,10 @@ void raymarchAimLineAgainstHitboxes() {
 
     // If the SDF distance is less than zero to something, we've hit it
     if ((closestDistance <= 0) && (closestHitbox != NULL)) {
+
+      // Fire
+      laserChargeFactor = 0.f;
+      
       if (closestHitbox->destroyable) {
         closestHitbox->alive = 0;
       }
@@ -570,7 +582,7 @@ void updateGame00(void) {
   nuDebPerfMarkSet(1);
   updateKaijuHitboxes(deltaInSeconds);
   nuDebPerfMarkSet(2);
-  if ((zoomState == ZOOMED_IN) && (contdata->trigger & Z_TRIG)) {
+  if ((zoomState == ZOOMED_IN) && (contdata->trigger & Z_TRIG) && (laserChargeFactor > 0.98f)) {
     raymarchAimLineAgainstHitboxes();
   }
   nuDebPerfMarkSet(3);
