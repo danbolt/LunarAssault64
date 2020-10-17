@@ -23,6 +23,9 @@ typedef struct {
 
   Mtx     hitboxTransform[NUMBER_OF_KAIJU_HITBOXES];
 
+  Mtx     divineLineTransform;
+  Mtx     divineLineScale;
+
   Mtx     orthoHudProjection;
   Mtx     orthoHudModelling;
 } DisplayData;
