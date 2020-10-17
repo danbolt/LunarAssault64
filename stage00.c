@@ -21,7 +21,7 @@
 #define CAMERA_DISTANCE 3.f
 #define CAMERA_LIFT 1.f
 
-#define FAR_PLANE_DETAIL_CUTOFF 80.f
+#define FAR_PLANE_DETAIL_CUTOFF 160.f
 #define FAR_PLANE_DETAIL_CUTOFF_SQ (FAR_PLANE_DETAIL_CUTOFF * FAR_PLANE_DETAIL_CUTOFF)
 
 #define FOCUS_HIGH_DETAIL_CUTOFF 29.f
@@ -775,7 +775,7 @@ void updateGame00(void) {
 
   if (divineLineState == DIVINE_LINE_ON) {
     divineLineTimePassed += deltaInSeconds;
-    divineLineStartSpot.z -= deltaInSeconds * 64.f;
+    divineLineStartSpot.z -= deltaInSeconds * 98.f;
 
     if (divineLineTimePassed > DIVINE_LINE_DURATION) {
       divineLineState = DIVINE_LINE_OFF;
