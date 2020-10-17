@@ -19,7 +19,7 @@
 #define CAMERA_TURN_SPEED_Y 2.373f
 #define CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED -2.2f
 #define CAMERA_DISTANCE 3.f
-#define CAMERA_LIFT 1.f
+#define CAMERA_LIFT 4.f
 
 #define FAR_PLANE_DETAIL_CUTOFF 160.f
 #define FAR_PLANE_DETAIL_CUTOFF_SQ (FAR_PLANE_DETAIL_CUTOFF * FAR_PLANE_DETAIL_CUTOFF)
@@ -335,7 +335,7 @@ void initStage00(void) {
     hitboxes[i].alive = 1;
     hitboxes[i].destroyable = (i % 2 == 1);
     hitboxes[i].isTransformDirty = 1;
-    hitboxes[i].position = (vec3){ 8.f + (4.f * i), 2.f, 8.f };
+    hitboxes[i].position = (vec3){ 8.f + (4.f * i), 2.f, 24.f };
     hitboxes[i].rotation = (vec3){ 45.f, 0.f, 0.f };
     hitboxes[i].scale = (vec3){ 1.f, 1.f, 1.f };
     guMtxIdentF(hitboxes[i].computedTransform.data);
@@ -570,10 +570,10 @@ float getHeight(float x, float y) {
   const int nw = sampleHeight(x-1, y-1);
   const int sw = sampleHeight(x-1, y+1);
 
-  const float heightA = (((nw + n + mid + w) * 0.25f) / 256.f) * 20.f;
-  const float heightB = (((n + ne + e + mid) * 0.25f) / 256.f) * 20.f;
-  const float heightC = (((mid + e + se + s) * 0.25f) / 256.f) * 20.f;
-  const float heightD = (((w + mid + s + sw) * 0.25f) / 256.f) * 20.f;
+  const float heightA = (((nw + n + mid + w) * 0.25f) / 256.f) * 50.f;
+  const float heightB = (((n + ne + e + mid) * 0.25f) / 256.f) * 50.f;
+  const float heightC = (((mid + e + se + s) * 0.25f) / 256.f) * 50.f;
+  const float heightD = (((w + mid + s + sw) * 0.25f) / 256.f) * 50.f;
 
   return bilinear(heightA, heightB, heightC, heightD, fractionX,  fractionY);
 }

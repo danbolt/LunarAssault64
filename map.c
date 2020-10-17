@@ -35,10 +35,10 @@ void generateDLPerSection(SectionData* section, int originX, int originY) {
       const int se = sampleHeight(originX+i+1, originY+j+1);
       const int nw = sampleHeight(originX+i-1, originY+j-1);
       const int sw = sampleHeight(originX+i-1, originY+j+1);
-      const float heightA = (((nw + n + mid + w) * 0.25f) / 256.f) * 20.f * 100.f;
-      const float heightB = (((n + ne + e + mid) * 0.25f) / 256.f) * 20.f * 100.f;
-      const float heightC = (((mid + e + se + s) * 0.25f) / 256.f) * 20.f * 100.f;
-      const float heightD = (((w + mid + s + sw) * 0.25f) / 256.f) * 20.f * 100.f;
+      const float heightA = (((nw + n + mid + w) * 0.25f) / 256.f) * 50.f * 100.f;
+      const float heightB = (((n + ne + e + mid) * 0.25f) / 256.f) * 50.f * 100.f;
+      const float heightC = (((mid + e + se + s) * 0.25f) / 256.f) * 50.f * 100.f;
+      const float heightD = (((w + mid + s + sw) * 0.25f) / 256.f) * 50.f * 100.f;
 
       if (i == 1 && j == 1) {
         section->centroid.z = heightA / 100.f;
@@ -75,10 +75,10 @@ void generateLowDetailDLPerSection(SectionData* section, int originX, int origin
   guTranslate(&(section->transform), originX * 100, originY * 100, 0.f);
 
   texIndex = sampleTileTex(originX, originY);
-  heightA = (sampleHeight(originX - 1 , originY - 1) / 256.f) * 20.f * 100.f;
-  heightB = (sampleHeight(originX + 4, originY - 1) / 256.f) * 20.f * 100.f;
-  heightC = (sampleHeight(originX + 4, originY + 4) / 256.f) * 20.f * 100.f;
-  heightD = (sampleHeight(originX - 1 , originY + 4) / 256.f) * 20.f * 100.f;
+  heightA = (sampleHeight(originX - 1 , originY - 1) / 256.f) * 50.f * 100.f;
+  heightB = (sampleHeight(originX + 4, originY - 1) / 256.f) * 50.f * 100.f;
+  heightC = (sampleHeight(originX + 4, originY + 4) / 256.f) * 50.f * 100.f;
+  heightD = (sampleHeight(originX - 1 , originY + 4) / 256.f) * 50.f * 100.f;
 
   *(verts++) = (Vtx){(originX) -   100, (originY) -   100, heightA - 1.f, 0, ((texIndex % 4) * 8) << 6,     (((texIndex / 4) % 4) * 8) << 6, 0x11, (u8)(0xff * heightA / 2000.f), 0x13, 0xff };
   *(verts++) = (Vtx){(originX) + 500, (originY) -   100, heightB - 1.f, 0, ((texIndex % 4) * 8 + 7) << 6, (((texIndex / 4) % 4) * 8) << 6, 0x11, (u8)(0xff * heightB / 2000.f), 0x13, 0xff };
