@@ -19,12 +19,13 @@
 #define CAMERA_TURN_SPEED_Y 2.373f
 #define CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED -2.2f
 #define CAMERA_DISTANCE 3.f
-#define CAMERA_LIFT 4.f
+#define CAMERA_LIFT_FRONT 0.3f
+#define CAMERA_LIFT_BACK 1.f
 
 #define FAR_PLANE_DETAIL_CUTOFF 160.f
 #define FAR_PLANE_DETAIL_CUTOFF_SQ (FAR_PLANE_DETAIL_CUTOFF * FAR_PLANE_DETAIL_CUTOFF)
 
-#define FOCUS_HIGH_DETAIL_CUTOFF 29.f
+#define FOCUS_HIGH_DETAIL_CUTOFF 34.f
 #define FOCUS_HIGH_DETAIL_CUTOFF_SQ (FOCUS_HIGH_DETAIL_CUTOFF * FOCUS_HIGH_DETAIL_CUTOFF)
 
 #define HIGH_DETAIL_CUTOFF 20.f
@@ -599,11 +600,11 @@ void updatePlayer(float deltaSeconds) {
     cameraRotation.z -= (CAMERA_TURN_SPEED_X + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds;
   }
 
-  if (contdata->button & D_CBUTTONS) {
-    cameraRotation.y = MAX(M_PI * -0.5f, cameraRotation.y - ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert));
+  if (contdata->button & U_CBUTTONS) {
+    cameraRotation.y = MAX(-M_PI * 0.35f, cameraRotation.y - ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert));
   }
-  else if (contdata->button & U_CBUTTONS) {
-    cameraRotation.y = MIN(M_PI * 0.5f, cameraRotation.y + ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert));
+  else if (contdata->button & D_CBUTTONS) {
+    cameraRotation.y = MIN(M_PI * 0.35f, cameraRotation.y + ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert));
   }
 
   cosCameraRot = cosf(cameraRotation.z + M_PI * 0.5f);
@@ -649,10 +650,10 @@ void updatePlayer(float deltaSeconds) {
 
   cameraTarget.x = lerp( cameraTarget.x, playerPos.x, 0.12f);
   cameraTarget.y = lerp( cameraTarget.y, playerPos.y, 0.12f);
-  cameraTarget.z = lerp( cameraTarget.z, playerPos.z + cameraRotation.y, 0.12f);
-  cameraPos.x = cameraTarget.x + (cosf(cameraRotation.z) * (CAMERA_DISTANCE));
-  cameraPos.y = cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE));
-  cameraPos.z = cameraTarget.z + CAMERA_LIFT - cameraRotation.y;
+  cameraTarget.z = lerp( cameraTarget.z, playerPos.z + CAMERA_LIFT_FRONT, 0.12f);
+  cameraPos.x = cameraTarget.x + (cosf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y));
+  cameraPos.y = cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y));
+  cameraPos.z = cameraTarget.z + (CAMERA_DISTANCE * sinf(cameraRotation.y)) + CAMERA_LIFT_BACK;
 
   zoomState = (contdata->button & R_TRIG) ? ZOOMED_IN : NOT_ZOOMED_IN;
   playerZoomFactor = clamp(playerZoomFactor + (ZOOM_IN_OUT_SPEED * deltaSeconds * zoomState), 0.f, 1.f);
