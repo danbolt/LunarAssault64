@@ -19,8 +19,8 @@
 #define CAMERA_TURN_SPEED_Y 2.373f
 #define CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED -2.2f
 #define CAMERA_DISTANCE 3.f
-#define CAMERA_LIFT_FRONT 0.3f
-#define CAMERA_LIFT_BACK 1.f
+#define CAMERA_LIFT_FRONT 0.7f
+#define CAMERA_LIFT_BACK 1.2f
 
 #define FAR_PLANE_DETAIL_CUTOFF 160.f
 #define FAR_PLANE_DETAIL_CUTOFF_SQ (FAR_PLANE_DETAIL_CUTOFF * FAR_PLANE_DETAIL_CUTOFF)
@@ -43,7 +43,7 @@
 #define LASER_CHARGE_SPEED 0.45f
 
 #define MAX_STEP_COUNT 64
-#define INITIAL_STEP_DISTANCE 0.01f
+#define INITIAL_STEP_DISTANCE 4.0f
 
 #define DEFAULT_NOISE_LEVEL 0.035f
 
@@ -579,6 +579,11 @@ float getHeight(float x, float y) {
   return bilinear(heightA, heightB, heightC, heightD, fractionX,  fractionY);
 }
 
+float getDistanceFromGround(const vec3* pos) {
+  const float height = getHeight(pos->x, pos->y);
+  return pos->z - height;
+}
+
 void updatePlayer(float deltaSeconds) {
   float stepX;
   float stepY;
@@ -713,6 +718,19 @@ void raymarchAimLineAgainstHitboxes() {
     KaijuHitbox* closestHitbox = NULL;
 
     checkPoint = (vec3){ checkPoint.x + (nextStepDistance * normalizedAimDirection.x), checkPoint.y + (nextStepDistance * normalizedAimDirection.y), checkPoint.z + (nextStepDistance * normalizedAimDirection.z) };
+
+    // Check against the ground
+    closestDistance = getDistanceFromGround(&(checkPoint));
+
+    // If we're below ground, then we've hit the laser against that
+    if (closestDistance <= 0) {
+      fireLaser(&(checkPoint));
+      noiseFactor = 0.07f;
+
+      break;
+    }
+
+    // Check agianst each of the Kaiju hitboxes
     for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
       KaijuHitbox* hitbox = &(hitboxes[i]);
       vec3 checkPointInHitboxSpace;
@@ -732,10 +750,11 @@ void raymarchAimLineAgainstHitboxes() {
     // If the SDF distance is less than zero to something, we've hit it
     if ((closestDistance <= 0) && (closestHitbox != NULL)) {
       fireLaser(&(checkPoint));
-      noiseFactor = 1.00f;
+      noiseFactor = 0.10000524f;
 
       if (closestHitbox->destroyable) {
         closestHitbox->alive = 0;
+        noiseFactor = 1.00f;
       }
       break;
     }
