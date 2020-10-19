@@ -64,6 +64,15 @@ static Vtx cube_geo[] = {
   {  1, -1,  -1, 0, 0, 0, 0, 0, 0x33, 0xff },
 };
 
+static Gfx blue_cube_commands[] = {
+  gsSPVertex(&cube_geo, 8, 0),
+  gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+  gsSP2Triangles(3, 2, 6, 0, 3, 6, 7, 0),
+  gsSP2Triangles(1, 0, 4, 0, 1, 4, 5, 0),
+  gsSP2Triangles(4, 5, 6, 0, 5, 6, 7, 0),
+  gsSPEndDisplayList()
+};
+
 static Vtx red_octahedron_geo[] = {
   {  1,  0,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
   { -1,  0,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
@@ -82,13 +91,6 @@ static Gfx red_octahedron_commands[] = {
   gsSPEndDisplayList()
 };
 
-static Gfx player_commands[] = {
-  gsSPVertex(&cube_geo, 8, 0),
-  gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
-  gsSP2Triangles(3, 2, 6, 0, 3, 6, 7, 0),
-  gsSP2Triangles(1, 0, 4, 0, 1, 4, 5, 0),
-  gsSPEndDisplayList()
-};
 
 static Vtx divine_line_geo[] = {
   {  0,   2,     0, 0, 0, 0, 0xDD, 0xDD, 0x00, 0xff },
@@ -332,17 +334,41 @@ void initStage00(void) {
   divineLineStartSpot = (vec3){ MAP_WIDTH * 0.5f, MAP_LENGTH * 0.5f, 60.f };
   divineLineEndSpot = (vec3){ 0.f, 0.f, 0.f };
 
-  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
-    hitboxes[i].alive = 1;
-    hitboxes[i].destroyable = (i % 2 == 1);
-    hitboxes[i].isTransformDirty = 1;
-    hitboxes[i].position = (vec3){ 8.f + (4.f * i), 2.f, 24.f };
-    hitboxes[i].rotation = (vec3){ 45.f, 0.f, 0.f };
-    hitboxes[i].scale = (vec3){ 1.f, 1.f, 1.f };
-    guMtxIdentF(hitboxes[i].computedTransform.data);
-    hitboxes[i].displayCommands = (i % 2 == 0) ? player_commands : red_octahedron_commands;
-    hitboxes[i].check = (i % 2 == 0) ? sdBox : sdOctahedron;
+  // Create a "body piece"
+  hitboxes[0].alive = 1;
+  hitboxes[0].destroyable = 0;
+  hitboxes[0].isTransformDirty = 1;
+  hitboxes[0].position = (vec3){ 16.f, 2.f, 24.f };
+  hitboxes[0].rotation = (vec3){ 45.f, 0.f, 0.f };
+  hitboxes[0].scale = (vec3){ 1.f, 2.f, 1.f };
+  guMtxIdentF(hitboxes[0].computedTransform.data);
+  hitboxes[0].displayCommands = blue_cube_commands;
+  hitboxes[0].check = sdBox;
+  hitboxes[0].numberOfChildren = 0;
+  for (i = 0; i < 4; i++) {
+    hitboxes[0].children[i] = NULL;
   }
+  hitboxes[0].parent = NULL;
+
+  // Create an appendage that's a hitbox
+  hitboxes[1].alive = 1;
+  hitboxes[1].destroyable = 1;
+  hitboxes[1].isTransformDirty = 1;
+  hitboxes[1].position = (vec3){ 5.f, 0.f, 0.f };
+  hitboxes[1].rotation = (vec3){ 0.f, 0.f, 0.f };
+  hitboxes[1].scale = (vec3){ 1.f, 1.f, 1.f };
+  guMtxIdentF(hitboxes[1].computedTransform.data);
+  hitboxes[1].displayCommands = red_octahedron_commands;
+  hitboxes[1].check = sdOctahedron;
+  hitboxes[1].numberOfChildren = 0;
+  for (i = 0; i < 4; i++) {
+    hitboxes[1].children[i] = NULL;
+  }
+  hitboxes[1].parent = NULL;
+
+  // parent the hitbox to the body
+  hitboxes[0].children[hitboxes[0].numberOfChildren++] = (struct KaijuHitbox*)(&(hitboxes[1]));
+  hitboxes[1].parent = (struct KaijuHitbox*)(&(hitboxes[0]));
   
   // Fill the map with sinewave-based data
   // TODO: make this load from a file
@@ -390,6 +416,26 @@ void initStage00(void) {
   generateSectionDLs();
 }
 
+void appendHitboxDL(KaijuHitbox* hitbox, DisplayData* dynamicp) {
+  int i;
+
+  if (!(hitbox->alive)) {
+    return;
+  }
+
+  guMtxF2L(hitbox->computedTransform.data, &(dynamicp->hitboxTransform[dynamicp->hitboxTransformCount]));
+  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->hitboxTransform[dynamicp->hitboxTransformCount])), G_MTX_MODELVIEW | G_MTX_PUSH);
+  gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(hitbox->displayCommands));
+  dynamicp->hitboxTransformCount++;
+
+  for (i = 0; i < hitbox->numberOfChildren; i++) {
+    appendHitboxDL(hitbox->children[i], dynamicp);
+  }
+
+
+  gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+}
+
 void makeDL00(void) {
   int i;
   DisplayData* dynamicp;
@@ -400,6 +446,8 @@ void makeDL00(void) {
   /* Specify the display list buffer */
   dynamicp = &gfx_dynamic[gfx_gtask_no];
   glistp = &gfx_glist[gfx_gtask_no][0];
+
+  dynamicp->hitboxTransformCount = 0;
 
   /* Initialize RCP */
   gfxRCPInit();
@@ -436,7 +484,7 @@ void makeDL00(void) {
 
     guScale(&(dynamicp->playerScale), 0.25f, 0.25f, 0.25f);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH);
-    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(player_commands));
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(blue_cube_commands));
     gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
   }
 
@@ -455,18 +503,7 @@ void makeDL00(void) {
 
   // The kaiju hitboxes
   {
-    for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
-      if (!(hitboxes[i].alive)) {
-        continue;
-      }
-
-      guMtxF2L(hitboxes[i].computedTransform.data, &(dynamicp->hitboxTransform[i]));
-      gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->hitboxTransform[i])), G_MTX_MODELVIEW | G_MTX_PUSH);
-
-      gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(hitboxes[i].displayCommands));
-
-      gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
-    }
+    appendHitboxDL(&(hitboxes[0]), dynamicp);
   }
 
   // The map
@@ -546,7 +583,7 @@ void makeDL00(void) {
       nuDebConCPuts(0, "Connect controller #1, kid!");
     }
 
-    nuDebTaskPerfBar1(5, 200, NU_SC_NOSWAPBUFFER);
+    nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
     
   /* Display characters on the frame buffer */
   nuDebConDisp(NU_SC_SWAPBUFFER);
@@ -703,6 +740,15 @@ void fireLaser(const vec3* location) {
   divineLineTimePassed = 0.f;
 }
 
+void getParentAdjustedInverses(mat4* result, KaijuHitbox* hitbox) {
+  if (hitbox->parent) {
+    getParentAdjustedInverses(result, hitbox->parent);
+    guMtxCatF(result->data, hitbox->computedInverse.data, result->data);
+  } else {
+    *result = hitbox->computedInverse;
+  }
+}
+
 void raymarchAimLineAgainstHitboxes() {
   int stepI;
   vec3 checkPoint = cameraPos;
@@ -734,12 +780,16 @@ void raymarchAimLineAgainstHitboxes() {
     for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
       KaijuHitbox* hitbox = &(hitboxes[i]);
       vec3 checkPointInHitboxSpace;
+      mat4 inverseToCheck;
       float distanceToHitbox = 9999999.f; // TODO: make this a special max-float
+
       if (!(hitbox->alive)) {
         continue;
       }
 
-      guMtxXFMF(hitbox->computedInverse.data, checkPoint.x, checkPoint.y, checkPoint.z, &(checkPointInHitboxSpace.x), &(checkPointInHitboxSpace.y), &(checkPointInHitboxSpace.z));
+      getParentAdjustedInverses(&inverseToCheck, hitbox);
+
+      guMtxXFMF(inverseToCheck.data, checkPoint.x, checkPoint.y, checkPoint.z, &(checkPointInHitboxSpace.x), &(checkPointInHitboxSpace.y), &(checkPointInHitboxSpace.z));
       distanceToHitbox = hitbox->check(&checkPointInHitboxSpace);
       if (distanceToHitbox < closestDistance) {
         closestDistance = distanceToHitbox;
@@ -781,37 +831,34 @@ void updateDivineLine(float deltaSeconds) {
 }
 
 void updateKaiju(float deltaSeconds) {
-  int i;
-
   // TODO: make this cooler
-  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
-    hitboxes[i].rotation.x += 0.05f * i;
-    hitboxes[i].isTransformDirty = 1;
-  }
+  hitboxes[0].rotation.x += 0.05f;
+  hitboxes[0].isTransformDirty = 1;
 }
 
 void updateGame00(void) {
   int i;
-  float deltaInSeconds = 0.f;
+  float deltaSeconds = 0.f;
   OSTime newTime = OS_CYCLES_TO_USEC(osGetTime());
 
   delta = (newTime - time);
   time = newTime;
-  deltaInSeconds = delta * 0.000001f;
+  deltaSeconds = delta * 0.000001f;
 
   noiseFactor = lerp(noiseFactor, DEFAULT_NOISE_LEVEL, 0.04f);
 
   nuDebPerfMarkSet(0);
 
-  /* Data reading of controller 1 */
   nuContDataGetEx(contdata,0);
-  updateKaiju(deltaInSeconds);
-  updatePlayer(deltaInSeconds);
+
+  updateKaiju(deltaSeconds);
   nuDebPerfMarkSet(1);
-  updateKaijuHitboxes(deltaInSeconds);
+  updatePlayer(deltaSeconds);
   nuDebPerfMarkSet(2);
-  updateHitboxCheck();
+  updateKaijuHitboxes(deltaSeconds);
   nuDebPerfMarkSet(3);
-  updateDivineLine(deltaInSeconds);
+  updateHitboxCheck();
   nuDebPerfMarkSet(4);
+  updateDivineLine(deltaSeconds);
+  nuDebPerfMarkSet(5);
 }

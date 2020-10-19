@@ -21,6 +21,7 @@ typedef struct {
 
   Mtx     mapScale;
 
+  int     hitboxTransformCount;
   Mtx     hitboxTransform[NUMBER_OF_KAIJU_HITBOXES];
 
   Mtx     divineLineTransform;
