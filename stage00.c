@@ -763,6 +763,33 @@ void raymarchAimLineAgainstHitboxes() {
   }
 }
 
+void updateHitboxCheck() {
+  if ((zoomState == ZOOMED_IN) && (contdata->trigger & Z_TRIG) && (laserChargeFactor > 0.98f)) {
+    raymarchAimLineAgainstHitboxes();
+  }
+}
+
+void updateDivineLine(float deltaSeconds) {
+  if (divineLineState == DIVINE_LINE_ON) {
+    divineLineTimePassed += deltaSeconds;
+    divineLineStartSpot.z -= deltaSeconds * 98.f;
+
+    if (divineLineTimePassed > DIVINE_LINE_DURATION) {
+      divineLineState = DIVINE_LINE_OFF;
+    }
+  }
+}
+
+void updateKaiju(float deltaSeconds) {
+  int i;
+
+  // TODO: make this cooler
+  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+    hitboxes[i].rotation.x += 0.05f * i;
+    hitboxes[i].isTransformDirty = 1;
+  }
+}
+
 void updateGame00(void) {
   int i;
   float deltaInSeconds = 0.f;
@@ -778,27 +805,13 @@ void updateGame00(void) {
 
   /* Data reading of controller 1 */
   nuContDataGetEx(contdata,0);
-
-  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
-    hitboxes[i].rotation.x += 0.05f * i;
-    hitboxes[i].isTransformDirty = 1;
-  }
-  
+  updateKaiju(deltaInSeconds);
   updatePlayer(deltaInSeconds);
   nuDebPerfMarkSet(1);
   updateKaijuHitboxes(deltaInSeconds);
   nuDebPerfMarkSet(2);
-  if ((zoomState == ZOOMED_IN) && (contdata->trigger & Z_TRIG) && (laserChargeFactor > 0.98f)) {
-    raymarchAimLineAgainstHitboxes();
-  }
+  updateHitboxCheck();
   nuDebPerfMarkSet(3);
-
-  if (divineLineState == DIVINE_LINE_ON) {
-    divineLineTimePassed += deltaInSeconds;
-    divineLineStartSpot.z -= deltaInSeconds * 98.f;
-
-    if (divineLineTimePassed > DIVINE_LINE_DURATION) {
-      divineLineState = DIVINE_LINE_OFF;
-    }
-  }
+  updateDivineLine(deltaInSeconds);
+  nuDebPerfMarkSet(4);
 }
