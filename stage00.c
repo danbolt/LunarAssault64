@@ -93,6 +93,24 @@ static Gfx red_octahedron_commands[] = {
   gsSPEndDisplayList()
 };
 
+static Vtx blue_octahedron_geo[] = {
+  {  1,  0,  0, 0, 0, 0, 0x77, 0, 0x99, 0xff },
+  { -1,  0,  0, 0, 0, 0, 0x77, 0, 0x99, 0xff },
+  {  0,  1,  0, 0, 0, 0, 0x77, 0, 0x99, 0xff },
+  {  0, -1,  0, 0, 0, 0, 0x77, 0, 0x99, 0xff },
+  {  0,  0,  1, 0, 0, 0, 0x77, 0, 0x99, 0xff },
+  {  0,  0, -1, 0, 0, 0, 0x77, 0, 0x99, 0xff },
+};
+
+static Gfx blue_octahedron_commands[] = {
+  gsSPVertex(&blue_octahedron_geo, 6, 0),
+  gsSP2Triangles(0, 2, 4, 0, 0, 5, 2, 0),
+  gsSP2Triangles(0, 4, 3, 0, 0, 3, 5, 0),
+  gsSP2Triangles(1, 3, 4, 0, 1, 5, 3, 0),
+  gsSP2Triangles(1, 4, 2, 0, 1, 2, 5, 0),
+  gsSPEndDisplayList()
+};
+
 
 static Vtx divine_line_geo[] = {
   {  0,   2,     0, 0, 0, 0, 0xDD, 0xDD, 0x00, 0xff },
@@ -322,7 +340,7 @@ void initStage00(void) {
 
   cameraPos = (vec3){4, 0, 20};
   cameraTarget = (vec3){10.f, 10.f, 10.f};
-  cameraRotation = (vec3){0.f, 0.f, 0.f};
+  cameraRotation = (vec3){0.f, 0.f, M_PI};
 
   playerPos = (vec3){10.f, 10.f, 10.f};
 
@@ -336,41 +354,90 @@ void initStage00(void) {
   divineLineStartSpot = (vec3){ MAP_WIDTH * 0.5f, MAP_LENGTH * 0.5f, 60.f };
   divineLineEndSpot = (vec3){ 0.f, 0.f, 0.f };
 
+  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+    hitboxes[0].alive = 0;
+  }
+
   // Create a "body piece"
   hitboxes[0].alive = 1;
   hitboxes[0].destroyable = 0;
   hitboxes[0].isTransformDirty = 1;
-  hitboxes[0].position = (vec3){ 16.f, 2.f, 24.f };
-  hitboxes[0].rotation = (vec3){ 45.f, 0.f, 0.f };
-  hitboxes[0].scale = (vec3){ 1.f, 2.f, 1.f };
+  hitboxes[0].position = (vec3){ 48.f, 2.f, 45.5f };
+  hitboxes[0].rotation = (vec3){ -10.f, 0.f, 45.f };
+  hitboxes[0].scale = (vec3){ 8.f, 6.f, 7.f };
   guMtxIdentF(hitboxes[0].computedTransform.data);
-  hitboxes[0].displayCommands = blue_cube_commands;
-  hitboxes[0].check = sdBox;
+  hitboxes[0].displayCommands = blue_octahedron_commands;
+  hitboxes[0].check = sdOctahedron;
   hitboxes[0].numberOfChildren = 0;
-  for (i = 0; i < 4; i++) {
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
     hitboxes[0].children[i] = NULL;
   }
   hitboxes[0].parent = NULL;
+
+  hitboxes[4].alive = 1;
+  hitboxes[4].destroyable = 0;
+  hitboxes[4].isTransformDirty = 1;
+  hitboxes[4].position = (vec3){ 0.f, 0.f, 1.f };
+  hitboxes[4].rotation = (vec3){ 10.f, 0.f, 0.f };
+  hitboxes[4].scale = (vec3){ 0.9f, 0.9f, 0.9f };
+  guMtxIdentF(hitboxes[4].computedTransform.data);
+  hitboxes[4].displayCommands = blue_cube_commands;
+  hitboxes[4].check = sdBox;
+  hitboxes[4].numberOfChildren = 0;
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
+    hitboxes[4].children[i] = NULL;
+  }
+  hitboxes[4].parent = NULL;
+  parentHitboxes(&(hitboxes[4]), &(hitboxes[0]));
+
+  hitboxes[2].alive = 1;
+  hitboxes[2].destroyable = 0;
+  hitboxes[2].isTransformDirty = 1;
+  hitboxes[2].position = (vec3){ 0.75f, 0.0f, -1.7f };
+  hitboxes[2].rotation = (vec3){ 7.f, 0.f, 0.f };
+  hitboxes[2].scale = (vec3){ 0.25f, 0.20f, 3.f };
+  guMtxIdentF(hitboxes[2].computedTransform.data);
+  hitboxes[2].displayCommands = blue_octahedron_commands;
+  hitboxes[2].check = sdOctahedron;
+  hitboxes[2].numberOfChildren = 0;
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
+    hitboxes[2].children[i] = NULL;
+  }
+  hitboxes[2].parent = NULL;
+  parentHitboxes(&(hitboxes[2]), &(hitboxes[0]));
+
+  hitboxes[3].alive = 1;
+  hitboxes[3].destroyable = 0;
+  hitboxes[3].isTransformDirty = 1;
+  hitboxes[3].position = (vec3){ -0.75f, 0.0f, -1.7f };
+  hitboxes[3].rotation = (vec3){ 7.f, 0.f, 0.f };
+  hitboxes[3].scale = (vec3){ 0.25f, 0.20f, 3.f };
+  guMtxIdentF(hitboxes[3].computedTransform.data);
+  hitboxes[3].displayCommands = blue_octahedron_commands;
+  hitboxes[3].check = sdOctahedron;
+  hitboxes[3].numberOfChildren = 0;
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
+    hitboxes[3].children[i] = NULL;
+  }
+  hitboxes[3].parent = NULL;
+  parentHitboxes(&(hitboxes[3]), &(hitboxes[0]));
 
   // Create an appendage that's a hitbox
   hitboxes[1].alive = 1;
   hitboxes[1].destroyable = 1;
   hitboxes[1].isTransformDirty = 1;
-  hitboxes[1].position = (vec3){ 5.f, 0.f, 0.f };
+  hitboxes[1].position = (vec3){ 0.f, 1.7f, -0.2f };
   hitboxes[1].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[1].scale = (vec3){ 1.f, 1.f, 1.f };
+  hitboxes[1].scale = (vec3){ 1.f / hitboxes[0].scale.x, 1.f / hitboxes[0].scale.y, 1.f / hitboxes[0].scale.z };
   guMtxIdentF(hitboxes[1].computedTransform.data);
   hitboxes[1].displayCommands = red_octahedron_commands;
   hitboxes[1].check = sdOctahedron;
   hitboxes[1].numberOfChildren = 0;
-  for (i = 0; i < 4; i++) {
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
     hitboxes[1].children[i] = NULL;
   }
   hitboxes[1].parent = NULL;
-
-  // parent the hitbox to the body
-  hitboxes[0].children[hitboxes[0].numberOfChildren++] = (struct KaijuHitbox*)(&(hitboxes[1]));
-  hitboxes[1].parent = (struct KaijuHitbox*)(&(hitboxes[0]));
+  parentHitboxes(&(hitboxes[1]), &(hitboxes[0]));
   
   // Fill the map with sinewave-based data
   // TODO: make this load from a file
@@ -434,7 +501,6 @@ void appendHitboxDL(KaijuHitbox* hitbox, DisplayData* dynamicp) {
     appendHitboxDL(hitbox->children[i], dynamicp);
   }
 
-
   gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
 }
 
@@ -460,7 +526,7 @@ void makeDL00(void) {
   // Initial setup
   gDPPipeSync(glistp++);
   gDPSetEnvColor(glistp++, envVal, envVal, envVal, 255);
-  gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
+  // gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
   gDPSetScissor(glistp++, G_SC_NON_INTERLACE, SCISSOR_SIDES, SCISSOR_LOW, SCREEN_WD - SCISSOR_SIDES, SCREEN_HT - SCISSOR_HIGH);
   gDPSetCycleType(glistp++, G_CYC_1CYCLE);
   gDPSetRenderMode(glistp++, G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
@@ -505,7 +571,9 @@ void makeDL00(void) {
 
   // The kaiju hitboxes
   {
+    gSPClipRatio(glistp++, FRUSTRATIO_6);
     appendHitboxDL(&(hitboxes[0]), dynamicp);
+    gSPClipRatio(glistp++, FRUSTRATIO_2);
   }
 
   // The map
@@ -834,8 +902,8 @@ void updateDivineLine(float deltaSeconds) {
 
 void updateKaiju(float deltaSeconds) {
   // TODO: make this cooler
-  hitboxes[0].rotation.x += 0.05f;
-  hitboxes[0].isTransformDirty = 1;
+  // hitboxes[0].rotation.x += 0.05f;
+  // hitboxes[0].isTransformDirty = 1;
 }
 
 void updateGame00(void) {

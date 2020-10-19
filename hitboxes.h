@@ -6,7 +6,7 @@
 #include "gamemath.h"
 
 #define NUMBER_OF_KAIJU_HITBOXES 16
-#define MAX_CHILDREN_PER_HITBOX 4
+#define MAX_CHILDREN_PER_HITBOX 8
 
 typedef float (*SDFCallback)(const vec3*);
 
