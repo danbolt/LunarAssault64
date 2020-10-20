@@ -7,6 +7,7 @@
 #include "gamemath.h"
 #include "terraintex.h"
 #include "hitboxes.h"
+#include "portraittex.h"
 
 #define SCISSOR_HIGH 64
 #define SCISSOR_LOW 24
@@ -288,17 +289,41 @@ static Vtx hud_geo[] = {
   {                  SCISSOR_SIDES,               SCISSOR_HIGH,  5, 0, 0 << 6, 0 << 6, 0x24, 0, 0x33, 0xff },
   {                  SCISSOR_SIDES,                          0,  5, 0, 0 << 6, 8 << 6, 0x2D, 0, 0x33, 0xff },
   {  SCREEN_WD - SCISSOR_SIDES - 1,                          0,  5, 0, 8 << 6, 8 << 6, 0x2D, 0, 0x33, 0xff },
+
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 -  6,  SCISSOR_HIGH - 8,  5, 0, 32 << 6,  0 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 48 - 10,  SCISSOR_HIGH - 8,  5, 0,  0 << 6,  0 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 48 - 10,  SCISSOR_HIGH - 8 - 48,  5, 0,  0 << 6, 32 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 -  6,  SCISSOR_HIGH - 8 - 48,  5, 0, 32 << 6, 32 << 6, 0xCC, 0xCC, 0, 0xff },
+
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 - 8,  SCISSOR_HIGH - 8,  5, 0, 32 << 6,  0 << 6, 0x22, 0x88, 0x88, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 48 - 8,  SCISSOR_HIGH - 8,  5, 0,  0 << 6,  0 << 6, 0x22, 0x88, 0x88, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 48 - 8,  SCISSOR_HIGH - 8 - 48,  5, 0,  0 << 6, 32 << 6, 0x00, 0, 0x88, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 - 8,  SCISSOR_HIGH - 8 - 48,  5, 0, 32 << 6, 32 << 6, 0x00, 0, 0x88, 0xff },
 };
 
 static Gfx hud_dl[] = {
-  gsSPVertex(&hud_geo, 16, 0),
+  gsSPVertex(&hud_geo, 24, 0),
   gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
   gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
   gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
   gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
 
+  gsSP2Triangles(16, 17, 18, 0, 16, 18, 19, 0),
+  gsSP2Triangles(16 + 4, 17 + 4, 18 + 4, 0, 16 + 4, 18 + 4, 19 + 4, 0),
+
+  gsSPTexture(0x8000, 0x8000, 0, 0, G_ON),
+  gsDPPipeSync(),
+  gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+  gsDPSetRenderMode(G_RM_TEX_EDGE, G_RM_TEX_EDGE),
+  gsDPSetTextureFilter(G_TF_POINT),
+  gsDPLoadTextureBlock(portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
+
+
+  gsSP2Triangles(16 + 4, 17 + 4, 18 + 4, 0, 16 + 4, 18 + 4, 19 + 4, 0),
+
   // reticule
   gsDPPipeSync(),
+  gsDPSetAlphaCompare(G_AC_NONE),
   gsDPSetCycleType(G_CYC_FILL),
   gsDPSetFillColor((GPACK_RGBA5551(255, 0, 0, 1) << 16 |  GPACK_RGBA5551(255, 0, 0, 1))),
   gsDPFillRectangle((SCREEN_WD >> 1) - 1, (SCREEN_HT >> 1) - 1, (SCREEN_WD >> 1) + 1, (SCREEN_HT >> 1) + 1),
@@ -333,7 +358,15 @@ static OSTime delta;
 
 static float noiseFactor;
 
-KaijuHitbox hitboxes[NUMBER_OF_KAIJU_HITBOXES];
+static KaijuHitbox hitboxes[NUMBER_OF_KAIJU_HITBOXES];
+
+typedef struct {
+  float distSq;
+  float dotProduct;
+  Gfx* commands;
+} RenderOrdering;
+
+static RenderOrdering sectionRenderOrdering[SECTIONS_PER_MAP];
 
 void initStage00(void) {
   int i;
@@ -526,7 +559,7 @@ void makeDL00(void) {
   // Initial setup
   gDPPipeSync(glistp++);
   gDPSetEnvColor(glistp++, envVal, envVal, envVal, 255);
-  // gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
+  gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
   gDPSetScissor(glistp++, G_SC_NON_INTERLACE, SCISSOR_SIDES, SCISSOR_LOW, SCREEN_WD - SCISSOR_SIDES, SCREEN_HT - SCISSOR_HIGH);
   gDPSetCycleType(glistp++, G_CYC_1CYCLE);
   gDPSetRenderMode(glistp++, G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
@@ -653,7 +686,7 @@ void makeDL00(void) {
       nuDebConCPuts(0, "Connect controller #1, kid!");
     }
 
-    nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
+    // nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
     
   /* Display characters on the frame buffer */
   nuDebConDisp(NU_SC_SWAPBUFFER);
@@ -904,6 +937,14 @@ void updateKaiju(float deltaSeconds) {
   // TODO: make this cooler
   // hitboxes[0].rotation.x += 0.05f;
   // hitboxes[0].isTransformDirty = 1;
+}
+
+void updateRenderDistances() {
+  int i;
+
+  for (i = 0; i < SECTIONS_PER_MAP; i++) {
+
+  }
 }
 
 void updateGame00(void) {
