@@ -290,15 +290,15 @@ static Vtx hud_geo[] = {
   {                  SCISSOR_SIDES,                          0,  5, 0, 0 << 6, 8 << 6, 0x2D, 0, 0x33, 0xff },
   {  SCREEN_WD - SCISSOR_SIDES - 1,                          0,  5, 0, 8 << 6, 8 << 6, 0x2D, 0, 0x33, 0xff },
 
-  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 -  6,  SCISSOR_HIGH - 8,  5, 0, 32 << 6,  0 << 6, 0xCC, 0xCC, 0, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 - 48 - 10,  SCISSOR_HIGH - 8,  5, 0,  0 << 6,  0 << 6, 0xCC, 0xCC, 0, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 - 48 - 10,  SCISSOR_HIGH - 8 - 48,  5, 0,  0 << 6, 32 << 6, 0xCC, 0xCC, 0, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 -  6,  SCISSOR_HIGH - 8 - 48,  5, 0, 32 << 6, 32 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 -  6,  SCISSOR_HIGH - 2,  5, 0, 32 << 6,  0 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 10,  SCISSOR_HIGH - 2,  5, 0,  0 << 6,  0 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 10,  SCISSOR_HIGH - 4 - 35,  5, 0,  0 << 6, 32 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 -  6,  SCISSOR_HIGH - 4 - 35,  5, 0, 32 << 6, 32 << 6, 0xCC, 0xCC, 0, 0xff },
 
-  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 - 8,  SCISSOR_HIGH - 8,  5, 0, 32 << 6,  0 << 6, 0x22, 0x88, 0x88, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 - 48 - 8,  SCISSOR_HIGH - 8,  5, 0,  0 << 6,  0 << 6, 0x22, 0x88, 0x88, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 - 48 - 8,  SCISSOR_HIGH - 8 - 48,  5, 0,  0 << 6, 32 << 6, 0x00, 0, 0x88, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 - 8,  SCISSOR_HIGH - 8 - 48,  5, 0, 32 << 6, 32 << 6, 0x00, 0, 0x88, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 - 8,  SCISSOR_HIGH - 3,  5, 0, 48 << 6,  0 << 6, 0x22, 0x88, 0x88, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 8,  SCISSOR_HIGH - 3,  5, 0,  0 << 6,  0 << 6, 0x22, 0x88, 0x88, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 8,  SCISSOR_HIGH - 3 - 35,  5, 0,  0 << 6, 42 << 6, 0x00, 0, 0x88, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 - 8,  SCISSOR_HIGH - 3 - 35,  5, 0, 48 << 6, 42 << 6, 0x00, 0, 0x88, 0xff },
 };
 
 static Gfx hud_dl[] = {
@@ -316,8 +316,7 @@ static Gfx hud_dl[] = {
   gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
   gsDPSetRenderMode(G_RM_TEX_EDGE, G_RM_TEX_EDGE),
   gsDPSetTextureFilter(G_TF_POINT),
-  gsDPLoadTextureBlock(portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-
+  gsDPLoadTextureBlock(portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 48, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
 
   gsSP2Triangles(16 + 4, 17 + 4, 18 + 4, 0, 16 + 4, 18 + 4, 19 + 4, 0),
 
