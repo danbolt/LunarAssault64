@@ -18,9 +18,6 @@
 
 typedef struct {
 	vec3 centroid;
-
-	Mtx transform;
-
 	Vtx verts[VERTS_PER_SECTION];
 	Gfx commands[COMMANDS_PER_SECTION];
 } SectionData;

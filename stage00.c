@@ -446,7 +446,7 @@ void initStage00(void) {
     int y = (i / MAP_WIDTH);
     float funcVal = MAX(0.f, sinf((i % MAP_WIDTH) * 0.1f) - cosf((i / MAP_WIDTH) * 0.1f) + (cosf((i / MAP_WIDTH * 10)) * 0.01f));
 
-    GroundMapping[i] = (u8)((funcVal * 0.5f + 0.5f) * 170) + ((guRandom() % 9) - 4);
+    GroundMapping[i] = (u8)((funcVal * 0.5f + 0.5f) * 170) ;
     if (funcVal > 0.25f) {
       GroundTexIndex[i] = 5;
     } else {
