@@ -23,7 +23,7 @@
 #define CAMERA_LIFT_FRONT 0.7f
 #define CAMERA_LIFT_BACK 1.2f
 
-#define FAR_PLANE_DETAIL_CUTOFF 160.f
+#define FAR_PLANE_DETAIL_CUTOFF 128.f
 #define FAR_PLANE_DETAIL_CUTOFF_SQ (FAR_PLANE_DETAIL_CUTOFF * FAR_PLANE_DETAIL_CUTOFF)
 
 #define FOCUS_HIGH_DETAIL_CUTOFF 34.f
@@ -629,7 +629,11 @@ void makeDL00(void) {
           const vec3 centroidDirection = { sections[sectionIndex].centroid.x - cameraPos.x, sections[sectionIndex].centroid.y - cameraPos.y, sections[sectionIndex].centroid.z - cameraPos.z };
           float dotProductFromCamera = dotProduct(&cameraDirection, &centroidDirection);
           float distanceToSectionSq = distanceSq(&(sections[sectionIndex].centroid), &cameraPos);
-          if (dotProductFromCamera < 0.4f) {
+          if (dotProductFromCamera < 0.5f && (distanceToSectionSq > 16.f)) {
+            continue;
+          }
+
+          if (distanceToSectionSq > FAR_PLANE_DETAIL_CUTOFF_SQ) {
             continue;
           }
 
@@ -667,7 +671,11 @@ void makeDL00(void) {
           const vec3 centroidDirection = { sections[sectionIndex].centroid.x - cameraPos.x, sections[sectionIndex].centroid.y - cameraPos.y, sections[sectionIndex].centroid.z - cameraPos.z };
           float dotProductFromCamera = dotProduct(&cameraDirection, &centroidDirection);
           float distanceToSectionSq = distanceSq(&(sections[sectionIndex].centroid), &cameraPos);
-          if (dotProductFromCamera < 0.4f && (distanceToSectionSq > 16.f)) {
+          if (dotProductFromCamera < 0.5f && (distanceToSectionSq > 16.f)) {
+            continue;
+          }
+
+          if (distanceToSectionSq > FAR_PLANE_DETAIL_CUTOFF_SQ) {
             continue;
           }
 
