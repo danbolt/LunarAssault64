@@ -251,7 +251,7 @@ static Gfx divine_line_commands[] = {
 };
 
 static Gfx mapSetionsPreable[] = {
-  gsSPSetGeometryMode(G_CULL_BACK),
+  gsSPSetGeometryMode(G_CULL_BACK | G_SHADE),
   gsSPTexture(0x8000, 0x8000, 0, 0, G_ON),
   gsDPPipeSync(),
   gsDPSetCombineLERP(NOISE, 0, ENVIRONMENT, TEXEL0, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, TEXEL0, 0, 0, 0, SHADE),
@@ -536,6 +536,22 @@ void appendHitboxDL(KaijuHitbox* hitbox, DisplayData* dynamicp) {
   gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
 }
 
+void renderDivineLine(DisplayData* dynamicp) {
+  if (divineLineState != DIVINE_LINE_ON) {
+    return;
+  }
+
+  guScale(&(dynamicp->divineLineScale), 0.32f, 0.32f, 1.f);
+  guTranslate(&(dynamicp->divineLineTransform), divineLineStartSpot.x, divineLineStartSpot.y, divineLineStartSpot.z);
+
+  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->divineLineTransform)), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->divineLineScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH); 
+
+  gSPDisplayList(glistp++, divine_line_commands);
+
+  gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+}
+
 void makeDL00(void) {
   int i;
   DisplayData* dynamicp;
@@ -556,14 +572,9 @@ void makeDL00(void) {
   gfxClearCfb();
 
   // Initial setup
-  gDPPipeSync(glistp++);
   gDPSetEnvColor(glistp++, envVal, envVal, envVal, 255);
-  gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
   gDPSetScissor(glistp++, G_SC_NON_INTERLACE, SCISSOR_SIDES, SCISSOR_LOW, SCREEN_WD - SCISSOR_SIDES, SCREEN_HT - SCISSOR_HIGH);
   gDPSetCycleType(glistp++, G_CYC_1CYCLE);
-  gDPSetRenderMode(glistp++, G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
-  gSPClearGeometryMode(glistp++, 0xFFFFFFFF);
-  gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK | G_ZBUFFER);
 
   // The camera
   {
@@ -573,6 +584,130 @@ void makeDL00(void) {
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
   
   }
+
+  // The map
+  {
+    int x;
+    int y;
+    int xStart, xEnd;
+    int yStart, yEnd;
+    int xStep;
+    int yStep;
+    const vec3 cameraDirection = { cameraTarget.x - cameraPos.x, cameraTarget.y - cameraPos.y, cameraTarget.z - cameraPos.z };
+    vec2 flatCamDir = { cameraTarget.x - cameraPos.x, cameraTarget.y - cameraPos.y };
+    float invFlatCamDistSq = Q_rsqrt((flatCamDir.x * flatCamDir.x) + (flatCamDir.y * flatCamDir.y));
+    flatCamDir.x *= invFlatCamDistSq;
+    flatCamDir.y *= invFlatCamDistSq;
+
+    guScale(&dynamicp->mapScale, 0.01f, 0.01f, 0.01f);
+    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(mapSetionsPreable));
+
+    if (flatCamDir.x < 0.f) {
+      xStart = 0;
+      xEnd = 32;
+      xStep = 1;
+    } else {
+      xStart = 32 - 1;
+      xEnd = -1;
+      xStep = -1;
+    }
+    if (flatCamDir.y < 0.f) {
+      yStart = 0;
+      yEnd = 32;
+      yStep = 1;
+    } else {
+      yStart = 32 - 1;
+      yEnd = -1;
+      yStep = -1;
+    }
+
+    if (fabs_d(flatCamDir.x) > fabs_d(flatCamDir.y)) {
+      for (x = xStart; x != xEnd; x += xStep) {
+        for (y = yStart; y != yEnd; y += yStep) {
+          int sectionIndex = x + (y * 32);
+          const vec3 centroidDirection = { sections[sectionIndex].centroid.x - cameraPos.x, sections[sectionIndex].centroid.y - cameraPos.y, sections[sectionIndex].centroid.z - cameraPos.z };
+          float dotProductFromCamera = dotProduct(&cameraDirection, &centroidDirection);
+          float distanceToSectionSq = distanceSq(&(sections[sectionIndex].centroid), &cameraPos);
+          if (dotProductFromCamera < 0.4f) {
+            continue;
+          }
+
+          if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8975f))) {
+            gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[sectionIndex].commands));
+          } else {
+            gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
+          }
+
+          // If we're on the same spot as the kaiju, render it
+          if (((int)(hitboxes[0].position.x / 4.f) == x) && ((int)(hitboxes[0].position.y / 4.f) == y)) {
+            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+            gSPClipRatio(glistp++, FRUSTRATIO_6);
+            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_OFF);
+            appendHitboxDL(&(hitboxes[0]), dynamicp);
+            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_ON);
+            gSPClipRatio(glistp++, FRUSTRATIO_2);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+          }
+
+          if (((int)(divineLineEndSpot.x / 4.f) == x) && ((int)(divineLineEndSpot.y / 4.f) == y)) {
+            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_OFF);
+            renderDivineLine(dynamicp);
+            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_ON);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+            
+          }
+        }
+      }
+    } else {
+      for (y = yStart; y != yEnd; y += yStep) {
+        for (x = xStart; x != xEnd; x += xStep) {
+          int sectionIndex = x + (y * 32);
+          const vec3 centroidDirection = { sections[sectionIndex].centroid.x - cameraPos.x, sections[sectionIndex].centroid.y - cameraPos.y, sections[sectionIndex].centroid.z - cameraPos.z };
+          float dotProductFromCamera = dotProduct(&cameraDirection, &centroidDirection);
+          float distanceToSectionSq = distanceSq(&(sections[sectionIndex].centroid), &cameraPos);
+          if (dotProductFromCamera < 0.4f && (distanceToSectionSq > 16.f)) {
+            continue;
+          }
+
+          if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8975f))) {
+            gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[sectionIndex].commands));
+          } else {
+            gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
+          }
+ 
+          // If we're on the same spot as the kaiju, render it
+          if (((int)(hitboxes[0].position.x / 4.f) == x) && ((int)(hitboxes[0].position.y / 4.f) == y)) {
+            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+            gSPClipRatio(glistp++, FRUSTRATIO_6);
+            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_OFF);
+            appendHitboxDL(&(hitboxes[0]), dynamicp);
+            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_ON);
+            gSPClipRatio(glistp++, FRUSTRATIO_2);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+          }
+
+          if (((int)(divineLineEndSpot.x / 4.f) == x) && ((int)(divineLineEndSpot.y / 4.f) == y)) {
+            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_OFF);
+            renderDivineLine(dynamicp);
+            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_ON);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+          }
+        }
+      }
+    }
+
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(mapSectionsPostamble));
+    gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+  }
+
+  gDPPipeSync(glistp++);
+  gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
+  gDPSetRenderMode(glistp++, G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
+  gSPClearGeometryMode(glistp++, 0xFFFFFFFF);
+  gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK | G_ZBUFFER);
 
   // The player
   if (zoomState != ZOOMED_IN) {
@@ -589,54 +724,16 @@ void makeDL00(void) {
   }
 
   // The divine line
-  if (divineLineState == DIVINE_LINE_ON) {
-    guScale(&(dynamicp->divineLineScale), 0.32f, 0.32f, 1.f);
-    guTranslate(&(dynamicp->divineLineTransform), divineLineStartSpot.x, divineLineStartSpot.y, divineLineStartSpot.z);
-
-    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->divineLineTransform)), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->divineLineScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH); 
-
-    gSPDisplayList(glistp++, divine_line_commands);
-
-    gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
-  }
+  // if (divineLineState == DIVINE_LINE_ON) {
+  //   renderDivineLine(dynamicp);
+  // }
 
   // The kaiju hitboxes
-  {
-    gSPClipRatio(glistp++, FRUSTRATIO_6);
-    appendHitboxDL(&(hitboxes[0]), dynamicp);
-    gSPClipRatio(glistp++, FRUSTRATIO_2);
-  }
-
-  // The map
-  {
-    guScale(&dynamicp->mapScale, 0.01f, 0.01f, 0.01f);
-    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
-    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(mapSetionsPreable));
-
-    for (i = 0; i < SECTIONS_PER_MAP; i++) {
-      float distanceToSectionSq = distanceSq(&(sections[i].centroid), &cameraPos);
-      const vec3 centroidDirection = { sections[i].centroid.x - cameraPos.x, sections[i].centroid.y - cameraPos.y, sections[i].centroid.z - cameraPos.z };
-      const vec3 cameraDirection = { cameraTarget.x - cameraPos.x, cameraTarget.y - cameraPos.y, cameraTarget.z - cameraPos.z };
-      float dotProductFromCamera = dotProduct(&cameraDirection, &centroidDirection);
-      if (dotProductFromCamera < 0.4f) {
-        continue;
-      }
-
-      if (distanceToSectionSq > FAR_PLANE_DETAIL_CUTOFF_SQ) {
-        continue;
-      }
-
-      if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8975f))) {
-        gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[i].commands));
-      } else {
-        gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[i].commands));
-      }
-    }
-
-    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(mapSectionsPostamble));
-    gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
-  }
+  // {
+  //   gSPClipRatio(glistp++, FRUSTRATIO_6);
+  //   appendHitboxDL(&(hitboxes[0]), dynamicp);
+  //   gSPClipRatio(glistp++, FRUSTRATIO_2);
+  // }
 
   // HUD
   {
@@ -685,7 +782,7 @@ void makeDL00(void) {
       nuDebConCPuts(0, "Connect controller #1, kid!");
     }
 
-    // nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
+    nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
     
   /* Display characters on the frame buffer */
   nuDebConDisp(NU_SC_SWAPBUFFER);
@@ -936,14 +1033,6 @@ void updateKaiju(float deltaSeconds) {
   // TODO: make this cooler
   // hitboxes[0].rotation.x += 0.05f;
   // hitboxes[0].isTransformDirty = 1;
-}
-
-void updateRenderDistances() {
-  int i;
-
-  for (i = 0; i < SECTIONS_PER_MAP; i++) {
-
-  }
 }
 
 void updateGame00(void) {
