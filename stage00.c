@@ -8,6 +8,7 @@
 #include "terraintex.h"
 #include "hitboxes.h"
 #include "portraittex.h"
+#include "protaggeo.h"
 
 #define SCISSOR_HIGH 64
 #define SCISSOR_LOW 24
@@ -319,8 +320,10 @@ static Gfx hud_dl[] = {
   gsDPLoadTextureBlock(portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 48, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
 
   gsSP2Triangles(16 + 4, 17 + 4, 18 + 4, 0, 16 + 4, 18 + 4, 19 + 4, 0),
+  gsSPEndDisplayList()
+};
 
-  // reticule
+static Gfx zoomed_in_dl[] = {
   gsDPPipeSync(),
   gsDPSetAlphaCompare(G_AC_NONE),
   gsDPSetCycleType(G_CYC_FILL),
@@ -335,6 +338,7 @@ static vec3 cameraRotation;
 
 static vec3 playerPos;
 static vec3 playerVelocity;
+static float playerDisplayRotation;
 static int playerIsOnTheGround;
 
 static float playerZoomFactor;
@@ -373,6 +377,7 @@ void initStage00(void) {
   cameraPos = (vec3){4, 0, 20};
   cameraTarget = (vec3){10.f, 10.f, 10.f};
   cameraRotation = (vec3){0.f, 0.f, M_PI};
+  playerDisplayRotation = cameraRotation.z;
 
   playerPos = (vec3){10.f, 10.f, 10.f};
 
@@ -722,12 +727,14 @@ void makeDL00(void) {
     guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
 
-    guRotate(&(dynamicp->playerRotation), (cameraRotation.z + M_PI * 0.5f) * RAD_TO_DEG, 0.f, 0.f, 1.f);
+    guRotate(&(dynamicp->playerRotation), (playerDisplayRotation - (M_PI * 0.5f)) * RAD_TO_DEG, 0.f, 0.f, 1.f);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerRotation)), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
 
-    guScale(&(dynamicp->playerScale), 0.25f, 0.25f, 0.25f);
+    guScale(&(dynamicp->playerScale), protag_scale, protag_scale, protag_scale);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH);
-    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(blue_cube_commands));
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(protag_head_commands));
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(protag_body_commands));
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(protag_legs_commands));
     gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
   }
 
@@ -757,6 +764,10 @@ void makeDL00(void) {
     guMtxIdent(&(dynamicp->orthoHudModelling));
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudModelling)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(glistp++, hud_dl);
+
+    if (zoomState == ZOOMED_IN) {
+      gSPDisplayList(glistp++, zoomed_in_dl);
+    }
   }
 
   gDPFullSync(glistp++);
@@ -864,6 +875,11 @@ void updatePlayer(float deltaSeconds) {
   playerVelocity.x = inputDirectionXRotated * PLAYER_MOVE_SPEED;
   playerVelocity.y = inputDirectionYRotated * PLAYER_MOVE_SPEED;
   playerVelocity.z += GRAVITY * deltaSeconds;
+
+  if (fabs_d(playerVelocity.x) > 0.01f || fabs_d(playerVelocity.y) > 0.01f) {
+    const float angle = nu_atan2(playerVelocity.y, playerVelocity.x);
+    playerDisplayRotation = lerp(playerDisplayRotation, angle, 0.12f);
+  }
 
   if (playerIsOnTheGround && (contdata->trigger & A_BUTTON)) {
     playerIsOnTheGround = 0;
