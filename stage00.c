@@ -727,7 +727,7 @@ void makeDL00(void) {
     guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
 
-    guRotate(&(dynamicp->playerRotation), (playerDisplayRotation - (M_PI * 0.5f)) * RAD_TO_DEG, 0.f, 0.f, 1.f);
+    guRotate(&(dynamicp->playerRotation), (playerDisplayRotation - (M_PI * 1.5f)) * RAD_TO_DEG, 0.f, 0.f, 1.f);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerRotation)), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
 
     guScale(&(dynamicp->playerScale), protag_scale, protag_scale, protag_scale);
