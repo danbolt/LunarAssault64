@@ -43,7 +43,7 @@
 #define ZOOMED_IN 1
 #define ZOOM_IN_OUT_SPEED 4.f
 
-#define LASER_CHARGE_SPEED 0.45f
+#define LASER_CHARGE_SPEED 0.49151f
 
 #define MAX_STEP_COUNT 64
 #define INITIAL_STEP_DISTANCE 4.0f
@@ -52,7 +52,7 @@
 
 #define DIVINE_LINE_OFF 0
 #define DIVINE_LINE_ON 1
-#define DIVINE_LINE_DURATION 5.4f
+#define DIVINE_LINE_DURATION 8.4f
 #define INV_DIVINE_LINE_DURATION (1.f / DIVINE_LINE_DURATION)
 #define DIVINE_LINE_START_HEIGHT 70
 
@@ -730,9 +730,15 @@ void updatePlayer(float deltaSeconds) {
   cameraPos.y = cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y));
   cameraPos.z = cameraTarget.z + (CAMERA_DISTANCE * sinf(cameraRotation.y)) + CAMERA_LIFT_BACK;
 
-  zoomState = (contdata->button & R_TRIG) ? ZOOMED_IN : NOT_ZOOMED_IN;
+  if ((zoomState == NOT_ZOOMED_IN) && (contdata->trigger & R_TRIG)) {
+    zoomState = ZOOMED_IN;
+  }
+  if ((zoomState == ZOOMED_IN) && (!(contdata->button & R_TRIG))) {
+    zoomState = NOT_ZOOMED_IN;
+  }
+  // zoomState = ((contdata->trigger & R_TRIG) || (ZOOMED_IN && ((contdata->button & R_TRIG)))) ? ZOOMED_IN : NOT_ZOOMED_IN;
   playerZoomFactor = clamp(playerZoomFactor + (ZOOM_IN_OUT_SPEED * deltaSeconds * zoomState), 0.f, 1.f);
-  laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * zoomState * ((zoomState == ZOOMED_IN) ? playerZoomFactor : 1.f)), 0.f, 1.f);
+  laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * ((zoomState == ZOOMED_IN) && (contdata->button & Z_TRIG) ? 1 : -1)), 0.f, 1.f);
 }
 
 // TODO: move this to its own "parent kaiju" file
@@ -766,6 +772,7 @@ void updateKaijuHitboxes(float delta) {
 
 void fireLaser(const vec3* location) {
   laserChargeFactor = 0.f;
+  zoomState = NOT_ZOOMED_IN;
 
   divineLineStartSpot = (vec3){ location->x, location->y, DIVINE_LINE_START_HEIGHT };
   divineLineEndSpot = (vec3){ location->x, location->y, location->z };
@@ -848,7 +855,7 @@ void raymarchAimLineAgainstHitboxes() {
 }
 
 void updateHitboxCheck() {
-  if ((zoomState == ZOOMED_IN) && (contdata->trigger & Z_TRIG) && (laserChargeFactor > 0.98f)) {
+  if ((zoomState == ZOOMED_IN) && (contdata->button & Z_TRIG) && (laserChargeFactor > 0.98f)) {
     raymarchAimLineAgainstHitboxes();
   }
 }
