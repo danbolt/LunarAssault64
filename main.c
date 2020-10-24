@@ -10,6 +10,11 @@ void updateGame00(void);
 NUContData	contdata[1];
 u8 contPattern;
 
+u32 groundTextureROMAddress;
+
+extern u8 _moon_geoSegmentRomStart[];
+extern u8 _moon_geoSegmentRomEnd[];
+
 /*------------------------
 	Main
 --------------------------*/
@@ -20,6 +25,8 @@ void mainproc(void)
 
   /* The initialization of the controller manager  */
   contPattern = nuContInit();
+
+  groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
 
   /* The initialization for stage00()  */
   initStage00();

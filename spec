@@ -31,7 +31,14 @@ beginseg
 	include "$(ROOT)/usr/lib/PR/gspS2DEX2.fifo.o"
 endseg
 
+beginseg
+	name "moon_geo"
+	flags "RAW"
+	include "geotex/moon_geo.bin"
+endseg
+
 beginwave
 	name	"jam"
 	include	"code"
+	include "moon_geo"
 endwave

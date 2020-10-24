@@ -56,14 +56,14 @@
 #define DIVINE_LINE_START_HEIGHT 70
 
 static Vtx cube_geo[] = {
-  {  1,  1,  1, 0, 0, 0, 0xff, 0, 0xff, 0xff },
-  { -1,  1,  1, 0, 0, 0, 0, 0, 0xff, 0xff },
-  { -1, -1,  1, 0, 0, 0, 0, 0, 0xff, 0xff },
-  {  1, -1,  1, 0, 0, 0, 0, 0, 0xff, 0xff },
-  {  1,  1,  -1, 0, 0, 0, 0, 0, 0x33, 0xff },
-  { -1,  1,  -1, 0, 0, 0, 0, 0, 0x33, 0xff },
-  { -1, -1,  -1, 0, 0, 0, 0, 0, 0xf3, 0xff },
-  {  1, -1,  -1, 0, 0, 0, 0, 0, 0x33, 0xff },
+  {  1,  1,  1, 0,  7 << 6, 24 << 6, 0, 0, 0xff, 0xff },
+  { -1,  1,  1, 0,  0 << 6, 24 << 6, 0, 0, 0xff, 0xff },
+  { -1, -1,  1, 0,  7 << 6, 31 << 6, 0, 0, 0xff, 0xff },
+  {  1, -1,  1, 0,  7 << 6, 31 << 6, 0, 0, 0xff, 0xff },
+  {  1,  1, -1, 0,  0 << 6, 24 << 6, 0, 0, 0xff, 0xff },
+  { -1,  1, -1, 0,  0 << 6, 24 << 6, 0, 0, 0xff, 0xff },
+  { -1, -1, -1, 0,  0 << 6, 31 << 6, 0, 0, 0xff, 0xff },
+  {  1, -1, -1, 0,  0 << 6, 31 << 6, 0, 0, 0xff, 0xff },
 };
 
 static Gfx blue_cube_commands[] = {
@@ -78,12 +78,12 @@ static Gfx blue_cube_commands[] = {
 };
 
 static Vtx red_octahedron_geo[] = {
-  {  1,  0,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
-  { -1,  0,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
-  {  0,  1,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
-  {  0, -1,  0, 0, 0, 0, 0xaa, 0, 0x00, 0xff },
-  {  0,  0,  1, 0, 0, 0, 0xff, 0, 0x00, 0xff },
-  {  0,  0, -1, 0, 0, 0, 0x55, 0, 0x00, 0xff },
+  {  1,  0,  0, 0, 0 << 6, 0 << 6, 0xaa, 0, 0x00, 0xff },
+  { -1,  0,  0, 0, 0 << 6, 0 << 6, 0xaa, 0, 0x00, 0xff },
+  {  0,  1,  0, 0, 7 << 6, 0 << 6, 0xaa, 0, 0x00, 0xff },
+  {  0, -1,  0, 0, 7 << 6, 0 << 6, 0xaa, 0, 0x00, 0xff },
+  {  0,  0,  1, 0, 0 << 6, 7 << 6, 0xff, 0, 0x00, 0xff },
+  {  0,  0, -1, 0, 0 << 6, 7 << 6, 0x55, 0, 0x00, 0xff },
 };
 
 static Gfx red_octahedron_commands[] = {
@@ -374,6 +374,8 @@ static RenderOrdering sectionRenderOrdering[SECTIONS_PER_MAP];
 void initStage00(void) {
   int i;
 
+  nuPiReadRom(groundTextureROMAddress, tex_terrain_bin, tex_terrain_bin_len);
+
   cameraPos = (vec3){4, 0, 20};
   cameraTarget = (vec3){10.f, 10.f, 10.f};
   cameraRotation = (vec3){0.f, 0.f, M_PI};
@@ -634,6 +636,16 @@ void makeDL00(void) {
           const vec3 centroidDirection = { sections[sectionIndex].centroid.x - cameraPos.x, sections[sectionIndex].centroid.y - cameraPos.y, sections[sectionIndex].centroid.z - cameraPos.z };
           float dotProductFromCamera = dotProduct(&cameraDirection, &centroidDirection);
           float distanceToSectionSq = distanceSq(&(sections[sectionIndex].centroid), &cameraPos);
+
+          // If we're on the same spot as the kaiju, render it
+          if (((int)(hitboxes[0].position.x / 4.f) == x) && ((int)(hitboxes[0].position.y / 4.f) == y)) {
+            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+            gSPClipRatio(glistp++, FRUSTRATIO_6);
+            appendHitboxDL(&(hitboxes[0]), dynamicp);
+            gSPClipRatio(glistp++, FRUSTRATIO_2);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+          }
+
           if (dotProductFromCamera < 0.5f && (distanceToSectionSq > 16.f)) {
             continue;
           }
@@ -648,22 +660,9 @@ void makeDL00(void) {
             gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
           }
 
-          // If we're on the same spot as the kaiju, render it
-          if (((int)(hitboxes[0].position.x / 4.f) == x) && ((int)(hitboxes[0].position.y / 4.f) == y)) {
-            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
-            gSPClipRatio(glistp++, FRUSTRATIO_6);
-            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_OFF);
-            appendHitboxDL(&(hitboxes[0]), dynamicp);
-            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_ON);
-            gSPClipRatio(glistp++, FRUSTRATIO_2);
-            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
-          }
-
           if (((int)(divineLineEndSpot.x / 4.f) == x) && ((int)(divineLineEndSpot.y / 4.f) == y)) {
             gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
-            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_OFF);
             renderDivineLine(dynamicp);
-            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_ON);
             gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
             
           }
@@ -676,6 +675,16 @@ void makeDL00(void) {
           const vec3 centroidDirection = { sections[sectionIndex].centroid.x - cameraPos.x, sections[sectionIndex].centroid.y - cameraPos.y, sections[sectionIndex].centroid.z - cameraPos.z };
           float dotProductFromCamera = dotProduct(&cameraDirection, &centroidDirection);
           float distanceToSectionSq = distanceSq(&(sections[sectionIndex].centroid), &cameraPos);
+ 
+          // If we're on the same spot as the kaiju, render it
+          if (((int)(hitboxes[0].position.x / 4.f) == x) && ((int)(hitboxes[0].position.y / 4.f) == y)) {
+            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+            gSPClipRatio(glistp++, FRUSTRATIO_6);
+            appendHitboxDL(&(hitboxes[0]), dynamicp);
+            gSPClipRatio(glistp++, FRUSTRATIO_2);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+          }
+
           if (dotProductFromCamera < 0.5f && (distanceToSectionSq > 16.f)) {
             continue;
           }
@@ -689,23 +698,10 @@ void makeDL00(void) {
           } else {
             gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
           }
- 
-          // If we're on the same spot as the kaiju, render it
-          if (((int)(hitboxes[0].position.x / 4.f) == x) && ((int)(hitboxes[0].position.y / 4.f) == y)) {
-            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
-            gSPClipRatio(glistp++, FRUSTRATIO_6);
-            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_OFF);
-            appendHitboxDL(&(hitboxes[0]), dynamicp);
-            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_ON);
-            gSPClipRatio(glistp++, FRUSTRATIO_2);
-            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
-          }
 
           if (((int)(divineLineEndSpot.x / 4.f) == x) && ((int)(divineLineEndSpot.y / 4.f) == y)) {
             gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
-            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_OFF);
             renderDivineLine(dynamicp);
-            gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_ON);
             gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
           }
         }
