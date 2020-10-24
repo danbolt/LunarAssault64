@@ -29,7 +29,9 @@ typedef struct KaijuHitbox {
 	struct KaijuHitbox* children[MAX_CHILDREN_PER_HITBOX];
 	struct KaijuHitbox* parent;
 } KaijuHitbox;
-
 void parentHitboxes(KaijuHitbox* child, KaijuHitbox* newParent);
+
+
+extern KaijuHitbox hitboxes[NUMBER_OF_KAIJU_HITBOXES];
 
 #endif

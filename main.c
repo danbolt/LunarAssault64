@@ -1,6 +1,8 @@
 #include <nusys.h>
 #include "main.h"
 
+#include "kaiju1.h"
+
 void stage00(int);
 
 void initStage00(void);
@@ -15,6 +17,10 @@ u32 groundTextureROMAddress;
 extern u8 _moon_geoSegmentRomStart[];
 extern u8 _moon_geoSegmentRomEnd[];
 
+void (*initKaijuCallback)();
+void (*updateKaijuCallback)(float);
+void (*renderKaijuCallback)(DisplayData*);
+
 /*------------------------
 	Main
 --------------------------*/
@@ -27,6 +33,9 @@ void mainproc(void)
   contPattern = nuContInit();
 
   groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
+  initKaijuCallback = &initKaiju1;
+  updateKaijuCallback = &updateKaiju1;
+  renderKaijuCallback = &renderKaiju1;
 
   /* The initialization for stage00()  */
   initStage00();
