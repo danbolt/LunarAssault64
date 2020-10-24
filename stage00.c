@@ -306,8 +306,6 @@ static float noiseFactor;
 void initStage00(void) {
   int i;
 
-  nuPiReadRom(groundTextureROMAddress, tex_terrain_bin, tex_terrain_bin_len);
-
   cameraPos = (vec3){4, 0, 20};
   cameraTarget = (vec3){10.f, 10.f, 10.f};
   cameraRotation = (vec3){0.f, 0.f, M_PI};
@@ -335,38 +333,11 @@ void initStage00(void) {
     float funcVal = MAX(0.f, sinf((i % MAP_WIDTH) * 0.1f) - cosf((i / MAP_WIDTH) * 0.1f) + (cosf((i / MAP_WIDTH * 10)) * 0.01f));
 
     GroundMapping[i] = (u8)((funcVal * 0.5f + 0.5f) * 170) ;
-    if (funcVal > 0.25f) {
-      GroundTexIndex[i] = 5;
-    } else {
-      GroundTexIndex[i] = RAND(4);
-    }
   }
 
-  GroundMapping[(MAP_WIDTH * 2) + 2] = 200;
-  GroundMapping[(MAP_WIDTH * 3) + 2] = 200;
-  GroundMapping[(MAP_WIDTH * 4) + 2] = 200;
-  GroundMapping[(MAP_WIDTH * 5) + 2] = 200;
-  GroundMapping[(MAP_WIDTH * 6) + 2] = 200;
-  GroundMapping[(MAP_WIDTH * 2) + 3] = 200;
-  GroundMapping[(MAP_WIDTH * 3) + 3] = 200;
-  GroundMapping[(MAP_WIDTH * 5) + 3] = 200;
-  GroundMapping[(MAP_WIDTH * 6) + 3] = 200;
-  GroundMapping[(MAP_WIDTH * 4) + 3] = 200;
-  GroundMapping[(MAP_WIDTH * 2) + 4] = 200;
-  GroundMapping[(MAP_WIDTH * 3) + 4] = 200;
-  GroundMapping[(MAP_WIDTH * 4) + 4] = 255;
-  GroundMapping[(MAP_WIDTH * 5) + 4] = 200;
-  GroundMapping[(MAP_WIDTH * 6) + 4] = 200;
-  GroundMapping[(MAP_WIDTH * 2) + 5] = 200;
-  GroundMapping[(MAP_WIDTH * 3) + 5] = 200;
-  GroundMapping[(MAP_WIDTH * 4) + 5] = 200;
-  GroundMapping[(MAP_WIDTH * 5) + 5] = 200;
-  GroundMapping[(MAP_WIDTH * 6) + 5] = 200;
-  GroundMapping[(MAP_WIDTH * 2) + 6] = 200;
-  GroundMapping[(MAP_WIDTH * 3) + 6] = 200;
-  GroundMapping[(MAP_WIDTH * 4) + 6] = 200;
-  GroundMapping[(MAP_WIDTH * 5) + 6] = 200;
-  GroundMapping[(MAP_WIDTH * 6) + 6] = 200;
+
+  nuPiReadRom(groundTextureROMAddress, tex_terrain_bin, tex_terrain_bin_len);
+  nuPiReadRom(terrainROMAddress, GroundTexIndex, MAP_LENGTH);
 
   noiseFactor = DEFAULT_NOISE_LEVEL;
 

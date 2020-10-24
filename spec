@@ -37,8 +37,15 @@ beginseg
 	include "geotex/moon_geo.bin"
 endseg
 
+beginseg
+	name "level1_terrain"
+	flags "RAW"
+	include "terrain/level1.bin"
+endseg
+
 beginwave
 	name	"jam"
 	include	"code"
 	include "moon_geo"
+	include "level1_terrain"
 endwave
