@@ -677,6 +677,11 @@ void updatePlayer(float deltaSeconds) {
     cameraRotation.y = MIN(M_PI * 0.35f, cameraRotation.y + ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert));
   }
 
+  if (contdata->button & Z_TRIG) {
+    inputDirectionX = 0.f;
+    inputDirectionY = 0.f;
+  }
+
   cosCameraRot = cosf(cameraRotation.z + M_PI * 0.5f);
   sinCameraRot = sinf(cameraRotation.z + M_PI * 0.5f);
   inputDirectionXRotated = (cosCameraRot * inputDirectionX) - (sinCameraRot * inputDirectionY);
