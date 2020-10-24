@@ -127,6 +127,17 @@ float lerp(float v0, float v1, float t) {
   return (1 - t) * v0 + t * v1;
 }
 
+// Copied from Phaser 3
+// https://github.com/photonstorm/phaser/blob/v3.22.0/src/math/CatmullRom.js
+float catmullRom(float t, float p0, float p1, float p2, float p3) {
+    float v0 = (p2 - p0) * 0.5f;
+    float v1 = (p3 - p1) * 0.5f;
+    float t2 = t * t;
+    float t3 = t * t2;
+
+    return (2.f * p1 - 2.f * p2 + v0 + v1) * t3 + (-3.f * p1 + 3.f * p2 - 2.f * v0 - v1) * t2 + v0 * t + p1;
+}
+
 float bilinear(float v00, float v10, float v11, float v01, float x, float y) {
   const float invX = (1.f - x);
   const float invY = (1.f - y);

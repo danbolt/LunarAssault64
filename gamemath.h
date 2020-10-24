@@ -36,6 +36,7 @@ float fabs_d(float x);
 float Q_rsqrt( float number );
 
 float lerp(float v0, float v1, float t);
+float catmullRom(float t, float p0, float p1, float p2, float p3);
 
 // Copied from:
 // https://math.stackexchange.com/questions/3230376/interpolate-between-4-points-on-a-2d-plane

@@ -620,30 +620,6 @@ void makeDL00(void) {
   gfx_gtask_no ^= 1;
 }
 
-float getHeight(float x, float y) {
-  const float fractionX = x - ((int)x);
-  const float fractionY = y - ((int)y);
-
-  const int mid = sampleHeight(x, y);
-
-  const int n = sampleHeight(x, y-1);
-  const int s = sampleHeight(x, y+1);
-  const int e = sampleHeight(x+1, y);
-  const int w = sampleHeight(x-1, y);
-
-  const int ne = sampleHeight(x+1, y-1);
-  const int se = sampleHeight(x+1, y+1);
-  const int nw = sampleHeight(x-1, y-1);
-  const int sw = sampleHeight(x-1, y+1);
-
-  const float heightA = (((nw + n + mid + w) * 0.25f) / 256.f) * 50.f;
-  const float heightB = (((n + ne + e + mid) * 0.25f) / 256.f) * 50.f;
-  const float heightC = (((mid + e + se + s) * 0.25f) / 256.f) * 50.f;
-  const float heightD = (((w + mid + s + sw) * 0.25f) / 256.f) * 50.f;
-
-  return bilinear(heightA, heightB, heightC, heightD, fractionX,  fractionY);
-}
-
 float getDistanceFromGround(const vec3* pos) {
   const float height = getHeight(pos->x, pos->y);
   return pos->z - height;

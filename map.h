@@ -31,6 +31,8 @@ extern SectionData lowDetailSections[SECTIONS_PER_MAP];
 u8 sampleHeight(u16 x, u16 y);
 u8 sampleTileTex(u16 x, u16 y);
 
+float getHeight(float x, float y);
+
 void generateSectionDLs();
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "hitboxes.h"
 #include "gamemath.h"
+#include "map.h"
 
 static Vtx cube_geo[] = {
   {  1,  1,  1, 0,  7 << 6, 24 << 6, 0, 0, 0xff, 0xff },
@@ -62,8 +63,26 @@ static Gfx blue_octahedron_commands[] = {
   gsSPEndDisplayList()
 };
 
+float kaijuTime;
+int pointIndex;
+float timeBetweenPoints;
+
+vec2 walkPoints[] = {
+  { 48.f, 2.f },
+  { 48.f, 100.f },
+  { 100.f, 48.f },
+  { 100.f, 100.f },
+  { 48.f, 100.f },
+};
+#define NUMBER_OF_WALK_POINTS (sizeof(walkPoints)/sizeof(walkPoints[0]))
+#define LOOPED_WALK_POINT(index) ((index + NUMBER_OF_WALK_POINTS) % NUMBER_OF_WALK_POINTS)
+
 void initKaiju1() {
   int i;
+
+  kaijuTime = 0.f;
+  pointIndex = 0;
+  timeBetweenPoints = 30.f;
 
 	 for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
     hitboxes[0].alive = 0;
@@ -152,7 +171,19 @@ void initKaiju1() {
 }
 
 void updateKaiju1(float deltaSeconds) {
-	//
+  float tVal = 0.f;
+  kaijuTime += deltaSeconds;
+  if (kaijuTime > timeBetweenPoints) {
+    pointIndex = LOOPED_WALK_POINT(pointIndex + 1);
+    kaijuTime = 0.f;
+  }
+
+  tVal = kaijuTime / timeBetweenPoints;
+
+	hitboxes[0].position.x = catmullRom(tVal, walkPoints[LOOPED_WALK_POINT(pointIndex - 1)].x, walkPoints[LOOPED_WALK_POINT(pointIndex)].x, walkPoints[LOOPED_WALK_POINT(pointIndex + 1)].x, walkPoints[LOOPED_WALK_POINT(pointIndex + 2)].x);
+  hitboxes[0].position.y = catmullRom(tVal, walkPoints[LOOPED_WALK_POINT(pointIndex - 1)].y, walkPoints[LOOPED_WALK_POINT(pointIndex)].y, walkPoints[LOOPED_WALK_POINT(pointIndex + 1)].y, walkPoints[LOOPED_WALK_POINT(pointIndex + 2)].y);
+  hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 25.f;
+  hitboxes[0].isTransformDirty = 1;
 }
 
 // TODO: move this to its own "parent kaiju" file
