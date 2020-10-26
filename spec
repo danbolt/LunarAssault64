@@ -43,9 +43,16 @@ beginseg
 	include "terrain/level1.bin"
 endseg
 
+beginseg
+	name "level1_topography"
+	flags "RAW"
+	include "topography/level1.bin"
+endseg
+
 beginwave
 	name	"jam"
 	include	"code"
 	include "moon_geo"
 	include "level1_terrain"
+	include "level1_topography"
 endwave

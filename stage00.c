@@ -327,17 +327,18 @@ void initStage00(void) {
   
   // Fill the map with sinewave-based data
   // TODO: make this load from a file
-  for (i = 0; i < MAP_LENGTH; i++) {
-    int x = (i % MAP_WIDTH);
-    int y = (i / MAP_WIDTH);
-    float funcVal = MAX(0.f, sinf((i % MAP_WIDTH) * 0.1f) - cosf((i / MAP_WIDTH) * 0.1f) + (cosf((i / MAP_WIDTH * 10)) * 0.01f));
+  // for (i = 0; i < MAP_LENGTH; i++) {
+  //   int x = (i % MAP_WIDTH);
+  //   int y = (i / MAP_WIDTH);
+  //   float funcVal = MAX(0.f, sinf((i % MAP_WIDTH) * 0.1f) - cosf((i / MAP_WIDTH) * 0.1f) + (cosf((i / MAP_WIDTH * 10)) * 0.01f));
 
-    GroundMapping[i] = (u8)((funcVal * 0.5f + 0.5f) * 170) ;
-  }
+  //   GroundMapping[i] = (u8)((funcVal * 0.5f + 0.5f) * 170) ;
+  // }
 
 
   nuPiReadRom(groundTextureROMAddress, tex_terrain_bin, tex_terrain_bin_len);
   nuPiReadRom(terrainROMAddress, GroundTexIndex, MAP_LENGTH);
+  nuPiReadRom(topographyROMAddress, GroundMapping, MAP_LENGTH);
 
   noiseFactor = DEFAULT_NOISE_LEVEL;
 

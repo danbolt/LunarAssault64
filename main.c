@@ -14,9 +14,11 @@ u8 contPattern;
 
 u32 groundTextureROMAddress;
 u32 terrainROMAddress;
+u32 topographyROMAddress;
 
 extern u8 _moon_geoSegmentRomStart[];
 extern u8 _level1_terrainSegmentRomStart[];
+extern u8 _level1_topographySegmentRomStart[];
 
 void (*initKaijuCallback)();
 void (*updateKaijuCallback)(float);
@@ -35,6 +37,7 @@ void mainproc(void)
 
   groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
   terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
+  topographyROMAddress = (u32)_level1_topographySegmentRomStart;
   initKaijuCallback = &initKaiju1;
   updateKaijuCallback = &updateKaiju1;
   renderKaijuCallback = &renderKaiju1;
