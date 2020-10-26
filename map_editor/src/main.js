@@ -255,6 +255,9 @@ EditScreen.prototype.create = function() {
     const saveKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     saveKey.on('down', () => {
         this.saveMapToBinary();
+    });
+    const saveKey2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    saveKey2.on('down', () => {
         this.saveHeightToBinary();
     });
 
@@ -314,7 +317,21 @@ EditScreen.prototype.create = function() {
 
         if (this.isDraggingTopography) {
             const verticalDelta = (pointer.downY - pointer.y);
-            this.heights[this.topographyDragSpot.x][this.topographyDragSpot.y] = ~~(clamp( this.topographyReferenceHeight + verticalDelta, 0, 255)) & 0xff;
+
+            for (let i = 0; i < this.brushSize; i++) {
+                for (let j = 0; j < this.brushSize; j++) {
+                    const targetX = this.topographyDragSpot.x + i - ~~(this.brushSize / 2);
+                    const targetY = this.topographyDragSpot.y + j - ~~(this.brushSize / 2);
+                    if ((targetX < 0) || (targetX >= MAP_WIDTH)) {
+                        continue;
+                    }
+                    if ((targetY < 0) || (targetY >= MAP_HEIGHT)) {
+                        continue;
+                    }
+
+                    this.heights[targetX][targetY] = ~~(clamp( this.topographyReferenceHeight + verticalDelta, 0, 255)) & 0xff;
+                }
+            }
             this.updateGeoFromHeights();
         }
     });
