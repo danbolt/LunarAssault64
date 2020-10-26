@@ -47,7 +47,7 @@ EditScreen.prototype.clearTiles = function() {
 EditScreen.prototype.refreshTile = function(x, y, value) {
     const mapstring = makeMappingString(x, y);
 
-    // this.mapping[mapstring].setFrame(value);
+    this.mapping[mapstring].setFrame(value);
     this.tiles[x][y] = value & 0xFF;
 };
 
@@ -158,18 +158,49 @@ EditScreen.prototype.updateGeoFromHeights = function () {
     }
     this.groundGeo.verticesNeedUpdate = true;
 };
+EditScreen.prototype.updateFaceFromTiles = function () {
+    for (let i = 0; i < MAP_WIDTH; i++) {
+        for (let j = 0; j < MAP_HEIGHT; j++) {
+            const tileIndex = this.tiles[i][j];
+            const u = ((tileIndex % 4) * 8) / 32.0 ;
+            const uPrime = (((tileIndex % 4) * 8) + 8) / 32.0 ;
+            const v = 1.0 - (((~~(tileIndex / 4)) * 8) / 32.0) ;
+            const vPrime = 1.0 - (((~~(tileIndex / 4)) * 8 + 8) / 32.0) ;
+
+            let facesIndex = ~~((i + (j * MAP_WIDTH)) * 2);
+            const face1 = this.groundGeo.faceVertexUvs[0][facesIndex];
+            face1[0].set(u, v);
+            face1[1].set(u, vPrime);
+            face1[2].set(uPrime, v);
+
+            const face2 = this.groundGeo.faceVertexUvs[0][facesIndex + 1];
+            face2[0].set(u, vPrime);
+            face2[1].set(uPrime, vPrime);
+            face2[2].set(uPrime, v);
+        }
+    }
+
+    this.groundGeo.uvsNeedUpdate = true;
+};
+
 EditScreen.prototype.setupScene = function() {
     this.groundMeshes = {};
-    const groundMat = new THREE.MeshBasicMaterial( { wireframe: true, color: 0x00FF00 } );
+    var texture = new THREE.TextureLoader().load( '../doc/gimp/moon_geo.png' );
+    texture.minFilter = THREE.NearestFilter;
+    texture.magFilter = THREE.NearestFilter;
+
+    const groundMat = new THREE.MeshBasicMaterial( { map: texture } );
     const groundGeo = new THREE.PlaneGeometry( MAP_WIDTH, MAP_HEIGHT, MAP_WIDTH, MAP_HEIGHT);
     const groundMesh = new THREE.Mesh( groundGeo, groundMat);
     this.three.scene.add(groundMesh);
     this.groundGeo = groundGeo;
+    console.log(groundGeo);
 
     this.three.camera.position.set(0, -50, 70);
     this.three.camera.lookAt(0, 0, 0);
 
     this.updateGeoFromHeights();
+    this.updateFaceFromTiles();
 };
 
 function clamp(num, min, max) {
@@ -180,6 +211,7 @@ const threeMouseCoordsVector = new THREE.Vector2(0, 0);
 const arrayRaycastResults = [];
 EditScreen.prototype.create = function() {
 
+    this.paintMode = false;
 
     this.isDraggingTopography = false;
     this.topographyDragSpot = { x: 0, y: 0};
@@ -218,13 +250,13 @@ EditScreen.prototype.create = function() {
     }
     for (let i = 0; i < MAP_WIDTH; i++) {
         for (let j = 0; j < MAP_HEIGHT; j++) {
-            // const s = this.add.image(i * 4, j * 4, 'test_tiles', 0);
-            // s.displayOriginX = 0;
-            // s.displayOriginY = 0;
-            // s.scaleX = 0.5;
-            // s.scaleY = 0.5
+            const s = this.add.image(i * 4, j * 4, 'test_tiles', 0);
+            s.displayOriginX = 0;
+            s.displayOriginY = 0;
+            s.scaleX = 0.5;
+            s.scaleY = 0.5
 
-            // this.mapping[makeMappingString(i, j)] = s;
+            this.mapping[makeMappingString(i, j)] = s;
         }
     }
 
@@ -235,6 +267,7 @@ EditScreen.prototype.create = function() {
                 const scopedX = ~~((pointer.x) / 4.0);
                 const scopedY = ~~((pointer.y) / 4.0);
                 this.refreshTile(scopedX, scopedY, this.brushIndex);
+                this.updateFaceFromTiles();
             }
         }
 
@@ -257,10 +290,10 @@ EditScreen.prototype.create = function() {
         if ((arrayRaycastResults.length > 0)) {
             // There should be nothing else in the scene
             const intersectPoint = arrayRaycastResults[0].point;
+            // console.log(arrayRaycastResults[0]);
 
             this.topographyDragSpot.x = ~~((intersectPoint.x + 64));
             this.topographyDragSpot.y = ~~(Math.abs(intersectPoint.y - 64));
-            console.log(this.topographyDragSpot.x + ' , ' + this.topographyDragSpot.y)
             this.isDraggingTopography = true;
             this.topographyReferenceHeight = this.heights[this.topographyDragSpot.x][this.topographyDragSpot.y];
         }
@@ -268,8 +301,6 @@ EditScreen.prototype.create = function() {
 
     this.input.on('pointerup', (pointer) => {
         this.isDraggingTopography = false;
-
-        console.log(this.heights);
     });
 };
 EditScreen.prototype.update = function() {
