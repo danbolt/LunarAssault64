@@ -34,6 +34,8 @@ EditScreen.prototype.init = function() {
   }
 };
 EditScreen.prototype.preload = function() {
+    this.load.bitmapFont('century', 'century_0.png', 'century.fnt');
+
     this.load.spritesheet('test_tiles', '../doc/gimp/moon_geo.png', { frameWidth: 8, frameHeight: 8 });
 };
 EditScreen.prototype.clearTiles = function() {
@@ -210,6 +212,8 @@ const arrayRaycastResults = [];
 EditScreen.prototype.create = function() {
 
     this.paintMode = false;
+    this.brushIndex = 0;
+    this.brushSize = 1;
 
     this.isDraggingTopography = false;
     this.topographyDragSpot = { x: 0, y: 0};
@@ -220,11 +224,11 @@ EditScreen.prototype.create = function() {
     this.setup3D();
     this.setupScene();
 
-    const brushTest = this.add.text(0, 16, 'brush index: 1', { color: 'white' });
+    const brushTest = this.add.bitmapText(0, 32, 'century', 'brush index: 1', 32);
     brushTest.displayOriginX = 0.5;
     brushTest.displayOriginY = 0.5;
 
-    const modeText = this.add.text(0, 0, 'pull mode', { color: 'white' });
+    const modeText = this.add.bitmapText(0, 0, 'century', 'pull mode', 32);
     const tabKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
     tabKey.on('up', () => {
         this.paintMode = !(this.paintMode);
@@ -235,6 +239,16 @@ EditScreen.prototype.create = function() {
         }
     })
 
+    const brushSizeText = this.add.bitmapText(0, 64, 'century', 'brush size: 1', 32);
+    const brushSizeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKTICK);
+    brushSizeKey.on('down', () => {
+        this.brushSize += 2;
+        if (this.brushSize > 10) {
+            this.brushSize = 1;
+        }
+
+        brushSizeText.text = 'brush size: ' + this.brushSize;
+    });
 
     this.controlsKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
 
@@ -279,7 +293,21 @@ EditScreen.prototype.create = function() {
                 const spotX = ~~((intersectPoint.x + 64));
                 const spotY = ~~(Math.abs(intersectPoint.y - 64));
 
-                this.tiles[spotX][spotY] = this.brushIndex;
+                for (let i = 0; i < this.brushSize; i++) {
+                    for (let j = 0; j < this.brushSize; j++) {
+                        const targetX = spotX + i - ~~(this.brushSize / 2);
+                        const targetY = spotY + j - ~~(this.brushSize / 2);
+                        if ((targetX < 0) || (targetX >= MAP_WIDTH)) {
+                            continue;
+                        }
+                        if ((targetY < 0) || (targetY >= MAP_HEIGHT)) {
+                            continue;
+                        }
+
+                        this.tiles[targetX][targetY] = this.brushIndex;
+                    }
+                }
+
                 this.updateFaceFromTiles();
             }
         }
