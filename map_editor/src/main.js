@@ -46,8 +46,6 @@ EditScreen.prototype.clearTiles = function() {
 };
 EditScreen.prototype.refreshTile = function(x, y, value) {
     const mapstring = makeMappingString(x, y);
-
-    this.mapping[mapstring].setFrame(value);
     this.tiles[x][y] = value & 0xFF;
 };
 
@@ -222,9 +220,21 @@ EditScreen.prototype.create = function() {
     this.setup3D();
     this.setupScene();
 
-    const brushTest = this.add.text(128 * 4, 32, 'brush index: 1', { color: 'white', font: 'monospace' });
+    const brushTest = this.add.text(0, 16, 'brush index: 1', { color: 'white' });
     brushTest.displayOriginX = 0.5;
     brushTest.displayOriginY = 0.5;
+
+    const modeText = this.add.text(0, 0, 'pull mode', { color: 'white' });
+    const tabKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
+    tabKey.on('up', () => {
+        this.paintMode = !(this.paintMode);
+        modeText.text = this.paintMode ? 'paint mode' : 'pull mode';
+
+        if (this.paintMode) {
+            this.isDraggingTopography = false;
+        }
+    })
+
 
     this.controlsKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
 
@@ -250,23 +260,26 @@ EditScreen.prototype.create = function() {
     }
     for (let i = 0; i < MAP_WIDTH; i++) {
         for (let j = 0; j < MAP_HEIGHT; j++) {
-            const s = this.add.image(i * 4, j * 4, 'test_tiles', 0);
-            s.displayOriginX = 0;
-            s.displayOriginY = 0;
-            s.scaleX = 0.5;
-            s.scaleY = 0.5
-
-            this.mapping[makeMappingString(i, j)] = s;
         }
     }
 
     this.input.on('pointermove', (pointer) => {
         // Painting on 2D map
-        if (pointer.isDown) {
-            if (pointer.x < (128 * 4)) {
-                const scopedX = ~~((pointer.x) / 4.0);
-                const scopedY = ~~((pointer.y) / 4.0);
-                this.refreshTile(scopedX, scopedY, this.brushIndex);
+        if (pointer.isDown && (this.paintMode)) {
+            arrayRaycastResults.length = 0;
+            const mouseX = pointer.x / this.game.canvas.width;
+            const mouseY = 1.0 - (pointer.y / this.game.canvas.height);
+            threeMouseCoordsVector.x = (mouseX * 2.0) - 1.0;
+            threeMouseCoordsVector.y = (mouseY * 2.0) - 1.0;
+            this.three.raycaster.setFromCamera(threeMouseCoordsVector, this.three.camera);
+            this.three.raycaster.intersectObjects(this.three.scene.children, false, arrayRaycastResults);
+            if ((arrayRaycastResults.length > 0)) {
+                const intersectPoint = arrayRaycastResults[0].point;
+
+                const spotX = ~~((intersectPoint.x + 64));
+                const spotY = ~~(Math.abs(intersectPoint.y - 64));
+
+                this.tiles[spotX][spotY] = this.brushIndex;
                 this.updateFaceFromTiles();
             }
         }
@@ -279,6 +292,11 @@ EditScreen.prototype.create = function() {
     });
 
     this.input.on('pointerdown', (pointer) => {
+        if (this.paintMode) {
+            this.isDraggingTopography = false;
+            return;
+        }
+
         this.isDraggingTopography = false;
         arrayRaycastResults.length = 0;
         const mouseX = pointer.x / this.game.canvas.width;
