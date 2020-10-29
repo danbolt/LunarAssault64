@@ -29,6 +29,9 @@ typedef struct {
 
   Mtx     orthoHudProjection;
   Mtx     orthoHudModelling;
+
+  Mtx     laserBarTranslation;
+  Mtx     laserBarScale;
 } DisplayData;
 
 /*-------------------------------- parameter---------------------------------*/

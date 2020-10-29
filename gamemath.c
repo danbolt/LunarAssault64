@@ -127,6 +127,11 @@ float lerp(float v0, float v1, float t) {
   return (1 - t) * v0 + t * v1;
 }
 
+float cubic(float x) {
+  const float inv = 1.f - x;
+  return 1.f - (inv * inv * inv);
+}
+
 // Copied from Phaser 3
 // https://github.com/photonstorm/phaser/blob/v3.22.0/src/math/CatmullRom.js
 float catmullRom(float t, float p0, float p1, float p2, float p3) {

@@ -38,6 +38,8 @@ float Q_rsqrt( float number );
 float lerp(float v0, float v1, float t);
 float catmullRom(float t, float p0, float p1, float p2, float p3);
 
+float cubic(float x);
+
 // Copied from:
 // https://math.stackexchange.com/questions/3230376/interpolate-between-4-points-on-a-2d-plane
 float bilinear(float v00, float v10, float v11, float v01, float x, float y);

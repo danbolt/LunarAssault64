@@ -52,7 +52,7 @@
 
 #define DIVINE_LINE_OFF 0
 #define DIVINE_LINE_ON 1
-#define DIVINE_LINE_DURATION 8.4f
+#define DIVINE_LINE_DURATION 100.4f
 #define INV_DIVINE_LINE_DURATION (1.f / DIVINE_LINE_DURATION)
 #define DIVINE_LINE_START_HEIGHT 70
 
@@ -233,19 +233,41 @@ static Vtx hud_geo[] = {
   {                  SCISSOR_SIDES,                          0,  5, 0, 0 << 6, 8 << 6, 0x2D, 0, 0x33, 0xff },
   {  SCREEN_WD - SCISSOR_SIDES - 1,                          0,  5, 0, 8 << 6, 8 << 6, 0x2D, 0, 0x33, 0xff },
 
-  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 -  6,  SCISSOR_HIGH - 2,  5, 0, 32 << 6,  0 << 6, 0xCC, 0xCC, 0, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 10,  SCISSOR_HIGH - 2,  5, 0,  0 << 6,  0 << 6, 0xCC, 0xCC, 0, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 10,  SCISSOR_HIGH - 4 - 35,  5, 0,  0 << 6, 32 << 6, 0xCC, 0xCC, 0, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 -  6,  SCISSOR_HIGH - 4 - 35,  5, 0, 32 << 6, 32 << 6, 0xCC, 0xCC, 0, 0xff },
+  // Player avatar
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 -  6 + 4,  SCISSOR_HIGH - 2,  5, 0, 32 << 6,  0 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 10 + 4,  SCISSOR_HIGH - 2,  5, 0,  0 << 6,  0 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 10 + 4,  SCISSOR_HIGH - 4 - 35,  5, 0,  0 << 6, 32 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 -  6 + 4,  SCISSOR_HIGH - 4 - 35,  5, 0, 32 << 6, 32 << 6, 0xCC, 0xCC, 0, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 - 8 + 4,  SCISSOR_HIGH - 3,  5, 0, 48 << 6,  0 << 6, 0x22, 0x88, 0x88, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 8 + 4,  SCISSOR_HIGH - 3,  5, 0,  0 << 6,  0 << 6, 0x22, 0x88, 0x88, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 8 + 4,  SCISSOR_HIGH - 3 - 35,  5, 0,  0 << 6, 42 << 6, 0x00, 0, 0x88, 0xff },
+  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 - 8 + 4,  SCISSOR_HIGH - 3 - 35,  5, 0, 48 << 6, 42 << 6, 0x00, 0, 0x88, 0xff },
 
-  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 - 8,  SCISSOR_HIGH - 3,  5, 0, 48 << 6,  0 << 6, 0x22, 0x88, 0x88, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 8,  SCISSOR_HIGH - 3,  5, 0,  0 << 6,  0 << 6, 0x22, 0x88, 0x88, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 - 40 - 8,  SCISSOR_HIGH - 3 - 35,  5, 0,  0 << 6, 42 << 6, 0x00, 0, 0x88, 0xff },
-  { SCREEN_WD - SCISSOR_SIDES - 1 -  0 - 8,  SCISSOR_HIGH - 3 - 35,  5, 0, 48 << 6, 42 << 6, 0x00, 0, 0x88, 0xff },
+  // laser charge bar backing
+  { SCISSOR_SIDES + 208,  SCISSOR_HIGH - 2,   5, 0, 32 << 6,  0 << 6, 0, 0, 0, 0xff },
+  { SCISSOR_SIDES +   0,  SCISSOR_HIGH - 2,   5, 0,  0 << 6,  0 << 6, 0, 0, 0, 0xff },
+  { SCISSOR_SIDES +   0,  SCISSOR_HIGH - 2 - 8,  5, 0,  0 << 6, 32 << 6, 0, 0, 0, 0xff },
+  { SCISSOR_SIDES + 208,  SCISSOR_HIGH - 2 - 8,  5, 0, 32 << 6, 32 << 6, 0, 0, 0, 0xff },
+  { SCISSOR_SIDES + 208 + 2 + 16,  SCISSOR_HIGH - 2,   5, 0, 32 << 6,  0 << 6, 0, 0, 0, 0xff },
+  { SCISSOR_SIDES + 208 + 2,  SCISSOR_HIGH - 2,   5, 0,  0 << 6,  0 << 6, 0, 0, 0, 0xff },
+  { SCISSOR_SIDES + 208 + 2,  SCISSOR_HIGH - 2 - 8,  5, 0,  0 << 6, 32 << 6, 0, 0, 0, 0xff },
+  { SCISSOR_SIDES + 208 + 2 + 16,  SCISSOR_HIGH - 2 - 8,  5, 0, 32 << 6, 32 << 6, 0, 0, 0, 0xff },
+};
+
+static Vtx laser_charge_bar_geo[] = {
+  { 0,  0,  5, 0, 32 << 6,  0 << 6, 0xCC, 0x21, 0x04, 0xff },
+  { 208,  0,  5, 0,  0 << 6,  0 << 6, 0xCC, 0x21, 0, 0xff },
+  { 208,  8,  5, 0,  0 << 6, 32 << 6, 0xCC, 0x21, 0, 0xff },
+  { 0,  8,  5, 0, 32 << 6, 32 << 6, 0xCC, 0x21, 0x04, 0xff },
+
+  { 208 + 2,  0,  5, 0, 32 << 6,  0 << 6, 0xCC, 0xaD, 0x04, 0xff },
+  { 208 + 2 + 16,  0,  5, 0,  0 << 6,  0 << 6, 0xCC, 0xaD, 0, 0xff },
+  { 208 + 2 + 16,  8,  5, 0,  0 << 6, 32 << 6, 0xCC, 0xaD, 0, 0xff },
+  { 208 + 2,  8,  5, 0, 32 << 6, 32 << 6, 0xCC, 0xaD, 0x04, 0xff },
 };
 
 static Gfx hud_dl[] = {
-  gsSPVertex(&hud_geo, 24, 0),
+  gsSPVertex(&hud_geo, 32, 0),
   gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
   gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
   gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
@@ -254,6 +276,24 @@ static Gfx hud_dl[] = {
   gsSP2Triangles(16, 17, 18, 0, 16, 18, 19, 0),
   gsSP2Triangles(16 + 4, 17 + 4, 18 + 4, 0, 16 + 4, 18 + 4, 19 + 4, 0),
 
+  gsSP2Triangles(24, 25, 26, 0, 24, 26, 27, 0),
+  gsSP2Triangles(28, 29, 30, 0, 28, 30, 31, 0),
+
+  gsSPEndDisplayList()
+};
+
+static Gfx laser_charge_bar_commands[] = {
+  gsSPVertex(&laser_charge_bar_geo, 8, 0),
+  gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+  gsSPEndDisplayList()
+};
+
+static Gfx laser_charge_almost_max[] = {
+  gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
+  gsSPEndDisplayList()
+};
+
+static Gfx portrait_commands[] = {
   gsSPTexture(0x8000, 0x8000, 0, 0, G_ON),
   gsDPPipeSync(),
   gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
@@ -545,7 +585,25 @@ void makeDL00(void) {
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudProjection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
     guMtxIdent(&(dynamicp->orthoHudModelling));
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudModelling)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+
+    // Hud background
     gSPDisplayList(glistp++, hud_dl);
+
+    guTranslate(&(dynamicp->laserBarTranslation), SCISSOR_SIDES, SCISSOR_HIGH - 10, 0.f);
+    if (laserChargeFactor < 0.9f) {
+      guScale(&(dynamicp->laserBarScale), cubic(laserChargeFactor / 0.9f), 1.f, 1.f);
+    } else {
+      guScale(&(dynamicp->laserBarScale), 1.f, 1.f, 1.f);
+    }
+    gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->laserBarTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
+    gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->laserBarScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH);
+    gSPDisplayList(glistp++, laser_charge_bar_commands);
+    if (laserChargeFactor > 0.9f) {
+      gSPDisplayList(glistp++, laser_charge_almost_max);
+    }
+    gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+
+    gSPDisplayList(glistp++, portrait_commands);
 
     if (zoomState == ZOOMED_IN) {
       gSPDisplayList(glistp++, zoomed_in_dl);
@@ -691,7 +749,16 @@ void updatePlayer(float deltaSeconds) {
   }
   // zoomState = ((contdata->trigger & R_TRIG) || (ZOOMED_IN && ((contdata->button & R_TRIG)))) ? ZOOMED_IN : NOT_ZOOMED_IN;
   playerZoomFactor = clamp(playerZoomFactor + (ZOOM_IN_OUT_SPEED * deltaSeconds * zoomState), 0.f, 1.f);
-  laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * ((zoomState == ZOOMED_IN) && (contdata->button & Z_TRIG) ? 1 : -1)), 0.f, 1.f);
+
+  if (laserChargeFactor < 0.01f && (zoomState == ZOOMED_IN) && (contdata->trigger & Z_TRIG)) {
+    laserChargeFactor = 0.01f;
+  }
+
+  if ((laserChargeFactor >= 0.01f) && (contdata->button & Z_TRIG) && (zoomState == ZOOMED_IN)) {
+    laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * 1), 0.f, 1.f);
+  } else {
+    laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * -1), 0.f, 1.f);
+  }
 }
 
 // TODO: move this to its own "parent kaiju" file
@@ -751,6 +818,7 @@ void raymarchAimLineAgainstHitboxes() {
   const float aimDirLengthSq = distanceSq(&aimDirection, &zeroVector);
   const float invAimDirLengthSq = Q_rsqrt(aimDirLengthSq);
   const vec3 normalizedAimDirection = { aimDirection.x * invAimDirLengthSq, aimDirection.y * invAimDirLengthSq, aimDirection.z * invAimDirLengthSq };
+  int hitAnything = 0;
 
   for (stepI = 0; stepI < MAX_STEP_COUNT; stepI++) {
     int i;
@@ -766,6 +834,7 @@ void raymarchAimLineAgainstHitboxes() {
     if (closestDistance <= 0) {
       fireLaser(&(checkPoint));
       noiseFactor = 0.07f;
+      hitAnything = 1;
 
       break;
     }
@@ -787,13 +856,14 @@ void raymarchAimLineAgainstHitboxes() {
       distanceToHitbox = hitbox->check(&checkPointInHitboxSpace);
       if (distanceToHitbox < closestDistance) {
         closestDistance = distanceToHitbox;
-        closestHitbox = hitbox; // TODO: let the player hit multiple hitboxes simultaneously
+        closestHitbox = hitbox;
       }
     }
 
     // If the SDF distance is less than zero to something, we've hit it
     if ((closestDistance <= 0) && (closestHitbox != NULL)) {
       fireLaser(&(checkPoint));
+      hitAnything = 1;
       noiseFactor = 0.10000524f;
 
       if (closestHitbox->destroyable) {
@@ -804,6 +874,10 @@ void raymarchAimLineAgainstHitboxes() {
     }
 
     nextStepDistance = closestDistance + 0.001f;
+  }
+
+  if (!hitAnything) {
+    laserChargeFactor = 0.f;
   }
 }
 
