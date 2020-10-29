@@ -31,7 +31,7 @@
 #define FOCUS_HIGH_DETAIL_CUTOFF 34.f
 #define FOCUS_HIGH_DETAIL_CUTOFF_SQ (FOCUS_HIGH_DETAIL_CUTOFF * FOCUS_HIGH_DETAIL_CUTOFF)
 
-#define HIGH_DETAIL_CUTOFF 20.f
+#define HIGH_DETAIL_CUTOFF 45.f
 #define HIGH_DETAIL_CUTOFF_SQ (HIGH_DETAIL_CUTOFF * HIGH_DETAIL_CUTOFF)
 
 #define PLAYER_MOVE_SPEED 10.f
@@ -454,7 +454,7 @@ void makeDL00(void) {
             continue;
           }
 
-          if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8975f))) {
+          if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ)) {
             gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[sectionIndex].commands));
           } else {
             gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
