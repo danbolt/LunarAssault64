@@ -1,8 +1,8 @@
 #include <nusys.h>
 #include "graphic.h"
 
-Gfx          gfx_glist[2][GFX_GLIST_LEN];
-DisplayData  gfx_dynamic[2];
+Gfx          gfx_glist[3][GFX_GLIST_LEN];
+DisplayData  gfx_dynamic[3];
 Gfx*         glistp;
 u32          gfx_gtask_no = 0;
 

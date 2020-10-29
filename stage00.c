@@ -561,35 +561,35 @@ void makeDL00(void) {
      switch display buffers */
   nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0],
 		 (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx),
-		 NU_GFX_UCODE_F3DLP_REJ , NU_SC_NOSWAPBUFFER);
+		 NU_GFX_UCODE_F3DLP_REJ , NU_SC_SWAPBUFFER);
 
-  if(contPattern & 0x1)
-    {
-      nuDebConTextPos(0,4,4);
-      sprintf(conbuf, "zoomState: %3d", zoomState);
-      nuDebConCPuts(0, conbuf);
+  // if(contPattern & 0x1)
+  //   {
+  //     nuDebConTextPos(0,4,4);
+  //     sprintf(conbuf, "zoomState: %3d", zoomState);
+  //     nuDebConCPuts(0, conbuf);
 
-      nuDebConTextPos(0,4,5);
-      sprintf(conbuf, "zoomFactor: %3.4f", playerZoomFactor);
-      nuDebConCPuts(0, conbuf);
+  //     nuDebConTextPos(0,4,5);
+  //     sprintf(conbuf, "zoomFactor: %3.4f", playerZoomFactor);
+  //     nuDebConCPuts(0, conbuf);
 
-      nuDebConTextPos(0,4,6);
-      sprintf(conbuf, "laserChargeFactor: %3.4f", laserChargeFactor);
-      nuDebConCPuts(0, conbuf);
-    }
-  else
-    {
-      nuDebConTextPos(0,4,4);
-      nuDebConCPuts(0, "Connect controller #1, kid!");
-    }
+  //     nuDebConTextPos(0,4,6);
+  //     sprintf(conbuf, "laserChargeFactor: %3.4f", laserChargeFactor);
+  //     nuDebConCPuts(0, conbuf);
+  //   }
+  // else
+  //   {
+  //     nuDebConTextPos(0,4,4);
+  //     nuDebConCPuts(0, "Connect controller #1, kid!");
+  //   }
 
-    nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
+  //   nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
     
-  /* Display characters on the frame buffer */
-  nuDebConDisp(NU_SC_SWAPBUFFER);
+  // /* Display characters on the frame buffer */
+  // nuDebConDisp(NU_SC_SWAPBUFFER);
 
   /* Switch display list buffers */
-  gfx_gtask_no ^= 1;
+  gfx_gtask_no = (gfx_gtask_no + 1) % 3;
 }
 
 float getDistanceFromGround(const vec3* pos) {
