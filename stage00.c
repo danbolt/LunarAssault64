@@ -824,6 +824,20 @@ void updateDivineLine(float deltaSeconds) {
   }
 }
 
+void checkIfPlayerHasWon() {
+  int i;
+  int defeatedAllHitboxes = 1;
+
+  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+    if (hitboxes[i].alive && hitboxes[i].destroyable) {
+      defeatedAllHitboxes = 0;
+      break;
+    }
+  }
+
+  assert(!defeatedAllHitboxes);
+}
+
 void updateGame00(void) {
   int i;
   float deltaSeconds = 0.f;
@@ -847,4 +861,5 @@ void updateGame00(void) {
   nuDebPerfMarkSet(4);
   updateDivineLine(deltaSeconds);
   nuDebPerfMarkSet(5);
+  checkIfPlayerHasWon();
 }
