@@ -1,13 +1,10 @@
 #include <nusys.h>
 #include "main.h"
+#include "stage00.h"
 
 #include "kaiju1.h"
 
 void stage00(int);
-
-void initStage00(void);
-void makeDL00(void);
-void updateGame00(void);
 
 NUContData	contdata[1];
 u8 contPattern;
