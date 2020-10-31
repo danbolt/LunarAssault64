@@ -23,27 +23,53 @@ APP =		jam.out
 
 TARGETS =	jam.n64
 
-HFILES =	main.h stage00.h graphic.h gamemath.h terraintex.h map.h hitboxes.h portraittex.h protaggeo.h kaiju1.h
+HFILES =	main.h stage00.h graphic.h gamemath.h segmentinfo.h terraintex.h map.h hitboxes.h portraittex.h protaggeo.h kaiju1.h 
 
-CODEFILES   = 	main.c stage00.c graphic.c gfxinit.c gamemath.c map.c hitboxes.c portraittex.c protaggeo.c kaiju1.c
+CODEFILES   = 	main.c graphic.c gfxinit.c kaiju1.c
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
 
-DATAFILES   =	
+DATAFILES   =	stage00.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
 CODESEGMENT =	codesegment.o
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
+STAGEFILES  =	stage00.c gamemath.c map.c hitboxes.c portraittex.c protaggeo.c 
 
+STAGEOBJ    =	$(STAGEFILES:.c=.o)
+
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(STAGEOBJ)
+
+FORCELINK =	-u guOrtho \
+			-u guPerspective \
+			-u guLookAt \
+			-u guRotate \
+			-u guScale \
+			-u guTranslate \
+			-u guMtxIdent \
+			-u guTranslateF \
+			-u guRotateF \
+			-u guScaleF \
+			-u guRotateRPYF \
+			-u guMtxCatF \
+			-u guMtxXFMF \
+			-u cosf \
+			-u sinf \
+			-u __cmpdi2 \
+			-u __floatdisf \
+			-u nuDebPerfMarkSet \
+			-u nuPiReadRom \
+			-u nuContDataGetEx \
+			-u nuDebConTextPos \
+			-u sprintf
 
 default:        $(TARGETS)
 
 include $(COMMONRULES)
 
 $(CODESEGMENT):	$(CODEOBJECTS) Makefile
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+		$(LD) $(FORCELINK) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
 $(TARGETS):	$(OBJECTS)
 		$(MAKEROM) spec -I$(NUSYSINCDIR) -r $(TARGETS) -e $(APP)

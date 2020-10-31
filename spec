@@ -32,6 +32,19 @@ beginseg
 endseg
 
 beginseg
+	name "stage"
+	flags OBJECT
+	after "code"
+	align 32
+	include "stage00.o"
+	include "gamemath.o"
+	include "hitboxes.o"
+	include "map.o"
+	include "portraittex.o"
+	include "protaggeo.o"
+endseg
+
+beginseg
 	name "moon_geo"
 	flags "RAW"
 	include "geotex/moon_geo.bin"
@@ -52,6 +65,7 @@ endseg
 beginwave
 	name	"jam"
 	include	"code"
+	include	"stage"
 	include "moon_geo"
 	include "level1_terrain"
 	include "level1_topography"

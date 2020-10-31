@@ -1,5 +1,7 @@
 #include <nusys.h>
 #include "main.h"
+#include "segmentinfo.h"
+
 #include "stage00.h"
 
 #include "kaiju1.h"
@@ -21,6 +23,22 @@ void (*initKaijuCallback)();
 void (*updateKaijuCallback)(float);
 void (*renderKaijuCallback)(DisplayData*);
 
+void loadInStage() {
+  NUPiOverlaySegment segment;
+
+  segment.romStart  = _stageSegmentRomStart;
+  segment.romEnd    = _stageSegmentRomEnd;
+  segment.ramStart  = _stageSegmentStart;
+  segment.textStart = _stageSegmentTextStart;
+  segment.textEnd   = _stageSegmentTextEnd;
+  segment.dataStart = _stageSegmentDataStart;
+  segment.dataEnd   = _stageSegmentDataEnd;
+  segment.bssStart  = _stageSegmentBssStart;
+  segment.bssEnd    = _stageSegmentBssEnd;
+
+  nuPiReadRomOverlay(&segment);
+}
+
 /*------------------------
 	Main
 --------------------------*/
@@ -38,6 +56,8 @@ void mainproc(void)
   initKaijuCallback = &initKaiju1;
   updateKaijuCallback = &updateKaiju1;
   renderKaijuCallback = &renderKaiju1;
+
+  loadInStage();
 
   /* The initialization for stage00()  */
   initStage00();

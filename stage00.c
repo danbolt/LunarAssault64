@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <nusys.h>
+#include "stage00.h"
 #include "main.h"
+#include "segmentinfo.h"
 
 #include "map.h"
 #include "graphic.h"
