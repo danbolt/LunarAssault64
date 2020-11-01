@@ -316,34 +316,30 @@ static Gfx zoomed_in_dl[] = {
   gsSPEndDisplayList()
 };
 
-static vec3 cameraPos;
-static vec3 cameraTarget;
-static vec3 cameraRotation;
-
-static vec3 playerPos;
-static vec3 playerVelocity;
-static float playerDisplayRotation;
-static int playerIsOnTheGround;
-
-static float playerZoomFactor;
-static s8 zoomState;
-
-static float laserChargeFactor;
-
-static u8 divineLineState;
-static float divineLineTimePassed;
-static vec3 divineLineStartSpot;
-static vec3 divineLineEndSpot;
-
-static vec3 cameraPos;
-static vec3 cameraTarget;
-static vec3 cameraRotation;
+static vec3 cameraPos = { 0.f, 0.f, 0.f };
+static vec3 cameraTarget = { 0.f, 0.f, 0.f };
+static vec3 cameraRotation = { 0.f, 0.f, 0.f };
 static const s8 cameraYInvert = 1;
 
-static OSTime time;
-static OSTime delta;
+static vec3 playerPos = { 0.f, 0.f, 0.f };
+static vec3 playerVelocity = { 0.f, 0.f, 0.f };
+static float playerDisplayRotation = 0.f;
+static int playerIsOnTheGround = 0;
 
-static float noiseFactor;
+static float playerZoomFactor = 0.f;
+static s8 zoomState = NOT_ZOOMED_IN;
+
+static float laserChargeFactor = 0.f;
+
+static u8 divineLineState = DIVINE_LINE_OFF;
+static float divineLineTimePassed = 0.f;
+static vec3 divineLineStartSpot = { 0.f, 0.f, 0.f };
+static vec3 divineLineEndSpot = { 0.f, 0.f, 0.f };
+
+static OSTime time = 0;
+static OSTime delta = 0;
+
+static float noiseFactor = 0.f;
 
 void initStage00(void) {
   int i;

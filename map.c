@@ -1,11 +1,11 @@
 
 #include "map.h"
 
-u8 GroundMapping[MAP_LENGTH];
-u8 GroundTexIndex[MAP_LENGTH];
+u8 GroundMapping[MAP_LENGTH] = {};
+u8 GroundTexIndex[MAP_LENGTH] = {};
 
-SectionData sections[SECTIONS_PER_MAP];
-SectionData lowDetailSections[SECTIONS_PER_MAP];
+SectionData sections[SECTIONS_PER_MAP] = {};
+LowDetailSectionData lowDetailSections[SECTIONS_PER_MAP] = {};
 
 u8 sampleHeight(u16 x, u16 y) {
   return GroundMapping[((x + MAP_WIDTH) % MAP_WIDTH) + (((y + MAP_HEIGHT) % MAP_HEIGHT) * MAP_WIDTH)];
@@ -83,7 +83,7 @@ void generateDLPerSection(SectionData* section, int originX, int originY) {
   gSPEndDisplayList(commands++);
 }
 
-void generateLowDetailDLPerSection(SectionData* section, int originX, int originY) {
+void generateLowDetailDLPerSection(LowDetailSectionData* section, int originX, int originY) {
   int i;
   int j;
   int texIndex;
