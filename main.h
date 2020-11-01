@@ -6,6 +6,14 @@
 
 #ifdef _LANGUAGE_C
 
+typedef enum {
+	StageScreen,
+	DialogueScreen
+} ScreenSetting;
+
+extern volatile int changeScreensFlag;
+extern volatile ScreenSetting screenType;
+
 extern NUContData	contdata[1];
 extern u8 contPattern;
 

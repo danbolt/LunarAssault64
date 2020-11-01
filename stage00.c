@@ -911,13 +911,17 @@ void checkIfPlayerHasWon() {
     }
   }
 
-  assert(!defeatedAllHitboxes);
+  if (defeatedAllHitboxes) {
+    changeScreensFlag = 1;
+  }
 }
 
 void updateGame00(void) {
   int i;
   float deltaSeconds = 0.f;
   OSTime newTime = OS_CYCLES_TO_USEC(osGetTime());
+
+  nuContDataGetEx(contdata,0);
 
   delta = (newTime - time);
   time = newTime;
@@ -926,7 +930,6 @@ void updateGame00(void) {
   noiseFactor = lerp(noiseFactor, DEFAULT_NOISE_LEVEL, 0.04f);
 
   nuDebPerfMarkSet(0);
-  nuContDataGetEx(contdata,0);
   updateKaijuCallback(deltaSeconds);
   nuDebPerfMarkSet(1);
   updateKaijuHitboxes(deltaSeconds);
@@ -938,4 +941,10 @@ void updateGame00(void) {
   updateDivineLine(deltaSeconds);
   nuDebPerfMarkSet(5);
   checkIfPlayerHasWon();
+
+
+  if (contdata->trigger & START_BUTTON) {
+    changeScreensFlag = 1;
+    return;
+  }
 }

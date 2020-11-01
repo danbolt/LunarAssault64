@@ -8,6 +8,9 @@
 
 void stage00(int);
 
+volatile int changeScreensFlag;
+volatile ScreenSetting screenType;
+
 NUContData	contdata[1];
 u8 contPattern;
 
@@ -23,7 +26,7 @@ void (*initKaijuCallback)();
 void (*updateKaijuCallback)(float);
 void (*renderKaijuCallback)(DisplayData*);
 
-void loadInStage() {
+void loadInStageState() {
   NUPiOverlaySegment segment;
 
   segment.romStart  = _stageSegmentRomStart;
@@ -47,27 +50,34 @@ void mainproc(void)
   /* The initialization of graphic  */
   nuGfxInit();
 
+  changeScreensFlag = 0;
+  screenType = StageScreen;
+
   /* The initialization of the controller manager  */
   contPattern = nuContInit();
 
-  groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
-  terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
-  topographyROMAddress = (u32)_level1_topographySegmentRomStart;
-  initKaijuCallback = &initKaiju1;
-  updateKaijuCallback = &updateKaiju1;
-  renderKaijuCallback = &renderKaiju1;
+  while (1) {
+    groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
+    terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
+    topographyROMAddress = (u32)_level1_topographySegmentRomStart;
+    initKaijuCallback = &initKaiju1;
+    updateKaijuCallback = &updateKaiju1;
+    renderKaijuCallback = &renderKaiju1;
 
-  loadInStage();
+    loadInStageState();
 
-  /* The initialization for stage00()  */
-  initStage00();
-  /* Register call-back  */
-  nuGfxFuncSet((NUGfxFunc)stage00);
-  /* The screen display is ON */
-  nuGfxDisplayOn();
+    initStage00();
 
-  while(1)
-    ;
+    nuGfxFuncSet((NUGfxFunc)stage00);
+    nuGfxDisplayOn();
+
+    while(!changeScreensFlag);
+
+    nuGfxFuncRemove();
+    nuGfxDisplayOff();
+
+    changeScreensFlag = 0;
+  }
 }
 
 /*-----------------------------------------------------------------------------
@@ -79,6 +89,10 @@ void mainproc(void)
 -----------------------------------------------------------------------------*/
 void stage00(int pendingGfx)
 {
+  if (changeScreensFlag != 0) {
+    return;
+  }
+
   /* Provide the display process if 2 or less RCP tasks are processing or
 	waiting for the process.  */
   if(pendingGfx < 3)
