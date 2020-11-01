@@ -945,6 +945,7 @@ void updateGame00(void) {
 
   if (contdata->trigger & START_BUTTON) {
     changeScreensFlag = 1;
+    screenType = DialogueScreen;
     return;
   }
 }

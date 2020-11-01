@@ -45,6 +45,14 @@ beginseg
 endseg
 
 beginseg
+	name "dialogue"
+	flags OBJECT
+	after "code"
+	align 32
+	include "dialoguestage.o"
+endseg
+
+beginseg
 	name "moon_geo"
 	flags "RAW"
 	include "geotex/moon_geo.bin"
@@ -63,10 +71,16 @@ beginseg
 endseg
 
 beginwave
-	name	"jam"
+	name	"gameplay_wave"
 	include	"code"
 	include	"stage"
 	include "moon_geo"
 	include "level1_terrain"
 	include "level1_topography"
+endwave
+
+beginwave
+	name	"dialogue_wave"
+	include	"code"
+	include	"dialogue"
 endwave

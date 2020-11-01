@@ -3,10 +3,12 @@
 #include "segmentinfo.h"
 
 #include "stage00.h"
+#include "dialoguestage.h"
 
 #include "kaiju1.h"
 
 void stage00(int);
+void dialogue(int);
 
 volatile int changeScreensFlag;
 volatile ScreenSetting screenType;
@@ -39,6 +41,30 @@ void loadInStageState() {
   segment.bssStart  = _stageSegmentBssStart;
   segment.bssEnd    = _stageSegmentBssEnd;
 
+
+  groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
+  terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
+  topographyROMAddress = (u32)_level1_topographySegmentRomStart;
+  initKaijuCallback = &initKaiju1;
+  updateKaijuCallback = &updateKaiju1;
+  renderKaijuCallback = &renderKaiju1;
+
+  nuPiReadRomOverlay(&segment);
+}
+
+void loadInDialogueState() {
+  NUPiOverlaySegment segment;
+
+  segment.romStart  = _dialogueSegmentRomStart;
+  segment.romEnd    = _dialogueSegmentRomEnd;
+  segment.ramStart  = _dialogueSegmentStart;
+  segment.textStart = _dialogueSegmentTextStart;
+  segment.textEnd   = _dialogueSegmentTextEnd;
+  segment.dataStart = _dialogueSegmentDataStart;
+  segment.dataEnd   = _dialogueSegmentDataEnd;
+  segment.bssStart  = _dialogueSegmentBssStart;
+  segment.bssEnd    = _dialogueSegmentBssEnd;
+
   nuPiReadRomOverlay(&segment);
 }
 
@@ -57,18 +83,16 @@ void mainproc(void)
   contPattern = nuContInit();
 
   while (1) {
-    groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
-    terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
-    topographyROMAddress = (u32)_level1_topographySegmentRomStart;
-    initKaijuCallback = &initKaiju1;
-    updateKaijuCallback = &updateKaiju1;
-    renderKaijuCallback = &renderKaiju1;
+    if (screenType == StageScreen) {
+      loadInStageState();
+      initStage00();
+      nuGfxFuncSet((NUGfxFunc)stage00);
+    } else if (screenType == DialogueScreen) {
+      loadInDialogueState();
+      initDialogue();
+      nuGfxFuncSet((NUGfxFunc)dialogue);
+    }
 
-    loadInStageState();
-
-    initStage00();
-
-    nuGfxFuncSet((NUGfxFunc)stage00);
     nuGfxDisplayOn();
 
     while(!changeScreensFlag);
@@ -80,13 +104,6 @@ void mainproc(void)
   }
 }
 
-/*-----------------------------------------------------------------------------
-  The call-back function 
-
-  pendingGfx which is passed from Nusystem as the argument of the call-back 
-  function is the total of RCP tasks that are currently processing and 
-  waiting for the process. 
------------------------------------------------------------------------------*/
 void stage00(int pendingGfx)
 {
   if (changeScreensFlag != 0) {
@@ -100,5 +117,18 @@ void stage00(int pendingGfx)
 
   /* The process of game progress  */
   updateGame00(); 
+}
+
+void dialogue(int pendingGfx)
+{
+  if (changeScreensFlag != 0) {
+    return;
+  }
+
+  if(pendingGfx < 3) {
+    makeDLDialogue();   
+  }
+
+  updateDialogue(); 
 }
 

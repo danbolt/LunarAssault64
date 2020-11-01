@@ -23,7 +23,7 @@ APP =		jam.out
 
 TARGETS =	jam.n64
 
-HFILES =	main.h stage00.h graphic.h gamemath.h segmentinfo.h terraintex.h map.h hitboxes.h portraittex.h protaggeo.h kaiju1.h 
+HFILES =	main.h stage00.h graphic.h gamemath.h segmentinfo.h terraintex.h map.h hitboxes.h portraittex.h protaggeo.h kaiju1.h dialoguestage.h
 
 CODEFILES   = 	main.c graphic.c gfxinit.c kaiju1.c
 
@@ -37,9 +37,13 @@ CODESEGMENT =	codesegment.o
 
 STAGEFILES  =	stage00.c gamemath.c map.c hitboxes.c portraittex.c protaggeo.c 
 
+DIALFILES   =	dialoguestage.c
+
+DIALOBJ     =	$(DIALFILES:.c=.o)
+
 STAGEOBJ    =	$(STAGEFILES:.c=.o)
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(STAGEOBJ)
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(STAGEOBJ) $(DIALOBJ)
 
 FORCELINK =	-u guOrtho \
 			-u guPerspective \
@@ -62,7 +66,9 @@ FORCELINK =	-u guOrtho \
 			-u nuPiReadRom \
 			-u nuContDataGetEx \
 			-u nuDebConTextPos \
-			-u sprintf
+			-u sprintf \
+			-u gfxRCPInit \
+			-u gfxClearCfb \
 
 default:        $(TARGETS)
 
@@ -72,4 +78,4 @@ $(CODESEGMENT):	$(CODEOBJECTS) Makefile
 		$(LD) $(FORCELINK) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
 $(TARGETS):	$(OBJECTS)
-		$(MAKEROM) spec -I$(NUSYSINCDIR) -r $(TARGETS) -e $(APP)
+		$(MAKEROM) -o spec -I$(NUSYSINCDIR) -r $(TARGETS) -e $(APP)
