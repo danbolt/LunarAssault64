@@ -77,7 +77,7 @@ void mainproc(void)
   nuGfxInit();
 
   changeScreensFlag = 0;
-  screenType = StageScreen;
+  screenType = DialogueScreen;
 
   /* The initialization of the controller manager  */
   contPattern = nuContInit();
