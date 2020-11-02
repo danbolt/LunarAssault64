@@ -1,6 +1,7 @@
 #include "dialoguestage.h"
 
 #include "main.h"
+#include "font.h"
 #include "graphic.h"
 
 static Vtx test_geo[] = {
@@ -43,7 +44,21 @@ void makeDLDialogue(void) {
     guMtxIdent(&(dynamicp->orthoHudModelling));
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudModelling)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
 
+
     gSPDisplayList(glistp++, test_cmd);
+
+	gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_ON);
+	gDPPipeSync(glistp++);
+	gDPSetTextureFilter(glistp++, G_TF_AVERAGE);
+	gDPSetRenderMode(glistp++, G_RM_TEX_EDGE, G_RM_TEX_EDGE);
+	gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
+	gDPSetTexturePersp(glistp++, G_TP_NONE);
+    gDPLoadTextureBlock_4b(glistp++, font_bin, G_IM_FMT_IA, 128, 64, 0, G_TX_MIRROR | G_TX_WRAP, G_TX_MIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+
+    gSPScisTextureRectangle(glistp++, 0 << 2, 0 << 2, 128 << 2, 64 << 2, 0, 0 << 5, 0 << 5, 1 << 10, 1 << 10);
+
+
+    gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_OFF);
 
 	gDPFullSync(glistp++);
 	gSPEndDisplayList(glistp++);
