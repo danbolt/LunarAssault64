@@ -69,6 +69,9 @@ FORCELINK =	-u guOrtho \
 			-u sprintf \
 			-u gfxRCPInit \
 			-u gfxClearCfb \
+			-u nuDebConCPuts \
+			-u nuDebTaskPerfBar1EX2 \
+			-u nuDebConDispEX2 \
 
 default:        $(TARGETS)
 
