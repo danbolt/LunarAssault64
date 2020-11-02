@@ -196,7 +196,7 @@ static Gfx divine_line_commands[] = {
 };
 
 static Gfx mapSetionsPreable[] = {
-  gsSPSetGeometryMode(G_CULL_BACK | G_SHADE),
+  gsSPSetGeometryMode(G_CULL_BACK),
   gsSPTexture(0x8000, 0x8000, 0, 0, G_ON),
   gsDPPipeSync(),
   gsDPSetCombineLERP(NOISE, 0, ENVIRONMENT, TEXEL0, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, TEXEL0, 0, 0, 0, SHADE),
@@ -429,7 +429,6 @@ void makeDL00(void) {
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->projection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
     guLookAt(&dynamicp->camera, cameraPos.x ,cameraPos.y, cameraPos.z, cameraTarget.x, cameraTarget.y, cameraTarget.z, 0, 0, 1);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-  
   }
 
   // The map
@@ -745,7 +744,7 @@ void updatePlayer(float deltaSeconds) {
   if ((zoomState == ZOOMED_IN) && (!(contdata->button & R_TRIG))) {
     zoomState = NOT_ZOOMED_IN;
   }
-  // zoomState = ((contdata->trigger & R_TRIG) || (ZOOMED_IN && ((contdata->button & R_TRIG)))) ? ZOOMED_IN : NOT_ZOOMED_IN;
+
   playerZoomFactor = clamp(playerZoomFactor + (ZOOM_IN_OUT_SPEED * deltaSeconds * zoomState), 0.f, 1.f);
 
   if (laserChargeFactor < 0.01f && (zoomState == ZOOMED_IN) && (contdata->trigger & Z_TRIG)) {
@@ -876,6 +875,7 @@ void raymarchAimLineAgainstHitboxes() {
 
   if (!hitAnything) {
     laserChargeFactor = 0.f;
+    noiseFactor = 0.f;
   }
 }
 

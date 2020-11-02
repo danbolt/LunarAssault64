@@ -223,7 +223,19 @@ void appendHitboxDL(KaijuHitbox* hitbox, DisplayData* dynamicp) {
 }
 
 void renderKaiju1(DisplayData* dynamicp) {
+  gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_OFF);
+  gDPPipeSync(glistp++);
+  gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
+  gDPSetRenderMode(glistp++, G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
+  gSPClearGeometryMode(glistp++, 0xFFFFFFFF);
+  gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK | G_ZBUFFER);
   gSPClipRatio(glistp++, FRUSTRATIO_6);
   appendHitboxDL(&(hitboxes[0]), dynamicp);
+  gDPPipeSync(glistp++);
+  gDPSetRenderMode(glistp++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+  gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, TEXEL0, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, TEXEL0, 0, 0, 0, SHADE);
   gSPClipRatio(glistp++, FRUSTRATIO_2);
+  gSPClearGeometryMode(glistp++, 0xFFFFFFFF);
+  gSPSetGeometryMode(glistp++, G_CULL_BACK);
+  gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_ON);
 }
