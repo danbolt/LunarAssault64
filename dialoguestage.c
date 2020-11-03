@@ -10,11 +10,13 @@
 
 #define ASCII_SPACE 32
 
+#define TIME_PER_LETTER 0.055f
+
 static Vtx test_geo[] = {
-  { 100,  100,  5, 0, 32 << 6,  0 << 6, 0xFF, 0x21, 0x04, 0xff },
-  { 208,  100,  5, 0,  0 << 6,  0 << 6, 0xFF, 0x21, 0, 0xff },
-  { 208,  128,  5, 0,  0 << 6, 32 << 6, 0xFF, 0x21, 0, 0xff },
-  { 100,  128,  5, 0, 32 << 6, 32 << 6, 0xFF, 0x21, 0x04, 0xff },
+  { 100,  200,  5, 0, 32 << 6,  0 << 6, 0xFF, 0x21, 0x04, 0xff },
+  { 208,  200,  5, 0,  0 << 6,  0 << 6, 0xFF, 0x21, 0x00, 0xff },
+  { 208,  228,  5, 0,  0 << 6, 32 << 6, 0xFF, 0x21, 0x00, 0xff },
+  { 100,  228,  5, 0, 32 << 6, 32 << 6, 0xFF, 0x21, 0x04, 0xff },
 };
 
 static Gfx test_cmd[] = {
@@ -23,8 +25,28 @@ static Gfx test_cmd[] = {
   gsSPEndDisplayList()
 };
 
+DialogueLine d2 = { "and, finally...\nthe third!\n...whew", NULL };
+DialogueLine d1 = { "okay, now let's do the\nsecond one.", &d2 };
+DialogueLine d0 = { "here's the first line", &d1 };
+
+
+static OSTime time = 0;
+static OSTime delta = 0;
+
+static int letterIndex = 0;
+static DialogueLine* currentLine = NULL;
+static int tickingText = 0;
+static float textTime;
+
 void initDialogue(void) {
-	//
+	// TODO: add a fadein
+	letterIndex = 0;
+	currentLine = &d0;
+	tickingText = 1;
+	textTime = 0.f;
+
+    time = OS_CYCLES_TO_USEC(osGetTime());
+	delta = 0;
 }
 
 void getCharST(const char* character, int* s, int* t) {
@@ -140,7 +162,11 @@ void makeDLDialogue(void) {
 	gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
 
-    drawString(72, 128, "Welcome to the\ndialogue screen test!\nHow does it look?\nI hope it's okay.", -1);
+    drawString(72, 128, currentLine->data, letterIndex);
+
+    if ((!tickingText) && (currentLine->data[letterIndex] == '\0')) {
+    	drawString(256, 200, "(A)", -1);
+	}
 
     gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_OFF);
 
@@ -155,9 +181,41 @@ void makeDLDialogue(void) {
 }
 
 void updateDialogue(void) {
+	OSTime newTime = OS_CYCLES_TO_USEC(osGetTime());
+	float deltaSeconds = 0.f;
+
+	delta = newTime - time;
+	time = newTime;
+	deltaSeconds = delta * 0.000001f;
+
+	if (tickingText) {
+		textTime += deltaSeconds;
+		if (textTime > TIME_PER_LETTER) {
+			textTime = 0;
+			letterIndex++;
+
+			if (currentLine->data[letterIndex] == '\0') {
+				tickingText = 0;
+			}
+		}
+	}
+
+	if ((!tickingText) && (currentLine->data[letterIndex] == '\0') && (contdata->trigger & A_BUTTON)) {
+		if (currentLine->next) {
+			currentLine = currentLine->next;
+			letterIndex = 0;
+			textTime = 0;
+			tickingText = 1;
+		} else {
+			// TODO: add a fadeout
+			changeScreensFlag = 1;
+			screenType = StageScreen;
+		}
+	}
+
 	nuContDataGetEx(contdata,0);
 
-	if (contdata->trigger & A_BUTTON) {
+	if (contdata->trigger & START_BUTTON) {
 		changeScreensFlag = 1;
 		screenType = StageScreen;
 		return;
