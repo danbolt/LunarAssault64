@@ -22,9 +22,10 @@
 #define BOSS_PORTRAIT_WIDTH 132
 #define BOSS_PORTRAIT_HEIGHT 206
 
-DialogueLine d2 = { "and, finally...\nthe third!\n...whew", NULL, 0 };
-DialogueLine d1 = { "okay, now let's do the\nsecond one.", &d2, 1 };
-DialogueLine d0 = { "here's the first line", &d1, 0 };
+DialogueLine d2 = { "and, finally...\nthe third!\n...whew", NULL, BOSS_SPEAKING };
+DialogueLine d1 = { "okay, now let's do the\nsecond one.", &d2, PROTAG_SPEAKING };
+DialogueLine d0 = { "here's the first line", &d1, BOSS_SPEAKING };
+DialogueLine dIntro = { "Lunar Fufillment Centre\n13:53 Earth Time, CST", &d0, NOBODY_THERE };
 
 static OSTime time = 0;
 static OSTime delta = 0;
@@ -37,19 +38,18 @@ static float textTime;
 vec2 portratPositions[2];
 vec2 portratTargetSpots[2];
 
-
 void refreshTargetSpots(int speakerIndex) {
-	if (speakerIndex == -1) {
-		portratPositions[0].x = -BOSS_PORTRAIT_WIDTH;
-		portratPositions[0].y = 240;
-		portratPositions[1].x = 320;
-		portratPositions[1].y = 240;
-	} else if (speakerIndex == 0) {
+	if (speakerIndex == NOBODY_THERE) {
+		portratTargetSpots[0].x = -BOSS_PORTRAIT_WIDTH;
+		portratTargetSpots[0].y = 240;
+		portratTargetSpots[1].x = 320;
+		portratTargetSpots[1].y = 240;
+	} else if (speakerIndex == BOSS_SPEAKING) {
 		portratTargetSpots[0].x = 0;
 		portratTargetSpots[0].y = (240 - (BOSS_PORTRAIT_HEIGHT - 32));
 		portratTargetSpots[1].x = (320 - (PROTAG_PORTRAIT_WIDTH - 32));
 		portratTargetSpots[1].y = (240 - (PROTAG_PORTRAIT_HEIGHT - 64));
-	} else if (speakerIndex == 1) {
+	} else if (speakerIndex == PROTAG_SPEAKING) {
 		portratTargetSpots[0].x = -32;
 		portratTargetSpots[0].y = (240 - (BOSS_PORTRAIT_HEIGHT - 64));
 		portratTargetSpots[1].x = (320 - (PROTAG_PORTRAIT_WIDTH - 0));
@@ -60,10 +60,9 @@ void refreshTargetSpots(int speakerIndex) {
 void initDialogue(void) {
 	// TODO: add a fadein
 	letterIndex = 0;
-	currentLine = &d0;
+	currentLine = &dIntro;
 	tickingText = 1;
 	textTime = 0.f;
-	refreshTargetSpots(currentLine->speakerIndex);
 
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;
@@ -72,6 +71,7 @@ void initDialogue(void) {
 	portratPositions[0].y = 240;
 	portratPositions[1].x = 320;
 	portratPositions[1].y = 240;
+	refreshTargetSpots(currentLine->speakerIndex);
 }
 
 void getCharST(const char* character, int* s, int* t) {
