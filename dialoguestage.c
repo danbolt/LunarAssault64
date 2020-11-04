@@ -197,7 +197,7 @@ void makeDLDialogue(void) {
 
 	gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_ON);
 	gDPPipeSync(glistp++);
-	gDPSetTextureFilter(glistp++, G_TF_AVERAGE);
+	gDPSetTextureFilter(glistp++, G_TF_BILERP);
 	gDPSetRenderMode(glistp++, G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE);
 	gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
@@ -220,14 +220,7 @@ void makeDLDialogue(void) {
 	gfx_gtask_no = (gfx_gtask_no + 1) % 3;
 }
 
-void updateDialogue(void) {
-	OSTime newTime = OS_CYCLES_TO_USEC(osGetTime());
-	float deltaSeconds = 0.f;
-
-	delta = newTime - time;
-	time = newTime;
-	deltaSeconds = delta * 0.000001f;
-
+void updateText(float deltaSeconds) {
 	if (tickingText) {
 		textTime += deltaSeconds;
 		if (textTime > TIME_PER_LETTER) {
@@ -238,6 +231,16 @@ void updateDialogue(void) {
 				tickingText = 0;
 			}
 		}
+	}
+
+	if (tickingText && (currentLine->data[letterIndex] != '\0') && (contdata->trigger & A_BUTTON)) {
+		while ((currentLine->data[letterIndex] != '\0')) {
+			letterIndex++;
+		}
+		tickingText = 0;
+		textTime = 0;
+
+		return;
 	}
 
 	if ((!tickingText) && (currentLine->data[letterIndex] == '\0') && (contdata->trigger & A_BUTTON)) {
@@ -253,8 +256,20 @@ void updateDialogue(void) {
 			screenType = StageScreen;
 		}
 	}
+}
+
+void updateDialogue(void) {
+	OSTime newTime = OS_CYCLES_TO_USEC(osGetTime());
+	float deltaSeconds = 0.f;
 
 	nuContDataGetEx(contdata,0);
+
+	delta = newTime - time;
+	time = newTime;
+	deltaSeconds = delta * 0.000001f;
+
+	updateText(deltaSeconds);
+
 
 	portratPositions[0].x = lerp(portratPositions[0].x, portratTargetSpots[0].x, 0.17f);
 	portratPositions[0].y = lerp(portratPositions[0].y, portratTargetSpots[0].y, 0.17f);
