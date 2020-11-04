@@ -22,10 +22,9 @@
 #define BOSS_PORTRAIT_WIDTH 132
 #define BOSS_PORTRAIT_HEIGHT 206
 
-DialogueLine d2 = { "and, finally...\nthe third!\n...whew", NULL };
-DialogueLine d1 = { "okay, now let's do the\nsecond one.", &d2 };
-DialogueLine d0 = { "here's the first line", &d1 };
-
+DialogueLine d2 = { "and, finally...\nthe third!\n...whew", NULL, 0 };
+DialogueLine d1 = { "okay, now let's do the\nsecond one.", &d2, 1 };
+DialogueLine d0 = { "here's the first line", &d1, 0 };
 
 static OSTime time = 0;
 static OSTime delta = 0;
@@ -35,6 +34,28 @@ static DialogueLine* currentLine = NULL;
 static int tickingText = 0;
 static float textTime;
 
+vec2 portratPositions[2];
+vec2 portratTargetSpots[2];
+
+
+void refreshTargetSpots(int speakerIndex) {
+	if (speakerIndex == -1) {
+		portratPositions[0].x = -BOSS_PORTRAIT_WIDTH;
+		portratPositions[0].y = 240;
+		portratPositions[1].x = 320;
+		portratPositions[1].y = 240;
+	} else if (speakerIndex == 0) {
+		portratTargetSpots[0].x = 0;
+		portratTargetSpots[0].y = (240 - (BOSS_PORTRAIT_HEIGHT - 32));
+		portratTargetSpots[1].x = (320 - (PROTAG_PORTRAIT_WIDTH - 32));
+		portratTargetSpots[1].y = (240 - (PROTAG_PORTRAIT_HEIGHT - 64));
+	} else if (speakerIndex == 1) {
+		portratTargetSpots[0].x = -32;
+		portratTargetSpots[0].y = (240 - (BOSS_PORTRAIT_HEIGHT - 64));
+		portratTargetSpots[1].x = (320 - (PROTAG_PORTRAIT_WIDTH - 0));
+		portratTargetSpots[1].y = (240 - (PROTAG_PORTRAIT_HEIGHT - 32));
+	}
+}
 
 void initDialogue(void) {
 	// TODO: add a fadein
@@ -42,9 +63,15 @@ void initDialogue(void) {
 	currentLine = &d0;
 	tickingText = 1;
 	textTime = 0.f;
+	refreshTargetSpots(currentLine->speakerIndex);
 
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;
+
+	portratPositions[0].x = -BOSS_PORTRAIT_WIDTH;
+	portratPositions[0].y = 240;
+	portratPositions[1].x = 320;
+	portratPositions[1].y = 240;
 }
 
 void getCharST(const char* character, int* s, int* t) {
@@ -175,8 +202,8 @@ void makeDLDialogue(void) {
 	gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
 
-	drawProtagonist(320 - (PROTAG_PORTRAIT_WIDTH - 16), (240 - (PROTAG_PORTRAIT_HEIGHT - 32)));
-	drawBosss(-16, (240 - (PROTAG_PORTRAIT_HEIGHT - 32)));
+	drawBosss(portratPositions[0].x, portratPositions[0].y);
+	drawProtagonist(portratPositions[1].x, portratPositions[1].y);
 
     drawString(72, 128, currentLine->data, letterIndex);
     if ((!tickingText) && (currentLine->data[letterIndex] == '\0')) {
@@ -216,6 +243,7 @@ void updateDialogue(void) {
 	if ((!tickingText) && (currentLine->data[letterIndex] == '\0') && (contdata->trigger & A_BUTTON)) {
 		if (currentLine->next) {
 			currentLine = currentLine->next;
+			refreshTargetSpots(currentLine->speakerIndex);
 			letterIndex = 0;
 			textTime = 0;
 			tickingText = 1;
@@ -227,6 +255,11 @@ void updateDialogue(void) {
 	}
 
 	nuContDataGetEx(contdata,0);
+
+	portratPositions[0].x = lerp(portratPositions[0].x, portratTargetSpots[0].x, 0.17f);
+	portratPositions[0].y = lerp(portratPositions[0].y, portratTargetSpots[0].y, 0.17f);
+	portratPositions[1].x = lerp(portratPositions[1].x, portratTargetSpots[1].x, 0.17f);
+	portratPositions[1].y = lerp(portratPositions[1].y, portratTargetSpots[1].y, 0.17f);
 
 	if (contdata->trigger & START_BUTTON) {
 		changeScreensFlag = 1;

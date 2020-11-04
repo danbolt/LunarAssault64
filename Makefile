@@ -25,7 +25,7 @@ TARGETS =	jam.n64
 
 HFILES =	main.h font.h stage00.h graphic.h gamemath.h segmentinfo.h terraintex.h map.h hitboxes.h portraittex.h protaggeo.h kaiju1.h dialoguestage.h
 
-CODEFILES   = 	main.c graphic.c gfxinit.c kaiju1.c
+CODEFILES   = 	main.c graphic.c gfxinit.c kaiju1.c gamemath.c
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
 
@@ -35,7 +35,7 @@ DATAOBJECTS =	$(DATAFILES:.c=.o)
 
 CODESEGMENT =	codesegment.o
 
-STAGEFILES  =	stage00.c gamemath.c map.c hitboxes.c portraittex.c protaggeo.c 
+STAGEFILES  =	stage00.c  map.c hitboxes.c portraittex.c protaggeo.c 
 
 DIALFILES   =	dialoguestage.c
 
@@ -72,6 +72,22 @@ FORCELINK =	-u guOrtho \
 			-u nuDebConCPuts \
 			-u nuDebTaskPerfBar1EX2 \
 			-u nuDebConDispEX2 \
+			-u lerp \
+			-u atan2bodyf \
+			-u nu_atan2 \
+			-u mat4x4_invert \
+			-u fabs_d \
+			-u cubic \
+			-u catmullRom \
+			-u bilinear \
+			-u clamp \
+			-u distanceSq \
+			-u length \
+			-u Q_rsqrt \
+			-u dotProduct \
+			-u sdSphere \
+			-u sdOctahedron \
+			-u sdBox \
 
 default:        $(TARGETS)
 

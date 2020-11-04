@@ -33,7 +33,6 @@ beginseg
 	after "code"
 	align 32
 	include "stage00.o"
-	include "gamemath.o"
 	include "hitboxes.o"
 	include "map.o"
 	include "portraittex.o"

@@ -4,6 +4,7 @@
 typedef struct DialogueLine {
 	const char* data;
 	struct DialogueLine* next;
+	int speakerIndex;
 } DialogueLine;
 
 void initDialogue(void);
