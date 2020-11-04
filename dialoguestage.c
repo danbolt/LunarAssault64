@@ -3,6 +3,10 @@
 #include "main.h"
 #include "font.h"
 #include "graphic.h"
+#include "segmentinfo.h"
+
+#include "doc/protag_portrait.h"
+#include "doc/boss_portrait.h"
 
 #define FONT_WIDTH 8
 #define FONT_HALF_HEIGHT 8
@@ -12,18 +16,11 @@
 
 #define TIME_PER_LETTER 0.055f
 
-static Vtx test_geo[] = {
-  { 100,  200,  5, 0, 32 << 6,  0 << 6, 0xFF, 0x21, 0x04, 0xff },
-  { 208,  200,  5, 0,  0 << 6,  0 << 6, 0xFF, 0x21, 0x00, 0xff },
-  { 208,  228,  5, 0,  0 << 6, 32 << 6, 0xFF, 0x21, 0x00, 0xff },
-  { 100,  228,  5, 0, 32 << 6, 32 << 6, 0xFF, 0x21, 0x04, 0xff },
-};
+#define PROTAG_PORTRAIT_WIDTH 98
+#define PROTAG_PORTRAIT_HEIGHT 211
 
-static Gfx test_cmd[] = {
-  gsSPVertex(&test_geo, 4, 0),
-  gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
-  gsSPEndDisplayList()
-};
+#define BOSS_PORTRAIT_WIDTH 132
+#define BOSS_PORTRAIT_HEIGHT 206
 
 DialogueLine d2 = { "and, finally...\nthe third!\n...whew", NULL };
 DialogueLine d1 = { "okay, now let's do the\nsecond one.", &d2 };
@@ -37,6 +34,7 @@ static int letterIndex = 0;
 static DialogueLine* currentLine = NULL;
 static int tickingText = 0;
 static float textTime;
+
 
 void initDialogue(void) {
 	// TODO: add a fadein
@@ -130,6 +128,24 @@ void drawString(int x, int y, const char* str, int cutoff) {
 	drawString_impl(x, y, str, cutoff);
 }
 
+void drawProtagonist(int x, int y) {
+	int i;
+
+	for (i = 0; i < (PROTAG_PORTRAIT_HEIGHT / 10); i++) {
+		gDPLoadTextureTile(glistp++, doc_protag_portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, PROTAG_PORTRAIT_WIDTH, PROTAG_PORTRAIT_HEIGHT, 0, (i * 10), PROTAG_PORTRAIT_WIDTH - 1, ((i + 1) * 10) - 1, 0, G_TX_WRAP, G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD );
+		gSPScisTextureRectangle(glistp++, x << 2, (y + (i * 10)) << 2, (x + PROTAG_PORTRAIT_WIDTH) << 2, (y + ((i + 1) * 10)) << 2, 0, 0 << 5, (i * 10) << 5, 1 << 10, 1 << 10);
+	}
+}
+
+void drawBosss(int x, int y) {
+	int i;
+
+	for (i = 0; i < (BOSS_PORTRAIT_HEIGHT / 15); i++) {
+		gDPLoadTextureTile(glistp++, doc_boss_portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, BOSS_PORTRAIT_WIDTH, BOSS_PORTRAIT_HEIGHT, 0, (i * 15), BOSS_PORTRAIT_WIDTH - 1, ((i + 1) * 15) - 1, 0, G_TX_WRAP, G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD );
+		gSPScisTextureRectangle(glistp++, x << 2, (y + (i * 15)) << 2, (x + BOSS_PORTRAIT_WIDTH) << 2, (y + ((i + 1) * 15)) << 2, 0, 0 << 5, (i * 15) << 5, 1 << 10, 1 << 10);
+	}
+}
+
 void makeDLDialogue(void) {
 	DisplayData* dynamicp;
 
@@ -152,23 +168,20 @@ void makeDLDialogue(void) {
     guMtxIdent(&(dynamicp->orthoHudModelling));
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudModelling)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
 
-
-    gSPDisplayList(glistp++, test_cmd);
-
 	gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_ON);
 	gDPPipeSync(glistp++);
 	gDPSetTextureFilter(glistp++, G_TF_AVERAGE);
-	gDPSetRenderMode(glistp++, G_RM_TEX_EDGE, G_RM_TEX_EDGE);
+	gDPSetRenderMode(glistp++, G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE);
 	gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
 
-    drawString(72, 128, currentLine->data, letterIndex);
+	drawProtagonist(320 - (PROTAG_PORTRAIT_WIDTH - 16), (240 - (PROTAG_PORTRAIT_HEIGHT - 32)));
+	drawBosss(-16, (240 - (PROTAG_PORTRAIT_HEIGHT - 32)));
 
+    drawString(72, 128, currentLine->data, letterIndex);
     if ((!tickingText) && (currentLine->data[letterIndex] == '\0')) {
     	drawString(256, 200, "(A)", -1);
 	}
-
-    gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_OFF);
 
 	gDPFullSync(glistp++);
 	gSPEndDisplayList(glistp++);
