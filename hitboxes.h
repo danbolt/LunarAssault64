@@ -4,8 +4,8 @@
 #include <nusys.h>
 
 #include "gamemath.h"
+#include "graphic.h"
 
-#define NUMBER_OF_KAIJU_HITBOXES 16
 #define MAX_CHILDREN_PER_HITBOX 8
 
 typedef float (*SDFCallback)(const vec3*);
@@ -30,6 +30,8 @@ typedef struct KaijuHitbox {
 	struct KaijuHitbox* parent;
 } KaijuHitbox;
 void parentHitboxes(KaijuHitbox* child, KaijuHitbox* newParent);
+
+void appendHitboxDL(KaijuHitbox* hitbox, DisplayData* dynamicp);
 
 
 extern KaijuHitbox hitboxes[NUMBER_OF_KAIJU_HITBOXES];

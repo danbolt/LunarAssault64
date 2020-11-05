@@ -3,6 +3,7 @@
 #include "main.h"
 #include "font.h"
 #include "graphic.h"
+#include "gamemath.h"
 #include "segmentinfo.h"
 
 #include "doc/protag_portrait.h"

@@ -13,6 +13,18 @@ extern u8 _kaiju1SegmentDataEnd[];
 extern u8 _kaiju1SegmentBssStart[];
 extern u8 _kaiju1SegmentBssEnd[];
 
+// Second kaiju
+extern u8 _kaiju2SegmentStart[];
+extern u8 _kaiju2SegmentEnd[];
+extern u8 _kaiju2SegmentRomStart[];
+extern u8 _kaiju2SegmentRomEnd[];
+extern u8 _kaiju2SegmentTextStart[];
+extern u8 _kaiju2SegmentTextEnd[];
+extern u8 _kaiju2SegmentDataStart[];
+extern u8 _kaiju2SegmentDataEnd[];
+extern u8 _kaiju2SegmentBssStart[];
+extern u8 _kaiju2SegmentBssEnd[];
+
 // First stage data
 extern u8 _moon_geoSegmentRomStart[];
 extern u8 _level1_terrainSegmentRomStart[];

@@ -1,7 +1,7 @@
 #ifndef _GRAPHIC_H_
 #define _GRAPHIC_H_
 
-#include "hitboxes.h"
+#include <nusys.h>
 
 /* The screen size  */
 #define SCREEN_HT        240
@@ -10,6 +10,7 @@
 /* The maximum length of the display list of one task  */
 #define GFX_GLIST_LEN     1024
 
+#define NUMBER_OF_KAIJU_HITBOXES 16
 
 typedef struct {
   Mtx     camera;

@@ -1,5 +1,5 @@
 
-#include "kaiju1.h"
+#include "kaiju2.h"
 
 #include "hitboxes.h"
 #include "gamemath.h"
@@ -67,17 +67,17 @@ float kaijuTime;
 int pointIndex;
 float timeBetweenPoints;
 
-vec2 walkPoints[] = {
+vec2 walkPoints2[] = {
   { 48.f, 2.f },
   { 48.f, 100.f },
   { 100.f, 48.f },
   { 100.f, 100.f },
   { 48.f, 100.f },
 };
-#define NUMBER_OF_WALK_POINTS (sizeof(walkPoints)/sizeof(walkPoints[0]))
+#define NUMBER_OF_WALK_POINTS (sizeof(walkPoints2)/sizeof(walkPoints2[0]))
 #define LOOPED_WALK_POINT(index) ((index + NUMBER_OF_WALK_POINTS) % NUMBER_OF_WALK_POINTS)
 
-void initKaiju1() {
+void initKaiju2() {
   int i;
 
   kaijuTime = 0.f;
@@ -104,54 +104,6 @@ void initKaiju1() {
   }
   hitboxes[0].parent = NULL;
 
-  hitboxes[4].alive = 1;
-  hitboxes[4].destroyable = 0;
-  hitboxes[4].isTransformDirty = 1;
-  hitboxes[4].position = (vec3){ 0.f, 0.f, 1.f };
-  hitboxes[4].rotation = (vec3){ 10.f, 0.f, 0.f };
-  hitboxes[4].scale = (vec3){ 0.9f, 0.9f, 0.9f };
-  guMtxIdentF(hitboxes[4].computedTransform.data);
-  hitboxes[4].displayCommands = blue_cube_commands;
-  hitboxes[4].check = sdBox;
-  hitboxes[4].numberOfChildren = 0;
-  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
-    hitboxes[4].children[i] = NULL;
-  }
-  hitboxes[4].parent = NULL;
-  parentHitboxes(&(hitboxes[4]), &(hitboxes[0]));
-
-  hitboxes[2].alive = 1;
-  hitboxes[2].destroyable = 0;
-  hitboxes[2].isTransformDirty = 1;
-  hitboxes[2].position = (vec3){ 0.75f, 0.0f, -1.7f };
-  hitboxes[2].rotation = (vec3){ 7.f, 0.f, 0.f };
-  hitboxes[2].scale = (vec3){ 0.25f, 0.20f, 3.f };
-  guMtxIdentF(hitboxes[2].computedTransform.data);
-  hitboxes[2].displayCommands = blue_octahedron_commands;
-  hitboxes[2].check = sdOctahedron;
-  hitboxes[2].numberOfChildren = 0;
-  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
-    hitboxes[2].children[i] = NULL;
-  }
-  hitboxes[2].parent = NULL;
-  parentHitboxes(&(hitboxes[2]), &(hitboxes[0]));
-
-  hitboxes[3].alive = 1;
-  hitboxes[3].destroyable = 0;
-  hitboxes[3].isTransformDirty = 1;
-  hitboxes[3].position = (vec3){ -0.75f, 0.0f, -1.7f };
-  hitboxes[3].rotation = (vec3){ 7.f, 0.f, 0.f };
-  hitboxes[3].scale = (vec3){ 0.25f, 0.20f, 3.f };
-  guMtxIdentF(hitboxes[3].computedTransform.data);
-  hitboxes[3].displayCommands = blue_octahedron_commands;
-  hitboxes[3].check = sdOctahedron;
-  hitboxes[3].numberOfChildren = 0;
-  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
-    hitboxes[3].children[i] = NULL;
-  }
-  hitboxes[3].parent = NULL;
-  parentHitboxes(&(hitboxes[3]), &(hitboxes[0]));
-
   // Create an appendage that's a hitbox
   hitboxes[1].alive = 1;
   hitboxes[1].destroyable = 1;
@@ -169,24 +121,24 @@ void initKaiju1() {
   hitboxes[1].parent = NULL;
   parentHitboxes(&(hitboxes[1]), &(hitboxes[0]));
 
-  hitboxes[5].alive = 1;
-  hitboxes[5].destroyable = 1;
-  hitboxes[5].isTransformDirty = 1;
-  hitboxes[5].position = (vec3){ -1.f, 1.7f, -0.2f };
-  hitboxes[5].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[5].scale = (vec3){ 1.f / hitboxes[0].scale.x, 1.f / hitboxes[0].scale.y, 1.f / hitboxes[0].scale.z };
-  guMtxIdentF(hitboxes[5].computedTransform.data);
-  hitboxes[5].displayCommands = red_octahedron_commands;
-  hitboxes[5].check = sdOctahedron;
-  hitboxes[5].numberOfChildren = 0;
+  hitboxes[2].alive = 1;
+  hitboxes[2].destroyable = 1;
+  hitboxes[2].isTransformDirty = 1;
+  hitboxes[2].position = (vec3){ -1.f, 1.7f, -0.2f };
+  hitboxes[2].rotation = (vec3){ 0.f, 0.f, 0.f };
+  hitboxes[2].scale = (vec3){ 1.f / hitboxes[0].scale.x, 1.f / hitboxes[0].scale.y, 1.f / hitboxes[0].scale.z };
+  guMtxIdentF(hitboxes[2].computedTransform.data);
+  hitboxes[2].displayCommands = red_octahedron_commands;
+  hitboxes[2].check = sdOctahedron;
+  hitboxes[2].numberOfChildren = 0;
   for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
-    hitboxes[5].children[i] = NULL;
+    hitboxes[2].children[i] = NULL;
   }
-  hitboxes[5].parent = NULL;
-  parentHitboxes(&(hitboxes[5]), &(hitboxes[0]));
+  hitboxes[2].parent = NULL;
+  parentHitboxes(&(hitboxes[2]), &(hitboxes[0]));
 }
 
-void updateKaiju1(float deltaSeconds) {
+void updateKaiju2(float deltaSeconds) {
   float tVal = 0.f;
   kaijuTime += deltaSeconds;
   if (kaijuTime > timeBetweenPoints) {
@@ -196,13 +148,13 @@ void updateKaiju1(float deltaSeconds) {
 
   tVal = kaijuTime / timeBetweenPoints;
 
-	hitboxes[0].position.x = catmullRom(tVal, walkPoints[LOOPED_WALK_POINT(pointIndex - 1)].x, walkPoints[LOOPED_WALK_POINT(pointIndex)].x, walkPoints[LOOPED_WALK_POINT(pointIndex + 1)].x, walkPoints[LOOPED_WALK_POINT(pointIndex + 2)].x);
-  hitboxes[0].position.y = catmullRom(tVal, walkPoints[LOOPED_WALK_POINT(pointIndex - 1)].y, walkPoints[LOOPED_WALK_POINT(pointIndex)].y, walkPoints[LOOPED_WALK_POINT(pointIndex + 1)].y, walkPoints[LOOPED_WALK_POINT(pointIndex + 2)].y);
+	hitboxes[0].position.x = catmullRom(tVal, walkPoints2[LOOPED_WALK_POINT(pointIndex - 1)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex + 1)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex + 2)].x);
+  hitboxes[0].position.y = catmullRom(tVal, walkPoints2[LOOPED_WALK_POINT(pointIndex - 1)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex + 1)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex + 2)].y);
   hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 25.f;
   hitboxes[0].isTransformDirty = 1;
 }
 
-void renderKaiju1(DisplayData* dynamicp) {
+void renderKaiju2(DisplayData* dynamicp) {
   gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_OFF);
   gDPPipeSync(glistp++);
   gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);

@@ -6,6 +6,7 @@
 #include "dialoguestage.h"
 
 #include "kaiju1.h"
+#include "kaiju2.h"
 
 void stage00(int);
 void dialogue(int);
@@ -46,21 +47,39 @@ void loadInStageState(int levelNumber) {
 void loadInKaiju(int levelNumber) {
   NUPiOverlaySegment segment;
 
-  segment.romStart  = _kaiju1SegmentRomStart;
-  segment.romEnd    = _kaiju1SegmentRomEnd;
-  segment.ramStart  = _kaiju1SegmentStart;
-  segment.textStart = _kaiju1SegmentTextStart;
-  segment.textEnd   = _kaiju1SegmentTextEnd;
-  segment.dataStart = _kaiju1SegmentDataStart;
-  segment.dataEnd   = _kaiju1SegmentDataEnd;
-  segment.bssStart  = _kaiju1SegmentBssStart;
-  segment.bssEnd    = _kaiju1SegmentBssEnd;
+  if (levelNumber == 1) {
+    segment.romStart  = _kaiju1SegmentRomStart;
+    segment.romEnd    = _kaiju1SegmentRomEnd;
+    segment.ramStart  = _kaiju1SegmentStart;
+    segment.textStart = _kaiju1SegmentTextStart;
+    segment.textEnd   = _kaiju1SegmentTextEnd;
+    segment.dataStart = _kaiju1SegmentDataStart;
+    segment.dataEnd   = _kaiju1SegmentDataEnd;
+    segment.bssStart  = _kaiju1SegmentBssStart;
+    segment.bssEnd    = _kaiju1SegmentBssEnd;
+  } else if (levelNumber == 2) {
+    segment.romStart  = _kaiju2SegmentRomStart;
+    segment.romEnd    = _kaiju2SegmentRomEnd;
+    segment.ramStart  = _kaiju2SegmentStart;
+    segment.textStart = _kaiju2SegmentTextStart;
+    segment.textEnd   = _kaiju2SegmentTextEnd;
+    segment.dataStart = _kaiju2SegmentDataStart;
+    segment.dataEnd   = _kaiju2SegmentDataEnd;
+    segment.bssStart  = _kaiju2SegmentBssStart;
+    segment.bssEnd    = _kaiju2SegmentBssEnd;
+  }
 
   nuPiReadRomOverlay(&segment);
 
-  initKaijuCallback = &initKaiju1;
-  updateKaijuCallback = &updateKaiju1;
-  renderKaijuCallback = &renderKaiju1;
+  if (levelNumber == 1) {
+    initKaijuCallback = &initKaiju1;
+    updateKaijuCallback = &updateKaiju1;
+    renderKaijuCallback = &renderKaiju1;
+  } else if (levelNumber == 2) {
+    initKaijuCallback = &initKaiju2;
+    updateKaijuCallback = &updateKaiju2;
+    renderKaijuCallback = &renderKaiju2;
+  }
 
 }
 
@@ -97,7 +116,7 @@ void mainproc(void)
   while (1) {
     if (screenType == StageScreen) {
       loadInStageState(1);
-      loadInKaiju(1);
+      loadInKaiju(2);
       initStage00();
       nuGfxFuncSet((NUGfxFunc)stage00);
     } else if (screenType == DialogueScreen) {
