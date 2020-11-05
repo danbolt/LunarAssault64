@@ -27,13 +27,17 @@ void makeDLTitleScreen(void) {
 	if(contPattern & 0x1)
     {
 		nuDebConTextPos(0,4,4);
-		sprintf(conbuf, "TITLE SCREEN");
+		sprintf(conbuf, "LASERSCOPE MOON SPOTTER");
+		nuDebConCPuts(0, conbuf);
+
+		nuDebConTextPos(0,4,5);
+		sprintf(conbuf, "press start");
 		nuDebConCPuts(0, conbuf);
 	}
 	else
 	{
-	nuDebConTextPos(0,4,4);
-	nuDebConCPuts(0, "Connect controller #1, kid!");
+		nuDebConTextPos(0,4,4);
+		nuDebConCPuts(0, "Connect controller #1, kid!");
 	}
 
 	nuDebConDisp(NU_SC_SWAPBUFFER);
@@ -43,7 +47,7 @@ void makeDLTitleScreen(void) {
 
 void updateTitleScreen(void) {
 	nuContDataGetEx(contdata,0);
-	
+
 	if (contdata->trigger & START_BUTTON) {
 		changeScreensFlag = 1;
 		screenType = DialogueScreen;
