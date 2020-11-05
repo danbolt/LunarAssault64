@@ -1,6 +1,18 @@
 #ifndef _SEGMENT_INFO_H_
 #define _SEGMENT_INFO_H_
 
+// First kaiju
+extern u8 _kaiju1SegmentStart[];
+extern u8 _kaiju1SegmentEnd[];
+extern u8 _kaiju1SegmentRomStart[];
+extern u8 _kaiju1SegmentRomEnd[];
+extern u8 _kaiju1SegmentTextStart[];
+extern u8 _kaiju1SegmentTextEnd[];
+extern u8 _kaiju1SegmentDataStart[];
+extern u8 _kaiju1SegmentDataEnd[];
+extern u8 _kaiju1SegmentBssStart[];
+extern u8 _kaiju1SegmentBssEnd[];
+
 // The gameplay stage
 extern u8 _stageSegmentStart[];
 extern u8 _stageSegmentEnd[];

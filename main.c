@@ -28,7 +28,7 @@ void (*initKaijuCallback)();
 void (*updateKaijuCallback)(float);
 void (*renderKaijuCallback)(DisplayData*);
 
-void loadInStageState() {
+void loadInStageState(int levelNumber) {
   NUPiOverlaySegment segment;
 
   segment.romStart  = _stageSegmentRomStart;
@@ -41,15 +41,31 @@ void loadInStageState() {
   segment.bssStart  = _stageSegmentBssStart;
   segment.bssEnd    = _stageSegmentBssEnd;
 
-
   groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
   terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
   topographyROMAddress = (u32)_level1_topographySegmentRomStart;
+  nuPiReadRomOverlay(&segment);
+}
+
+void loadInKaiju(int levelNumber) {
+  NUPiOverlaySegment segment;
+
+  segment.romStart  = _kaiju1SegmentRomStart;
+  segment.romEnd    = _kaiju1SegmentRomEnd;
+  segment.ramStart  = _kaiju1SegmentStart;
+  segment.textStart = _kaiju1SegmentTextStart;
+  segment.textEnd   = _kaiju1SegmentTextEnd;
+  segment.dataStart = _kaiju1SegmentDataStart;
+  segment.dataEnd   = _kaiju1SegmentDataEnd;
+  segment.bssStart  = _kaiju1SegmentBssStart;
+  segment.bssEnd    = _kaiju1SegmentBssEnd;
+
+  nuPiReadRomOverlay(&segment);
+
   initKaijuCallback = &initKaiju1;
   updateKaijuCallback = &updateKaiju1;
   renderKaijuCallback = &renderKaiju1;
 
-  nuPiReadRomOverlay(&segment);
 }
 
 void loadInDialogueState() {
@@ -84,7 +100,8 @@ void mainproc(void)
 
   while (1) {
     if (screenType == StageScreen) {
-      loadInStageState();
+      loadInStageState(1);
+      loadInKaiju(1);
       initStage00();
       nuGfxFuncSet((NUGfxFunc)stage00);
     } else if (screenType == DialogueScreen) {

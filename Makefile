@@ -25,17 +25,17 @@ TARGETS =	jam.n64
 
 HFILES =	main.h font.h stage00.h graphic.h gamemath.h segmentinfo.h terraintex.h map.h hitboxes.h portraittex.h protaggeo.h kaiju1.h dialoguestage.h
 
-CODEFILES   = 	main.c graphic.c gfxinit.c kaiju1.c gamemath.c
+CODEFILES   = 	main.c graphic.c gfxinit.c gamemath.c
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
 
-DATAFILES   =	stage00.c
+DATAFILES   =	kaiju1.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
 CODESEGMENT =	codesegment.o
 
-STAGEFILES  =	stage00.c  map.c hitboxes.c portraittex.c protaggeo.c 
+STAGEFILES  =	stage00.c map.c hitboxes.c portraittex.c protaggeo.c 
 
 DIALFILES   =	dialoguestage.c
 

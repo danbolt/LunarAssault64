@@ -48,6 +48,13 @@ beginseg
 endseg
 
 beginseg
+	name "kaiju1"
+	flags OBJECT
+	after "stage"
+	include "kaiju1.o"
+endseg
+
+beginseg
 	name "moon_geo"
 	flags "RAW"
 	include "geotex/moon_geo.bin"
@@ -69,6 +76,7 @@ beginwave
 	name	"gameplay_wave"
 	include	"code"
 	include	"stage"
+	include	"kaiju1"
 	include "moon_geo"
 	include "level1_terrain"
 	include "level1_topography"
