@@ -207,11 +207,13 @@ function clamp(num, min, max) {
   return num <= min ? min : num >= max ? max : num;
 }
 
+const modes = ['paint', 'smooth', 'pull'];
+
 const threeMouseCoordsVector = new THREE.Vector2(0, 0);
 const arrayRaycastResults = [];
 EditScreen.prototype.create = function() {
 
-    this.paintMode = false;
+    this.editMode = 'pull';
     this.brushIndex = 0;
     this.brushSize = 1;
 
@@ -231,10 +233,10 @@ EditScreen.prototype.create = function() {
     const modeText = this.add.bitmapText(0, 0, 'century', 'pull mode', 32);
     const tabKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
     tabKey.on('up', () => {
-        this.paintMode = !(this.paintMode);
-        modeText.text = this.paintMode ? 'paint mode' : 'pull mode';
+        this.editMode = modes[(modes.indexOf(this.editMode) + 1) % modes.length];
+        modeText.text = this.editMode + ' mode';
 
-        if (this.paintMode) {
+        if (this.editMode !== 'pull') {
             this.isDraggingTopography = false;
         }
     })
@@ -282,7 +284,7 @@ EditScreen.prototype.create = function() {
 
     this.input.on('pointermove', (pointer) => {
         // Painting on 2D map
-        if (pointer.isDown && (this.paintMode)) {
+        if (pointer.isDown && (this.editMode == 'paint')) {
             arrayRaycastResults.length = 0;
             const mouseX = pointer.x / this.game.canvas.width;
             const mouseY = 1.0 - (pointer.y / this.game.canvas.height);
@@ -315,6 +317,55 @@ EditScreen.prototype.create = function() {
             }
         }
 
+        if (pointer.isDown && (this.editMode == 'smooth')) {
+            arrayRaycastResults.length = 0;
+            const mouseX = pointer.x / this.game.canvas.width;
+            const mouseY = 1.0 - (pointer.y / this.game.canvas.height);
+            threeMouseCoordsVector.x = (mouseX * 2.0) - 1.0;
+            threeMouseCoordsVector.y = (mouseY * 2.0) - 1.0;
+            this.three.raycaster.setFromCamera(threeMouseCoordsVector, this.three.camera);
+            this.three.raycaster.intersectObjects(this.three.scene.children, false, arrayRaycastResults);
+            if ((arrayRaycastResults.length > 0)) {
+                const intersectPoint = arrayRaycastResults[0].point;
+
+                const spotX = ~~((intersectPoint.x + 64));
+                const spotY = ~~(Math.abs(intersectPoint.y - 64));
+
+                let sum = 0;
+                for (let i = 0; i < this.brushSize; i++) {
+                    for (let j = 0; j < this.brushSize; j++) {
+                        const targetX = spotX + i - ~~(this.brushSize / 2);
+                        const targetY = spotY + j - ~~(this.brushSize / 2);
+                        if ((targetX < 0) || (targetX >= MAP_WIDTH)) {
+                            continue;
+                        }
+                        if ((targetY < 0) || (targetY >= MAP_HEIGHT)) {
+                            continue;
+                        }
+
+                        sum += this.heights[targetX][targetY];
+                    }
+                }
+                const mean = sum / (this.brushSize * this.brushSize);
+                for (let i = 0; i < this.brushSize; i++) {
+                    for (let j = 0; j < this.brushSize; j++) {
+                        const targetX = spotX + i - ~~(this.brushSize / 2);
+                        const targetY = spotY + j - ~~(this.brushSize / 2);
+                        if ((targetX < 0) || (targetX >= MAP_WIDTH)) {
+                            continue;
+                        }
+                        if ((targetY < 0) || (targetY >= MAP_HEIGHT)) {
+                            continue;
+                        }
+
+                        this.heights[targetX][targetY] = (this.heights[targetX][targetY] + mean) / 2;
+                    }
+                }
+
+                this.updateGeoFromHeights();
+            }
+        }
+
         if (this.isDraggingTopography) {
             const verticalDelta = (pointer.downY - pointer.y);
 
@@ -337,7 +388,7 @@ EditScreen.prototype.create = function() {
     });
 
     this.input.on('pointerdown', (pointer) => {
-        if (this.paintMode) {
+        if (this.editMode !== 'pull') {
             this.isDraggingTopography = false;
             return;
         }
