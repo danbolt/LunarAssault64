@@ -77,9 +77,6 @@ beginwave
 	include	"code"
 	include	"stage"
 	include	"kaiju1"
-	include "moon_geo"
-	include "level1_terrain"
-	include "level1_topography"
 endwave
 
 beginwave

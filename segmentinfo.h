@@ -13,6 +13,11 @@ extern u8 _kaiju1SegmentDataEnd[];
 extern u8 _kaiju1SegmentBssStart[];
 extern u8 _kaiju1SegmentBssEnd[];
 
+// First stage data
+extern u8 _moon_geoSegmentRomStart[];
+extern u8 _level1_terrainSegmentRomStart[];
+extern u8 _level1_topographySegmentRomStart[];
+
 // The gameplay stage
 extern u8 _stageSegmentStart[];
 extern u8 _stageSegmentEnd[];
