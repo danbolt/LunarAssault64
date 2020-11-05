@@ -243,7 +243,7 @@ EditScreen.prototype.create = function() {
     const brushSizeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKTICK);
     brushSizeKey.on('down', () => {
         this.brushSize += 2;
-        if (this.brushSize > 10) {
+        if (this.brushSize > 20) {
             this.brushSize = 1;
         }
 

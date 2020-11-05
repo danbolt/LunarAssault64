@@ -134,7 +134,7 @@ void mainproc(void)
   while (1) {
     if (screenType == StageScreen) {
       loadInStageState(1);
-      loadInKaiju(2);
+      loadInKaiju(1);
       initStage00();
       nuGfxFuncSet((NUGfxFunc)stage00);
     } else if (screenType == DialogueScreen) {

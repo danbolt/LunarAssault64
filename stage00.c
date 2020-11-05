@@ -607,6 +607,7 @@ void makeDL00(void) {
 		 (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx),
 		 NU_GFX_UCODE_F3DLP_REJ , NU_SC_NOSWAPBUFFER);
 
+  
   if(contPattern & 0x1)
     {
       nuDebConTextPos(0,4,4);
