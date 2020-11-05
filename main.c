@@ -4,12 +4,14 @@
 
 #include "stage00.h"
 #include "dialoguestage.h"
+#include "titlescreenstage.h"
 
 #include "kaiju1.h"
 #include "kaiju2.h"
 
 void stage00(int);
 void dialogue(int);
+void titlescreen(int);
 
 volatile int changeScreensFlag;
 volatile ScreenSetting screenType;
@@ -99,6 +101,22 @@ void loadInDialogueState() {
   nuPiReadRomOverlay(&segment);
 }
 
+void loadInTitleScreenState() {
+  NUPiOverlaySegment segment;
+
+  segment.romStart  = _titlescreenSegmentRomStart;
+  segment.romEnd    = _titlescreenSegmentRomEnd;
+  segment.ramStart  = _titlescreenSegmentStart;
+  segment.textStart = _titlescreenSegmentTextStart;
+  segment.textEnd   = _titlescreenSegmentTextEnd;
+  segment.dataStart = _titlescreenSegmentDataStart;
+  segment.dataEnd   = _titlescreenSegmentDataEnd;
+  segment.bssStart  = _titlescreenSegmentBssStart;
+  segment.bssEnd    = _titlescreenSegmentBssEnd;
+
+  nuPiReadRomOverlay(&segment);
+}
+
 /*------------------------
 	Main
 --------------------------*/
@@ -108,7 +126,7 @@ void mainproc(void)
   nuGfxInit();
 
   changeScreensFlag = 0;
-  screenType = DialogueScreen;
+  screenType = TitleScreen;
 
   /* The initialization of the controller manager  */
   contPattern = nuContInit();
@@ -123,6 +141,10 @@ void mainproc(void)
       loadInDialogueState();
       initDialogue();
       nuGfxFuncSet((NUGfxFunc)dialogue);
+    } else if (screenType == TitleScreen) {
+      loadInTitleScreenState();
+      initTitleScreen();
+      nuGfxFuncSet((NUGfxFunc)titlescreen);
     }
 
     nuGfxDisplayOn();
@@ -162,5 +184,18 @@ void dialogue(int pendingGfx)
   }
 
   updateDialogue(); 
+}
+
+void titlescreen(int pendingGfx)
+{
+  if (changeScreensFlag != 0) {
+    return;
+  }
+
+  if(pendingGfx < 3) {
+    makeDLTitleScreen();   
+  }
+
+  updateTitleScreen(); 
 }
 

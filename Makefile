@@ -29,7 +29,7 @@ CODEFILES   = 	main.c graphic.c gfxinit.c gamemath.c
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
 
-DATAFILES   =	kaiju1.c kaiju2.c
+DATAFILES   =	kaiju1.c kaiju2.c titlescreenstage.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 

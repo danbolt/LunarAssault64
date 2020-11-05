@@ -48,6 +48,14 @@ beginseg
 endseg
 
 beginseg
+	name "titlescreen"
+	flags OBJECT
+	after "code"
+	align 32
+	include "titlescreenstage.o"
+endseg
+
+beginseg
 	name "kaiju1"
 	flags OBJECT
 	after "stage"
@@ -97,4 +105,10 @@ beginwave
 	name	"dialogue_wave"
 	include	"code"
 	include	"dialogue"
+endwave
+
+beginwave
+	name	"titlescreen_wave"
+	include	"code"
+	include	"titlescreen"
 endwave

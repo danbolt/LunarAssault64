@@ -8,7 +8,8 @@
 
 typedef enum {
 	StageScreen,
-	DialogueScreen
+	DialogueScreen,
+	TitleScreen
 } ScreenSetting;
 
 extern volatile int changeScreensFlag;

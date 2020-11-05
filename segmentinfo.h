@@ -54,4 +54,16 @@ extern u8 _dialogueSegmentDataEnd[];
 extern u8 _dialogueSegmentBssStart[];
 extern u8 _dialogueSegmentBssEnd[];
 
+// Title screen
+extern u8 _titlescreenSegmentStart[];
+extern u8 _titlescreenSegmentEnd[];
+extern u8 _titlescreenSegmentRomStart[];
+extern u8 _titlescreenSegmentRomEnd[];
+extern u8 _titlescreenSegmentTextStart[];
+extern u8 _titlescreenSegmentTextEnd[];
+extern u8 _titlescreenSegmentDataStart[];
+extern u8 _titlescreenSegmentDataEnd[];
+extern u8 _titlescreenSegmentBssStart[];
+extern u8 _titlescreenSegmentBssEnd[];
+
 #endif
