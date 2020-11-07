@@ -23,9 +23,10 @@
 #define BOSS_PORTRAIT_WIDTH 132
 #define BOSS_PORTRAIT_HEIGHT 206
 
-DialogueLine d2 = { "and, finally...\nthe third!\n...whew", NULL, BOSS_SPEAKING };
-DialogueLine d1 = { "okay, now let's do the\nsecond one.", &d2, PROTAG_SPEAKING };
-DialogueLine d0 = { "here's the first line", &d1, BOSS_SPEAKING };
+DialogueLine d2 = { "I'm on it!\nYou can count on me.", NULL, PROTAG_SPEAKING };
+DialogueLine d1 = { "Previous operators have\ntaken advantage of\nthe hill in the middle.", &d2, BOSS_SPEAKING };
+DialogueLine dBrief = { "A mark IV Lunarbeast\nhas been spotted there.", &d1, BOSS_SPEAKING };
+DialogueLine d0 = { "Your first task today\nwill be at Crater Pit.", &dBrief, BOSS_SPEAKING };
 DialogueLine dIntro = { "Lunar Fufillment Centre\n13:53 Earth Time, CST", &d0, NOBODY_THERE };
 
 static OSTime time = 0;

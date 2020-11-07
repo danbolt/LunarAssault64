@@ -349,7 +349,7 @@ void initStage00(void) {
   cameraRotation = (vec3){0.f, 0.f, M_PI};
   playerDisplayRotation = cameraRotation.z;
 
-  playerPos = (vec3){10.f, 10.f, 10.f};
+  playerPos = (vec3){24.f, 24.f, 10.f};
 
   playerZoomFactor = 0.f;
   zoomState = NOT_ZOOMED_IN;
@@ -605,25 +605,25 @@ void makeDL00(void) {
      switch display buffers */
   nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0],
 		 (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx),
-		 NU_GFX_UCODE_F3DLP_REJ , NU_SC_NOSWAPBUFFER);
+		 NU_GFX_UCODE_F3DLP_REJ , NU_SC_SWAPBUFFER);
 
   
-  if(contPattern & 0x1)
-    {
-      nuDebConTextPos(0,4,4);
-      sprintf(conbuf, "DL: %3d/%3d", (glistp - gfx_glist[gfx_gtask_no]), GFX_GLIST_LEN );
-      nuDebConCPuts(0, conbuf);
+  // if(contPattern & 0x1)
+  //   {
+  //     nuDebConTextPos(0,4,4);
+  //     sprintf(conbuf, "DL: %3d/%3d", (glistp - gfx_glist[gfx_gtask_no]), GFX_GLIST_LEN );
+  //     nuDebConCPuts(0, conbuf);
 
-    }
-  else
-    {
-      nuDebConTextPos(0,4,4);
-      nuDebConCPuts(0, "Connect controller #1, kid!");
-    }
+  //   }
+  // else
+  //   {
+  //     nuDebConTextPos(0,4,4);
+  //     nuDebConCPuts(0, "Connect controller #1, kid!");
+  //   }
 
-    nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
+  //   nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
     
-  nuDebConDisp(NU_SC_SWAPBUFFER);
+  // nuDebConDisp(NU_SC_SWAPBUFFER);
 
   /* Switch display list buffers */
   gfx_gtask_no = (gfx_gtask_no + 1) % 3;
@@ -890,7 +890,7 @@ void checkIfPlayerHasWon() {
   }
 
   if (defeatedAllHitboxes) {
-    screenType = DialogueScreen;
+    screenType = TitleScreen;
     changeScreensFlag = 1;
   }
 }

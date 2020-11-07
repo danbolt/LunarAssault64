@@ -30,7 +30,7 @@ void makeDLTitleScreen(void) {
 		sprintf(conbuf, "LASERSCOPE MOON SPOTTER");
 		nuDebConCPuts(0, conbuf);
 
-		nuDebConTextPos(0,4,5);
+		nuDebConTextPos(0,4,20);
 		sprintf(conbuf, "press start");
 		nuDebConCPuts(0, conbuf);
 	}
