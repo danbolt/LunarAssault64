@@ -53,6 +53,7 @@ void updateTitleScreen(void) {
 	nuContDataGetEx(contdata,0);
 
 	if (contdata->trigger & START_BUTTON) {
+    	nuAuSeqPlayerStop(0);
 		changeScreensFlag = 1;
 		screenType = DialogueScreen;
 		return;

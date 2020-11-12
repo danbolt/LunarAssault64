@@ -486,6 +486,10 @@ void initStage00(void) {
   noiseFactor = DEFAULT_NOISE_LEVEL;
 
   generateSectionDLs();
+
+  nuAuSeqPlayerStop(0);
+  nuAuSeqPlayerSetNo(0, 1);
+  nuAuSeqPlayerPlay(0);
 }
 
 void renderDivineLine(DisplayData* dynamicp) {
@@ -1012,6 +1016,7 @@ void checkIfPlayerHasWon() {
   }
 
   if (defeatedAllHitboxes) {
+    nuAuSeqPlayerStop(0);
     screenType = TitleScreen;
     changeScreensFlag = 1;
   }
