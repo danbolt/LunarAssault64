@@ -1,10 +1,18 @@
 
 #include "titlescreenstage.h"
 
+#include <nusys.h>
+#include <nualsgi_n.h>
 #include "main.h"
 
 void initTitleScreen(void) {
 	//
+
+	
+
+    nuAuSeqPlayerStop(0);
+    nuAuSeqPlayerSetNo(0, 0);
+    nuAuSeqPlayerPlay(0);
 }
 
 void makeDLTitleScreen(void) {

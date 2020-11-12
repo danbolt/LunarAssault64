@@ -1,0 +1,44 @@
+envelope synth1env
+{
+    attackTime    = 0;
+    attackVolume  = 127;
+    decayTime   = 425000;
+    decayVolume   = 100;
+    releaseTime   = 714000;
+}
+
+keymap synth1map
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 0;
+    keyMax      = 127;
+    keyBase     = 60;
+    detune      = 0;
+}
+
+sound synth1sound
+{
+    use ("sample/synth1.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = synth1map;
+    envelope = synth1env;
+}
+
+instrument synth1
+{
+    volume = 127;
+    pan    = 64;
+
+    sound  = synth1sound;
+}
+
+
+bank SongBank 
+{
+    sampleRate = 32000;
+
+    instrument [97] = synth1;
+}

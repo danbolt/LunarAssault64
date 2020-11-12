@@ -66,4 +66,12 @@ extern u8 _titlescreenSegmentDataEnd[];
 extern u8 _titlescreenSegmentBssStart[];
 extern u8 _titlescreenSegmentBssEnd[];
 
+// Audio
+extern u8 _songsSegmentRomStart[];
+extern u8 _songsSegmentRomEnd[];
+extern u8 _audiobank_tableSegmentRomStart[];
+extern u8 _audiobank_tableSegmentRomEnd[];
+extern u8 _audiobank_controlSegmentRomStart[];
+extern u8 _audiobank_controlSegmentRomEnd[];
+
 #endif

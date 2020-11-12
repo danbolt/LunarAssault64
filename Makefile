@@ -90,6 +90,9 @@ FORCELINK =	-u guOrtho \
 			-u sdSphere \
 			-u sdOctahedron \
 			-u sdBox \
+			-u nuAuSeqPlayerStop \
+			-u nuAuSeqPlayerSetNo \
+			-u nuAuSeqPlayerPlay \
 
 default:        $(TARGETS)
 

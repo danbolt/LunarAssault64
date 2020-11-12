@@ -88,6 +88,24 @@ beginseg
 	include "topography/level1.bin"
 endseg
 
+beginseg
+	name "audiobank_table"
+	flags "RAW"
+	include "audio/bank.tbl"
+endseg
+
+beginseg
+	name "audiobank_control"
+	flags "RAW"
+	include "audio/bank.ctl"
+endseg
+
+beginseg
+	name "songs"
+	flags "RAW"
+	include "audio/songs.sbk"
+endseg
+
 beginwave
 	name	"gameplay_wave_stage1"
 	include	"code"

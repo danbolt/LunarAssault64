@@ -119,7 +119,10 @@ void loadInTitleScreenState() {
 
 void initAudio(void)
 {
-    nuAuInit();
+  nuAuInit();
+
+  nuAuSeqPlayerBankSet(_audiobank_controlSegmentRomStart, _audiobank_controlSegmentRomEnd - _audiobank_controlSegmentRomStart, _audiobank_tableSegmentRomStart);
+  nuAuSeqPlayerSeqSet(_songsSegmentRomStart);
 }
 
 /*------------------------

@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <nusys.h>
+#include <nualsgi_n.h>
 #include "stage00.h"
 #include "main.h"
 #include "segmentinfo.h"
