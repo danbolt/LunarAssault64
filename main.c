@@ -117,6 +117,11 @@ void loadInTitleScreenState() {
   nuPiReadRomOverlay(&segment);
 }
 
+void initAudio(void)
+{
+    nuAuInit();
+}
+
 /*------------------------
 	Main
 --------------------------*/
@@ -124,6 +129,8 @@ void mainproc(void)
 {
   /* The initialization of graphic  */
   nuGfxInit();
+
+  initAudio();
 
   changeScreensFlag = 0;
   screenType = TitleScreen;
