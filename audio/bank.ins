@@ -1,29 +1,49 @@
 envelope synth1env
 {
-    attackTime    = 0;
+    attackTime    = 180000;
     attackVolume  = 127;
     decayTime   = 425000;
     decayVolume   = 100;
     releaseTime   = 714000;
 }
 
-keymap synth1map
+keymap synth1mapc4
 {
     velocityMin = 0;
     velocityMax = 127;
     keyMin      = 0;
-    keyMax      = 127;
+    keyMax      = 63;
     keyBase     = 60;
     detune      = 0;
 }
 
-sound synth1sound
+keymap synth1mapc5
 {
-    use ("sample/synth1.aifc");
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 64;
+    keyMax      = 127;
+    keyBase     = 72;
+    detune      = 0;
+}
+
+sound synth1soundc4
+{
+    use ("sample/synth1_c4.aifc");
     
     pan    = 64;
     volume = 127;
-    keymap = synth1map;
+    keymap = synth1mapc4;
+    envelope = synth1env;
+}
+
+sound synth1soundc5
+{
+    use ("sample/synth1_c5.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = synth1mapc5;
     envelope = synth1env;
 }
 
@@ -32,7 +52,8 @@ instrument synth1
     volume = 127;
     pan    = 64;
 
-    sound  = synth1sound;
+    sound  = synth1soundc4;
+    sound  = synth1soundc5;
 }
 
 
@@ -40,5 +61,8 @@ bank SongBank
 {
     sampleRate = 32000;
 
-    instrument [97] = synth1;
+    instrument [0] = synth1;
+    instrument [94] = synth1;
+    instrument [95] = synth1;
+    instrument [96] = synth1;
 }

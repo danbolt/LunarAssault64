@@ -6,10 +6,6 @@
 #include "main.h"
 
 void initTitleScreen(void) {
-	//
-
-	
-
     nuAuSeqPlayerStop(0);
     nuAuSeqPlayerSetNo(0, 0);
     nuAuSeqPlayerPlay(0);
