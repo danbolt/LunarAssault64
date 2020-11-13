@@ -8,7 +8,7 @@
 #define SCREEN_WD        320
 
 /* The maximum length of the display list of one task  */
-#define GFX_GLIST_LEN     1024
+#define GFX_GLIST_LEN     2048
 
 #define NUMBER_OF_KAIJU_HITBOXES 16
 
@@ -33,6 +33,8 @@ typedef struct {
 
   Mtx     laserBarTranslation;
   Mtx     laserBarScale;
+
+  Vtx     playerLegVerts[56];
 } DisplayData;
 
 /*-------------------------------- parameter---------------------------------*/

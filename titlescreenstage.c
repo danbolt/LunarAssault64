@@ -6,9 +6,9 @@
 #include "main.h"
 
 void initTitleScreen(void) {
-    nuAuSeqPlayerStop(0);
-    nuAuSeqPlayerSetNo(0, 0);
-    nuAuSeqPlayerPlay(0);
+	nuAuSeqPlayerStop(0);
+	nuAuSeqPlayerSetNo(0, 0);
+	nuAuSeqPlayerPlay(0);
 }
 
 void makeDLTitleScreen(void) {
@@ -53,7 +53,7 @@ void updateTitleScreen(void) {
 	nuContDataGetEx(contdata,0);
 
 	if (contdata->trigger & START_BUTTON) {
-    	nuAuSeqPlayerStop(0);
+		nuAuSeqPlayerStop(0);
 		changeScreensFlag = 1;
 		screenType = DialogueScreen;
 		return;

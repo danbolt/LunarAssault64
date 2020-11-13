@@ -670,6 +670,8 @@ void makeDL00(void) {
 
   // The player
   if (zoomState != ZOOMED_IN) {
+    const float st = sinf(time * 0.000005f) * 0.5f + 0.5f;
+
     guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
 
@@ -680,6 +682,17 @@ void makeDL00(void) {
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH);
     gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(protag_head_commands));
     gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(protag_body_commands));
+    if (distanceSq(&playerVelocity, &zeroVector) > 0.01f) {
+      for (i = 0; i < 56; i++) {
+        dynamicp->playerLegVerts[i] = protag_legs_verts[i];
+        dynamicp->playerLegVerts[i].v.ob[0] = (short)(lerp(protag_legs_move_a[i].v.ob[0], protag_legs_move_b[i].v.ob[0], st));
+        dynamicp->playerLegVerts[i].v.ob[1] = (short)(lerp(protag_legs_move_a[i].v.ob[1], protag_legs_move_b[i].v.ob[1], st));
+        dynamicp->playerLegVerts[i].v.ob[2] = (short)(lerp(protag_legs_move_a[i].v.ob[2], protag_legs_move_b[i].v.ob[2], st));
+      }
+        gSPVertex(glistp++, OS_K0_TO_PHYSICAL(dynamicp->playerLegVerts), 56, 0);
+    } else {
+      gSPVertex(glistp++, OS_K0_TO_PHYSICAL(protag_legs_verts), 56, 0);
+    }
     gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(protag_legs_commands));
     gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
   }
@@ -731,25 +744,25 @@ void makeDL00(void) {
      switch display buffers */
   nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0],
 		 (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx),
-		 NU_GFX_UCODE_F3DLP_REJ , NU_SC_SWAPBUFFER);
+		 NU_GFX_UCODE_F3DLP_REJ , NU_SC_NOSWAPBUFFER);
 
   
-  // if(contPattern & 0x1)
-  //   {
-  //     nuDebConTextPos(0,4,4);
-  //     sprintf(conbuf, "DL: %3d/%3d", (glistp - gfx_glist[gfx_gtask_no]), GFX_GLIST_LEN );
-  //     nuDebConCPuts(0, conbuf);
+  if(contPattern & 0x1)
+    {
+      nuDebConTextPos(0,4,4);
+      sprintf(conbuf, "DL: %3d/%3d", (glistp - gfx_glist[gfx_gtask_no]), GFX_GLIST_LEN );
+      nuDebConCPuts(0, conbuf);
 
-  //   }
-  // else
-  //   {
-  //     nuDebConTextPos(0,4,4);
-  //     nuDebConCPuts(0, "Connect controller #1, kid!");
-  //   }
+    }
+  else
+    {
+      nuDebConTextPos(0,4,4);
+      nuDebConCPuts(0, "Connect controller #1, kid!");
+    }
 
-  //   nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
+    nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
     
-  // nuDebConDisp(NU_SC_SWAPBUFFER);
+  nuDebConDisp(NU_SC_SWAPBUFFER);
 
   /* Switch display list buffers */
   gfx_gtask_no = (gfx_gtask_no + 1) % 3;
