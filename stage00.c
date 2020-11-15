@@ -425,6 +425,10 @@ static Gfx portrait_commands[] = {
 };
 
 static Gfx time_prefix_commands[] = {
+  gsDPPipeSync(),
+  gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+  gsDPSetTexturePersp(G_TP_NONE),
+  gsDPSetRenderMode(G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE),
   gsDPLoadTextureBlock(time_tex_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
 
   gsSPTextureRectangle((211 + 0) << 2, (192) << 2, (211 + 32) << 2, (192 + 8) << 2, 0, 0 << 5, 0 << 5, 1 << 10, 1 << 10),
@@ -461,6 +465,12 @@ static vec3 divineLineStartSpot = { 0.f, 0.f, 0.f };
 static vec3 divineLineEndSpot = { 0.f, 0.f, 0.f };
 
 static float timeRemaining = 0.f;
+static u32 majorDigit;
+static u32 minorDigit;
+static int s0;
+static int t0;
+static int s1;
+static int t1;
 
 static OSTime time = 0;
 static OSTime delta = 0;
@@ -487,7 +497,7 @@ void initStage00(void) {
   divineLineStartSpot = (vec3){ MAP_WIDTH * 0.5f, MAP_LENGTH * 0.5f, 60.f };
   divineLineEndSpot = (vec3){ 0.f, 0.f, 0.f };
 
-  timeRemaining = 30.f;
+  timeRemaining = 99.f;
 
   initKaijuCallback();
 
@@ -621,11 +631,11 @@ void makeDL00(void) {
             continue;
           }
 
-          if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ)) {
+          // if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ)) {
             gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[sectionIndex].commands));
-          } else {
-            gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
-          }
+          // } else {
+            // gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
+          // }
 
           if (((int)(divineLineEndSpot.x / 4.f) == x) && ((int)(divineLineEndSpot.y / 4.f) == y)) {
             gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
@@ -658,11 +668,11 @@ void makeDL00(void) {
             continue;
           }
 
-          if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8975f))) {
+          // if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8975f))) {
             gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[sectionIndex].commands));
-          } else {
-            gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
-          }
+          // } else {
+            // gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
+          // }
 
           if (((int)(divineLineEndSpot.x / 4.f) == x) && ((int)(divineLineEndSpot.y / 4.f) == y)) {
             gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
@@ -744,25 +754,17 @@ void makeDL00(void) {
     gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
 
     gSPDisplayList(glistp++, portrait_commands);
-    gSPDisplayList(glistp++, time_prefix_commands);
 
     // Show the remaining time in seconds
     {
-      const u32 timeLeft = clamp(timeRemaining, 0, 99);
-      const u32 majorDigit = timeLeft / 10;
-      const u32 minorDigit = timeLeft % 10;
-      const int s0 = (majorDigit % 4) * 8;
-      const int t0 = ((majorDigit / 4) * 8) + 8;
-      const int s1 = (minorDigit % 4) * 8;
-      const int t1 = ((minorDigit / 4) * 8) + 8;
-
+      gSPDisplayList(glistp++, time_prefix_commands);
       gSPTextureRectangle(glistp++, (211 +  8) << 2, (200) << 2, (211 + 16) << 2, (200 + 8) << 2, 0, s0 << 5, t0 << 5, 1 << 10, 1 << 10);
       gSPTextureRectangle(glistp++, (211 + 16) << 2, (200) << 2, (211 + 24) << 2, (200 + 8) << 2, 0, s1 << 5, t1 << 5, 1 << 10, 1 << 10);
     }
 
-    if (zoomState == ZOOMED_IN) {
-      gSPDisplayList(glistp++, zoomed_in_dl);
-    }
+    // if (zoomState == ZOOMED_IN) {
+    //   gSPDisplayList(glistp++, zoomed_in_dl);
+    // }
   }
 
   gDPFullSync(glistp++);
@@ -774,30 +776,30 @@ void makeDL00(void) {
      switch display buffers */
   nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0],
 		 (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx),
-		 NU_GFX_UCODE_F3DLP_REJ , NU_SC_NOSWAPBUFFER);
+		 NU_GFX_UCODE_F3DLP_REJ , NU_SC_SWAPBUFFER);
 
   
-  if(contPattern & 0x1)
-    {
-      nuDebConTextPos(0,4,4);
-      sprintf(conbuf, "DL: %3d/%3d", (glistp - gfx_glist[gfx_gtask_no]), GFX_GLIST_LEN );
-      nuDebConCPuts(0, conbuf);
+  // if(contPattern & 0x1)
+  //   {
+  //     nuDebConTextPos(0,4,4);
+  //     sprintf(conbuf, "DL: %3d/%3d", (glistp - gfx_glist[gfx_gtask_no]), GFX_GLIST_LEN );
+  //     nuDebConCPuts(0, conbuf);
 
 
-      nuDebConTextPos(0,4,5);
-      sprintf(conbuf, "time left: %3.2f", timeRemaining);
-      nuDebConCPuts(0, conbuf);
+  //     nuDebConTextPos(0,4,5);
+  //     sprintf(conbuf, "time left: %3.2f", timeRemaining);
+  //     nuDebConCPuts(0, conbuf);
 
-    }
-  else
-    {
-      nuDebConTextPos(0,4,4);
-      nuDebConCPuts(0, "Connect controller #1, kid!");
-    }
+  //   }
+  // else
+  //   {
+  //     nuDebConTextPos(0,4,4);
+  //     nuDebConCPuts(0, "Connect controller #1, kid!");
+  //   }
 
     // nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
     
-  nuDebConDisp(NU_SC_SWAPBUFFER);
+  // nuDebConDisp(NU_SC_SWAPBUFFER);
 
   /* Switch display list buffers */
   gfx_gtask_no = (gfx_gtask_no + 1) % 3;
@@ -1074,12 +1076,21 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
 
   // Check if we ran out of time
   {
+    u32 timeLeft;
     timeRemaining -= deltaSeconds;
     if (timeRemaining < 0.f) {
       nuAuSeqPlayerStop(0);
       screenType = TitleScreen;
       changeScreensFlag = 1;
     }
+
+    timeLeft = clamp(timeRemaining, 0, 99);
+    majorDigit = timeLeft / 10;
+    minorDigit = timeLeft % 10;
+    s0 = (majorDigit % 4) * 8;
+    t0 = ((majorDigit / 4) * 8) + 8;
+    s1 = (minorDigit % 4) * 8;
+    t1 = ((minorDigit / 4) * 8) + 8;
   }
 }
 
