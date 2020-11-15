@@ -9,6 +9,7 @@
 #include "graphic.h"
 #include "gamemath.h"
 #include "terraintex.h"
+#include "time_tex.h"
 #include "hitboxes.h"
 #include "portraittex.h"
 #include "protaggeo.h"
@@ -423,6 +424,13 @@ static Gfx portrait_commands[] = {
   gsSPEndDisplayList()
 };
 
+static Gfx time_prefix_commands[] = {
+  gsDPLoadTextureBlock(time_tex_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
+
+  gsSPTextureRectangle((211 + 0) << 2, (192) << 2, (211 + 32) << 2, (192 + 8) << 2, 0, 0 << 5, 0 << 5, 1 << 10, 1 << 10),
+  gsSPEndDisplayList()
+};
+
 static Gfx zoomed_in_dl[] = {
   gsDPPipeSync(),
   gsDPSetAlphaCompare(G_AC_NONE),
@@ -452,6 +460,8 @@ static float divineLineTimePassed = 0.f;
 static vec3 divineLineStartSpot = { 0.f, 0.f, 0.f };
 static vec3 divineLineEndSpot = { 0.f, 0.f, 0.f };
 
+static float timeRemaining = 0.f;
+
 static OSTime time = 0;
 static OSTime delta = 0;
 
@@ -477,6 +487,8 @@ void initStage00(void) {
   divineLineStartSpot = (vec3){ MAP_WIDTH * 0.5f, MAP_LENGTH * 0.5f, 60.f };
   divineLineEndSpot = (vec3){ 0.f, 0.f, 0.f };
 
+  timeRemaining = 30.f;
+
   initKaijuCallback();
 
   nuPiReadRom(groundTextureROMAddress, tex_terrain_bin, tex_terrain_bin_len);
@@ -490,6 +502,9 @@ void initStage00(void) {
   nuAuSeqPlayerStop(0);
   nuAuSeqPlayerSetNo(0, 1);
   nuAuSeqPlayerPlay(0);
+
+  time = OS_CYCLES_TO_USEC(osGetTime());
+  delta = 0;
 }
 
 void renderDivineLine(DisplayData* dynamicp) {
@@ -729,6 +744,21 @@ void makeDL00(void) {
     gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
 
     gSPDisplayList(glistp++, portrait_commands);
+    gSPDisplayList(glistp++, time_prefix_commands);
+
+    // Show the remaining time in seconds
+    {
+      const u32 timeLeft = clamp(timeRemaining, 0, 99);
+      const u32 majorDigit = timeLeft / 10;
+      const u32 minorDigit = timeLeft % 10;
+      const int s0 = (majorDigit % 4) * 8;
+      const int t0 = ((majorDigit / 4) * 8) + 8;
+      const int s1 = (minorDigit % 4) * 8;
+      const int t1 = ((minorDigit / 4) * 8) + 8;
+
+      gSPTextureRectangle(glistp++, (211 +  8) << 2, (200) << 2, (211 + 16) << 2, (200 + 8) << 2, 0, s0 << 5, t0 << 5, 1 << 10, 1 << 10);
+      gSPTextureRectangle(glistp++, (211 + 16) << 2, (200) << 2, (211 + 24) << 2, (200 + 8) << 2, 0, s1 << 5, t1 << 5, 1 << 10, 1 << 10);
+    }
 
     if (zoomState == ZOOMED_IN) {
       gSPDisplayList(glistp++, zoomed_in_dl);
@@ -753,6 +783,11 @@ void makeDL00(void) {
       sprintf(conbuf, "DL: %3d/%3d", (glistp - gfx_glist[gfx_gtask_no]), GFX_GLIST_LEN );
       nuDebConCPuts(0, conbuf);
 
+
+      nuDebConTextPos(0,4,5);
+      sprintf(conbuf, "time left: %3.2f", timeRemaining);
+      nuDebConCPuts(0, conbuf);
+
     }
   else
     {
@@ -760,7 +795,7 @@ void makeDL00(void) {
       nuDebConCPuts(0, "Connect controller #1, kid!");
     }
 
-    nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
+    // nuDebTaskPerfBar1(2, 200, NU_SC_NOSWAPBUFFER);
     
   nuDebConDisp(NU_SC_SWAPBUFFER);
 
@@ -1017,21 +1052,34 @@ void updateDivineLine(float deltaSeconds) {
   }
 }
 
-void checkIfPlayerHasWon() {
-  int i;
-  int defeatedAllHitboxes = 1;
+void checkIfPlayerHasWonOrLost(float deltaSeconds) {
+  // Check if we broke all the enemy hitboxes
+  {
+    int i;
+    int defeatedAllHitboxes = 1;
 
-  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
-    if (hitboxes[i].alive && hitboxes[i].destroyable) {
-      defeatedAllHitboxes = 0;
-      break;
+    for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+      if (hitboxes[i].alive && hitboxes[i].destroyable) {
+        defeatedAllHitboxes = 0;
+        break;
+      }
+    }
+
+    if (defeatedAllHitboxes) {
+      nuAuSeqPlayerStop(0);
+      screenType = TitleScreen;
+      changeScreensFlag = 1;
     }
   }
 
-  if (defeatedAllHitboxes) {
-    nuAuSeqPlayerStop(0);
-    screenType = TitleScreen;
-    changeScreensFlag = 1;
+  // Check if we ran out of time
+  {
+    timeRemaining -= deltaSeconds;
+    if (timeRemaining < 0.f) {
+      nuAuSeqPlayerStop(0);
+      screenType = TitleScreen;
+      changeScreensFlag = 1;
+    }
   }
 }
 
@@ -1059,6 +1107,6 @@ void updateGame00(void) {
   nuDebPerfMarkSet(4);
   updateDivineLine(deltaSeconds);
   nuDebPerfMarkSet(5);
-  checkIfPlayerHasWon();
+  checkIfPlayerHasWonOrLost(deltaSeconds);
 
 }
