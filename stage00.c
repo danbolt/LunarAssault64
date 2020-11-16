@@ -627,15 +627,11 @@ void makeDL00(void) {
             continue;
           }
 
-          if (distanceToSectionSq > FAR_PLANE_DETAIL_CUTOFF_SQ) {
-            continue;
-          }
-
-          // if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ)) {
+          if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ)) {
             gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[sectionIndex].commands));
-          // } else {
-            // gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
-          // }
+          } else {
+            gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
+          }
 
           if (((int)(divineLineEndSpot.x / 4.f) == x) && ((int)(divineLineEndSpot.y / 4.f) == y)) {
             gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
@@ -664,15 +660,11 @@ void makeDL00(void) {
             continue;
           }
 
-          if (distanceToSectionSq > FAR_PLANE_DETAIL_CUTOFF_SQ) {
-            continue;
-          }
-
-          // if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8975f))) {
+          if ((distanceToSectionSq < HIGH_DETAIL_CUTOFF_SQ) || ((distanceToSectionSq < FOCUS_HIGH_DETAIL_CUTOFF_SQ) && (dotProductFromCamera > 0.8975f))) {
             gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(sections[sectionIndex].commands));
-          // } else {
-            // gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
-          // }
+          } else {
+            gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(lowDetailSections[sectionIndex].commands));
+          }
 
           if (((int)(divineLineEndSpot.x / 4.f) == x) && ((int)(divineLineEndSpot.y / 4.f) == y)) {
             gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
@@ -889,9 +881,9 @@ void updatePlayer(float deltaSeconds) {
     playerIsOnTheGround = 0;
   }
 
-  cameraTarget.x = lerp( cameraTarget.x, playerPos.x, 0.12f);
-  cameraTarget.y = lerp( cameraTarget.y, playerPos.y, 0.12f);
-  cameraTarget.z = lerp( cameraTarget.z, playerPos.z + CAMERA_LIFT_FRONT, 0.12f);
+  cameraTarget.x =/* lerp( cameraTarget.x, */playerPos.x;/*, 0.12f);*/
+  cameraTarget.y =/* lerp( cameraTarget.y, */playerPos.y;/*, 0.12f);*/
+  cameraTarget.z =/* lerp( cameraTarget.z, */playerPos.z + CAMERA_LIFT_FRONT;/*, 0.12f);*/
   cameraPos.x = cameraTarget.x + (cosf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y));
   cameraPos.y = cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y));
   cameraPos.z = cameraTarget.z + (CAMERA_DISTANCE * sinf(cameraRotation.y)) + CAMERA_LIFT_BACK;
