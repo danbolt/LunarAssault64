@@ -371,6 +371,12 @@ static Vtx hud_geo[] = {
   { SCISSOR_SIDES + 208 + 2,  SCISSOR_HIGH - 2,   5, 0,  0 << 6,  0 << 6, 0, 0, 0, 0xff },
   { SCISSOR_SIDES + 208 + 2,  SCISSOR_HIGH - 2 - 8,  5, 0,  0 << 6, 32 << 6, 0, 0, 0, 0xff },
   { SCISSOR_SIDES + 208 + 2 + 16,  SCISSOR_HIGH - 2 - 8,  5, 0, 32 << 6, 32 << 6, 0, 0, 0, 0xff },
+
+
+  { SCISSOR_SIDES + 224,       SCISSOR_HIGH - 2 - 10,   5, 0, 32 << 6,  0 << 6, 0x23, 0x23, 0x23, 0xff },
+  { SCISSOR_SIDES + 224 - 38,  SCISSOR_HIGH - 2 - 10,   5, 0,  0 << 6,  0 << 6, 0x23, 0x23, 0x23, 0xff },
+  { SCISSOR_SIDES + 224 - 38,  SCISSOR_HIGH - 2 - 12 - 24,  5, 0,  0 << 6, 32 << 6, 0x18, 0x18, 0x18, 0xff },
+  { SCISSOR_SIDES + 224,       SCISSOR_HIGH - 2 - 12 - 24,   5, 0, 32 << 6, 32 << 6, 0x18, 0x18, 0x18, 0xff },
 };
 
 static Vtx laser_charge_bar_geo[] = {
@@ -386,7 +392,7 @@ static Vtx laser_charge_bar_geo[] = {
 };
 
 static Gfx hud_dl[] = {
-  gsSPVertex(&hud_geo, 32, 0),
+  gsSPVertex(&hud_geo, 36, 0),
   gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
   gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
   gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
@@ -397,6 +403,8 @@ static Gfx hud_dl[] = {
 
   gsSP2Triangles(24, 25, 26, 0, 24, 26, 27, 0),
   gsSP2Triangles(28, 29, 30, 0, 28, 30, 31, 0),
+
+  gsSP2Triangles(32, 33, 34, 0, 32, 34, 35, 0),
 
   gsSPEndDisplayList()
 };
