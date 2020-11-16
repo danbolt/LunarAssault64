@@ -465,12 +465,15 @@ static vec3 divineLineStartSpot = { 0.f, 0.f, 0.f };
 static vec3 divineLineEndSpot = { 0.f, 0.f, 0.f };
 
 static float timeRemaining = 0.f;
-static u32 majorDigit;
-static u32 minorDigit;
-static int s0;
-static int t0;
-static int s1;
-static int t1;
+static u8 hundredsDigit;
+static u8 majorDigit;
+static u8 minorDigit;
+static u8 s0;
+static u8 t0;
+static u8 s1;
+static u8 t1;
+static u8 s2;
+static u8 t2;
 
 static OSTime time = 0;
 static OSTime delta = 0;
@@ -497,7 +500,7 @@ void initStage00(void) {
   divineLineStartSpot = (vec3){ MAP_WIDTH * 0.5f, MAP_LENGTH * 0.5f, 60.f };
   divineLineEndSpot = (vec3){ 0.f, 0.f, 0.f };
 
-  timeRemaining = 99.f;
+  timeRemaining = 130.f;
 
   initKaijuCallback();
 
@@ -750,8 +753,9 @@ void makeDL00(void) {
     // Show the remaining time in seconds
     {
       gSPDisplayList(glistp++, time_prefix_commands);
-      gSPTextureRectangle(glistp++, (211 +  8) << 2, (200) << 2, (211 + 16) << 2, (200 + 8) << 2, 0, s0 << 5, t0 << 5, 1 << 10, 1 << 10);
-      gSPTextureRectangle(glistp++, (211 + 16) << 2, (200) << 2, (211 + 24) << 2, (200 + 8) << 2, 0, s1 << 5, t1 << 5, 1 << 10, 1 << 10);
+      gSPTextureRectangle(glistp++, (211 +  0 + 4) << 2, (200) << 2, (211 +  8 + 4) << 2, (200 + 8) << 2, 0, s2 << 5, t2 << 5, 1 << 10, 1 << 10);
+      gSPTextureRectangle(glistp++, (211 +  8 + 4) << 2, (200) << 2, (211 + 16 + 4) << 2, (200 + 8) << 2, 0, s0 << 5, t0 << 5, 1 << 10, 1 << 10);
+      gSPTextureRectangle(glistp++, (211 + 16 + 4) << 2, (200) << 2, (211 + 24 + 4) << 2, (200 + 8) << 2, 0, s1 << 5, t1 << 5, 1 << 10, 1 << 10);
     }
 
     // if (zoomState == ZOOMED_IN) {
@@ -1076,13 +1080,16 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
       changeScreensFlag = 1;
     }
 
-    timeLeft = clamp(timeRemaining, 0, 99);
-    majorDigit = timeLeft / 10;
+    timeLeft = clamp(timeRemaining, 0, 255);
+    hundredsDigit = timeLeft / 100;
+    majorDigit = (timeLeft / 10) % 10;
     minorDigit = timeLeft % 10;
     s0 = (majorDigit % 4) * 8;
     t0 = ((majorDigit / 4) * 8) + 8;
     s1 = (minorDigit % 4) * 8;
     t1 = ((minorDigit / 4) * 8) + 8;
+    s2 = (hundredsDigit % 4) * 8;
+    t2 = ((hundredsDigit / 4) * 8) + 8;
   }
 }
 

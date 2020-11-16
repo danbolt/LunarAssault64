@@ -26,7 +26,7 @@ typedef struct {
 typedef struct {
 	vec3 centroid;
 	Vtx verts[LOW_DETAIL_VERTS_PER_SECTION];
-	Gfx commands[COMMANDS_PER_SECTION];
+	Gfx commands[4];
 } LowDetailSectionData;
 
 extern u8 GroundMapping[MAP_LENGTH];
