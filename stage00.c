@@ -434,9 +434,7 @@ static Gfx portrait_commands[] = {
 
 static Gfx time_prefix_commands[] = {
   gsDPPipeSync(),
-  gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
   gsDPSetTexturePersp(G_TP_NONE),
-  gsDPSetRenderMode(G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE),
   gsDPLoadTextureBlock(time_tex_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
 
   gsSPTextureRectangle((211 + 0) << 2, (192) << 2, (211 + 32) << 2, (192 + 8) << 2, 0, 0 << 5, 0 << 5, 1 << 10, 1 << 10),
@@ -577,7 +575,10 @@ void makeDL00(void) {
 
   // The skybox
   {
+    guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
+    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
     gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(skybox_commands));
+    gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
   }
 
   gDPSetScissor(glistp++, G_SC_NON_INTERLACE, SCISSOR_SIDES, SCISSOR_LOW, SCREEN_WD - SCISSOR_SIDES, SCREEN_HT - SCISSOR_HIGH);
@@ -700,7 +701,6 @@ void makeDL00(void) {
   if (zoomState != ZOOMED_IN) {
     const float st = sinf(time * 0.000005f) * 0.5f + 0.5f;
 
-    guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
 
     guRotate(&(dynamicp->playerRotation), (playerDisplayRotation - (M_PI * 1.5f)) * RAD_TO_DEG, 0.f, 0.f, 1.f);
