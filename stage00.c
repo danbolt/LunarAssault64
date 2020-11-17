@@ -790,7 +790,7 @@ void makeDL00(void) {
   gDPFullSync(glistp++);
   gSPEndDisplayList(glistp++);
 
-  assert((glistp - gfx_glist[gfx_gtask_no]) < GFX_GLIST_LEN);
+  // assert((glistp - gfx_glist[gfx_gtask_no]) < GFX_GLIST_LEN);
 
   /* Activate the task and 
      switch display buffers */
