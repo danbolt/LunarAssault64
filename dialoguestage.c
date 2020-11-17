@@ -23,11 +23,23 @@
 #define BOSS_PORTRAIT_WIDTH 132
 #define BOSS_PORTRAIT_HEIGHT 206
 
-DialogueLine d2 = { "I'm on it!\nYou can count on me.", NULL, PROTAG_SPEAKING };
+DialogueLine closing = { "And the work began.", NULL, NOBODY_THERE };
+
+DialogueLine d2 = { "I'm on it!\nYou can count on me.", &closing, PROTAG_SPEAKING };
 DialogueLine d1 = { "Previous operators have\ntaken advantage of\nthe hill in the middle.", &d2, BOSS_SPEAKING };
 DialogueLine dBrief = { "A mark IV Lunarbeast\nhas been spotted there.", &d1, BOSS_SPEAKING };
 DialogueLine d0 = { "Your first task today\nwill be at Crater Pit.", &dBrief, BOSS_SPEAKING };
 DialogueLine dIntro = { "Lunar Fufillment Centre\n13:53 Earth Time, CST", &d0, NOBODY_THERE };
+
+DialogueLine dSecondStage2 = { "Whew, okay!", &closing, PROTAG_SPEAKING };
+DialogueLine dSecondStage1 = { "Don't mess it up\nkid.", &dSecondStage2, BOSS_SPEAKING };
+DialogueLine dSecondStage0 = { "Okay, this is the\nsecond piece of dia-\nlogue.", &dSecondStage1, BOSS_SPEAKING };
+DialogueLine dSecondStageIntro = { "Lunar Fufillment Centre\n08:15 Earth Time, CST", &dSecondStage0, NOBODY_THERE };
+
+DialogueLine* stageDialogues[NUMBER_OF_LEVELS] = {
+	&dIntro,
+	&dSecondStageIntro
+};
 
 static OSTime time = 0;
 static OSTime delta = 0;
@@ -62,7 +74,7 @@ void refreshTargetSpots(int speakerIndex) {
 void initDialogue(void) {
 	// TODO: add a fadein
 	letterIndex = 0;
-	currentLine = &dIntro;
+	currentLine = stageDialogues[currentLevel];
 	tickingText = 1;
 	textTime = 0.f;
 
