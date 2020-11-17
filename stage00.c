@@ -409,6 +409,19 @@ static Gfx hud_dl[] = {
   gsSPEndDisplayList()
 };
 
+static Vtx hud_zoomed_in_geo[] = {
+  { SCREEN_WD / 2 + 2,  SCREEN_HT / 2 + 2,  5, 0, 32 << 6,  0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  { SCREEN_WD / 2 - 2,  SCREEN_HT / 2 + 2,  5, 0,  0 << 6,  0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  { SCREEN_WD / 2 - 2,  SCREEN_HT / 2 - 2,  5, 0,  0 << 6, 32 << 6, 0xFF, 0x33, 0x00, 0xff },
+  { SCREEN_WD / 2 + 2,  SCREEN_HT / 2 - 2,  5, 0, 32 << 6, 32 << 6, 0xFF, 0x33, 0x00, 0xff },
+};
+
+static Gfx hud_zoomed_in_commands[] = {
+  gsSPVertex(&hud_zoomed_in_geo, 4, 0),
+  gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+  gsSPEndDisplayList()
+};
+
 static Gfx laser_charge_bar_commands[] = {
   gsSPVertex(&laser_charge_bar_geo, 8, 0),
   gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -740,7 +753,10 @@ void makeDL00(void) {
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudModelling)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
 
     // Hud background
-    gSPDisplayList(glistp++, hud_dl);
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(hud_dl));
+    if (zoomState == ZOOMED_IN) {
+      gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(hud_zoomed_in_commands));
+    }
 
     guTranslate(&(dynamicp->laserBarTranslation), SCISSOR_SIDES, SCISSOR_HIGH - 10, 0.f);
     if (laserChargeFactor < 0.9f) {
@@ -1075,6 +1091,7 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
       nuAuSeqPlayerStop(0);
       screenType = TitleScreen;
       changeScreensFlag = 1;
+      currentLevel++;
     }
   }
 

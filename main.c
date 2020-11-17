@@ -15,6 +15,7 @@ void titlescreen(int);
 
 volatile int changeScreensFlag;
 volatile ScreenSetting screenType;
+volatile int currentLevel;
 
 NUContData	contdata[1];
 u8 contPattern;
@@ -43,13 +44,14 @@ void loadInStageState(int levelNumber) {
   groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
   terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
   topographyROMAddress = (u32)_level1_topographySegmentRomStart;
+
   nuPiReadRomOverlay(&segment);
 }
 
 void loadInKaiju(int levelNumber) {
   NUPiOverlaySegment segment;
 
-  if (levelNumber == 1) {
+  if (levelNumber == 0) {
     segment.romStart  = _kaiju1SegmentRomStart;
     segment.romEnd    = _kaiju1SegmentRomEnd;
     segment.ramStart  = _kaiju1SegmentStart;
@@ -59,7 +61,7 @@ void loadInKaiju(int levelNumber) {
     segment.dataEnd   = _kaiju1SegmentDataEnd;
     segment.bssStart  = _kaiju1SegmentBssStart;
     segment.bssEnd    = _kaiju1SegmentBssEnd;
-  } else if (levelNumber == 2) {
+  } else if (levelNumber == 1) {
     segment.romStart  = _kaiju2SegmentRomStart;
     segment.romEnd    = _kaiju2SegmentRomEnd;
     segment.ramStart  = _kaiju2SegmentStart;
@@ -73,11 +75,11 @@ void loadInKaiju(int levelNumber) {
 
   nuPiReadRomOverlay(&segment);
 
-  if (levelNumber == 1) {
+  if (levelNumber == 0) {
     initKaijuCallback = &initKaiju1;
     updateKaijuCallback = &updateKaiju1;
     renderKaijuCallback = &renderKaiju1;
-  } else if (levelNumber == 2) {
+  } else if (levelNumber == 1) {
     initKaijuCallback = &initKaiju2;
     updateKaijuCallback = &updateKaiju2;
     renderKaijuCallback = &renderKaiju2;
@@ -136,15 +138,17 @@ void mainproc(void)
   initAudio();
 
   changeScreensFlag = 0;
-  screenType = TitleScreen;
+  screenType = StageScreen;// TitleScreen;
+
+  currentLevel = 0;
 
   /* The initialization of the controller manager  */
   contPattern = nuContInit();
 
   while (1) {
     if (screenType == StageScreen) {
-      loadInStageState(1);
-      loadInKaiju(1);
+      loadInStageState(currentLevel);
+      loadInKaiju(currentLevel);
       initStage00();
       nuGfxFuncSet((NUGfxFunc)stage00);
     } else if (screenType == DialogueScreen) {
@@ -163,6 +167,10 @@ void mainproc(void)
 
     nuGfxFuncRemove();
     nuGfxDisplayOff();
+
+    if (currentLevel == NUMBER_OF_LEVELS) {
+      currentLevel = 0;
+    }
 
     changeScreensFlag = 0;
   }

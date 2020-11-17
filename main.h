@@ -12,8 +12,11 @@ typedef enum {
 	TitleScreen
 } ScreenSetting;
 
+#define NUMBER_OF_LEVELS 2
+
 extern volatile int changeScreensFlag;
 extern volatile ScreenSetting screenType;
+extern volatile int currentLevel;
 
 extern NUContData	contdata[1];
 extern u8 contPattern;
