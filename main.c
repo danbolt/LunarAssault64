@@ -138,7 +138,7 @@ void mainproc(void)
   initAudio();
 
   changeScreensFlag = 0;
-  screenType = StageScreen;// TitleScreen;
+  screenType = TitleScreen;
 
   currentLevel = 0;
 
@@ -170,6 +170,7 @@ void mainproc(void)
 
     if (currentLevel == NUMBER_OF_LEVELS) {
       currentLevel = 0;
+      screenType = TitleScreen;
     }
 
     changeScreensFlag = 0;

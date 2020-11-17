@@ -967,7 +967,6 @@ void updateKaijuHitboxes(float delta) {
 
 void fireLaser(const vec3* location) {
   laserChargeFactor = 0.f;
-  zoomState = NOT_ZOOMED_IN;
 
   divineLineStartSpot = (vec3){ location->x, location->y, DIVINE_LINE_START_HEIGHT };
   divineLineEndSpot = (vec3){ location->x, location->y, location->z };
@@ -1089,7 +1088,7 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
 
     if (defeatedAllHitboxes) {
       nuAuSeqPlayerStop(0);
-      screenType = TitleScreen;
+      screenType = DialogueScreen;
       changeScreensFlag = 1;
       currentLevel++;
     }
@@ -1101,7 +1100,7 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
     timeRemaining -= deltaSeconds;
     if (timeRemaining < 0.f) {
       nuAuSeqPlayerStop(0);
-      screenType = TitleScreen;
+      screenType = DialogueScreen;
       changeScreensFlag = 1;
     }
 
