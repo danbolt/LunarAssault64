@@ -263,6 +263,76 @@ EditScreen.prototype.create = function() {
         this.saveHeightToBinary();
     });
 
+    const openKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.O);
+    openKey.on('down', () => {
+        var input = document.createElement('input');
+        input.type = 'file';
+
+        input.onchange = e => { 
+            const files = e.target.files;
+            if (files.length <= 0) {
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = (data) => {
+                const view = new Uint8ClampedArray(data.target.result);
+
+                for (let i = 0; i < view.length; i++) {
+                    const byteValue = view[i];
+                    const x = i % MAP_WIDTH;
+                    const y = ~~(i / MAP_WIDTH);
+
+                    this.refreshTile(x, y, byteValue);
+                }
+
+                this.updateFaceFromTiles();
+
+            };
+            reader.readAsArrayBuffer(files[0])
+
+            document.body.removeChild(input);
+        }
+
+        document.body.appendChild(input);  
+        input.click();
+    });
+
+    const openKey2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    openKey2.on('down', () => {
+        var input = document.createElement('input');
+        input.type = 'file';
+
+        input.onchange = e => { 
+            const files = e.target.files;
+            if (files.length <= 0) {
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = (data) => {
+                const view = new Uint8ClampedArray(data.target.result);
+
+                for (let i = 0; i < view.length; i++) {
+                    const byteValue = view[i];
+                    const x = i % MAP_WIDTH;
+                    const y = ~~(i / MAP_WIDTH);
+
+                    this.heights[x][y] = byteValue;
+                }
+
+                this.updateGeoFromHeights();
+
+            };
+            reader.readAsArrayBuffer(files[0])
+
+            document.body.removeChild(input);
+        }
+
+        document.body.appendChild(input);  
+        input.click();
+    });
+
     const zeroKey = 48;
     const shiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     for (let i = 0; i < 8; i++) {
