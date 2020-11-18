@@ -13,6 +13,7 @@
 */
 
 #include <nusys.h>
+#include "hvqm.h"
 
 /* Use all graphic micro codes */
 beginseg
@@ -106,6 +107,49 @@ beginseg
 	include "audio/songs.sbk"
 endseg
 
+beginseg
+	name "fmv"
+	flags OBJECT
+	after "code"
+	include "fmvstage.o"
+	include "$(ROOT)/usr/lib/PR/gspF3DEX2.fifo.o"
+	include "$(ROOT)/usr/lib/PR/gspS2DEX2.fifo.o"
+#if HVQM_CFB_FORMAT == 1
+	include "../libhvqm2/rspcode/hvqm2sp1.o"/* HVQM2 microcode */
+/*	include "$(ROOT)/usr/lib/PR/hvqm2sp1.o"	/* HVQM2 microcode */
+#else /* HVQM_CFB_FORMAT */
+	include "../libhvqm2/rspcode/hvqm2sp2.o"/* HVQM2 microcode */
+/*	include "$(ROOT)/usr/lib/PR/hvqm2sp2.o"	/* HVQM2 microcode */
+#endif /* HVQM_CFB_FORMAT */
+endseg
+
+beginseg
+	name	"hvqmvideobuf"
+	flags	OBJECT
+	address 0x80180000	/* 16byte alignment */
+	include "hvqmvideobuf.o"
+endseg
+
+beginseg
+	name	"hvqmaudiobuf"
+	flags	OBJECT
+	address 0x80200000	/* 16byte alignment */
+	include "hvqmaudiobuf.o"
+endseg
+
+beginseg
+	name	"hvqwork"
+	flags	OBJECT
+	address 0x80300000
+	include "hvqmwork.o"
+endseg
+
+beginseg
+	name	"hvqmdata"
+	flags	RAW
+	include "../sample/sample2.hvqm"
+endseg
+
 beginwave
 	name	"gameplay_wave_stage1"
 	include	"code"
@@ -131,3 +175,14 @@ beginwave
 	include	"code"
 	include	"titlescreen"
 endwave
+
+beginwave
+	name	"fmv_wave"
+	include	"code"
+	include	"fmv"
+ 	include  "hvqmdata"
+ 	include	"hvqmvideobuf"
+ 	include	"hvqmaudiobuf"
+ 	include	"hvqwork"
+endwave
+

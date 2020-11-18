@@ -66,6 +66,18 @@ extern u8 _titlescreenSegmentDataEnd[];
 extern u8 _titlescreenSegmentBssStart[];
 extern u8 _titlescreenSegmentBssEnd[];
 
+// FMVs
+extern u8 _fmvSegmentStart[];
+extern u8 _fmvSegmentEnd[];
+extern u8 _fmvSegmentRomStart[];
+extern u8 _fmvSegmentRomEnd[];
+extern u8 _fmvSegmentTextStart[];
+extern u8 _fmvSegmentTextEnd[];
+extern u8 _fmvSegmentDataStart[];
+extern u8 _fmvSegmentDataEnd[];
+extern u8 _fmvSegmentBssStart[];
+extern u8 _fmvSegmentBssEnd[];
+
 // Audio
 extern u8 _songsSegmentRomStart[];
 extern u8 _songsSegmentRomEnd[];

@@ -12,12 +12,17 @@ CC  = gcc
 LD  = ld
 MAKEROM = mild
 
+#  Directory holding the HVQM2 library (libhvqm2.a)
+HVQMLIBDIR = ../libhvqm2/lib
+#  Directory holding the HVQM2 include file
+HVQMINCDIR = ../libhvqm2/lib
+
 NUAUDIOLIB = -lnualsgi_n -lgn_audio
 
 LCDEFS =	-DNU_DEBUG -DF3DEX_GBI_2
-LCINCS =	-I. -I$(NUSYSINCDIR) -I$(ROOT)/usr/include/PR
+LCINCS =	-I. -I$(NUSYSINCDIR) -I$(HVQMLIBDIR) -I$(ROOT)/usr/include/PR
 LCOPTS =	-G 0
-LDFLAGS = $(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) $(NUAUDIOLIB) -lnusys_d -lgultra -L$(GCCDIR)/mipse/lib -lkmc
+LDFLAGS = $(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) -L$(HVQMLIBDIR) $(NUAUDIOLIB) -lhvqm2 -lnusys -lgultra -L$(GCCDIR)/mipse/lib -lkmc
 
 OPTIMIZER =	-g
 
@@ -25,13 +30,13 @@ APP =		jam.out
 
 TARGETS =	jam.n64
 
-HFILES =	main.h font.h stage00.h graphic.h gamemath.h segmentinfo.h terraintex.h map.h hitboxes.h portraittex.h protaggeo.h kaiju1.h kaiju2.h dialoguestage.h
+HFILES =	main.h font.h stage00.h graphic.h gamemath.h segmentinfo.h terraintex.h map.h hitboxes.h portraittex.h protaggeo.h kaiju1.h kaiju2.h dialoguestage.h hvqm.h fmvstage.h 
 
-CODEFILES   = 	main.c graphic.c gfxinit.c gamemath.c
+CODEFILES   = 	main.c graphic.c gfxinit.c gamemath.c hvqmgfxinit.c hvqmmain.c hvqmaudio.c hvqmcopyframebuffer.c
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
 
-DATAFILES   =	kaiju1.c kaiju2.c titlescreenstage.c
+DATAFILES   =	kaiju1.c kaiju2.c titlescreenstage.c hvqmwork.c hvqmaudiobuf.c hvqmvideobuf.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
@@ -39,13 +44,17 @@ CODESEGMENT =	codesegment.o
 
 STAGEFILES  =	stage00.c map.c hitboxes.c portraittex.c protaggeo.c 
 
+HQVMCODEFILES = fmvstage.c
+
 DIALFILES   =	dialoguestage.c
 
 DIALOBJ     =	$(DIALFILES:.c=.o)
 
 STAGEOBJ    =	$(STAGEFILES:.c=.o)
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(STAGEOBJ) $(DIALOBJ)
+HQVMOBJ    =	$(HQVMCODEFILES:.c=.o)
+
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(STAGEOBJ) $(DIALOBJ) $(HQVMOBJ)
 
 FORCELINK =	-u guOrtho \
 			-u guPerspective \
@@ -93,6 +102,14 @@ FORCELINK =	-u guOrtho \
 			-u nuAuSeqPlayerStop \
 			-u nuAuSeqPlayerSetNo \
 			-u nuAuSeqPlayerPlay \
+			-u hvqm2InitSP1 \
+			-u hvqm2SetupSP1 \
+			-u hvqm2DecodeSP1 \
+			-u osPiStartDma \
+			-u hvqmCopyFrameBuffer \
+			-u guS2DInitBg \
+			-u adpcmDecode \
+
 
 default:        $(TARGETS)
 

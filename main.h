@@ -9,7 +9,8 @@
 typedef enum {
 	StageScreen,
 	DialogueScreen,
-	TitleScreen
+	TitleScreen,
+	FMVScreen
 } ScreenSetting;
 
 #define NUMBER_OF_LEVELS 2

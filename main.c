@@ -1,8 +1,10 @@
 #include <nusys.h>
 #include "main.h"
 #include "segmentinfo.h"
+#include "hvqm.h"
 
 #include "stage00.h"
+#include "fmvstage.h"
 #include "dialoguestage.h"
 #include "titlescreenstage.h"
 
@@ -12,6 +14,7 @@
 void stage00(int);
 void dialogue(int);
 void titlescreen(int);
+void fmvtick(int);
 
 volatile int changeScreensFlag;
 volatile ScreenSetting screenType;
@@ -119,6 +122,22 @@ void loadInTitleScreenState() {
   nuPiReadRomOverlay(&segment);
 }
 
+void loadInFMVScreenState() {
+  NUPiOverlaySegment segment;
+
+  segment.romStart  = _fmvSegmentRomStart;
+  segment.romEnd    = _fmvSegmentRomEnd;
+  segment.ramStart  = _fmvSegmentStart;
+  segment.textStart = _fmvSegmentTextStart;
+  segment.textEnd   = _fmvSegmentTextEnd;
+  segment.dataStart = _fmvSegmentDataStart;
+  segment.dataEnd   = _fmvSegmentDataEnd;
+  segment.bssStart  = _fmvSegmentBssStart;
+  segment.bssEnd    = _fmvSegmentBssEnd;
+
+  nuPiReadRomOverlay(&segment);
+}
+
 void initAudio(void)
 {
   nuAuInit();
@@ -133,17 +152,48 @@ void initAudio(void)
 void mainproc(void)
 {
   /* The initialization of graphic  */
-  nuGfxInit();
-
-  initAudio();
-
-  changeScreensFlag = 0;
-  screenType = TitleScreen;
-
-  currentLevel = 0;
+  // nuGfxInit();
+  hvqmGfxInit();
 
   /* The initialization of the controller manager  */
   contPattern = nuContInit();
+  changeScreensFlag = 0;
+
+  screenType = FMVScreen;
+
+  loadInFMVScreenState();
+  initFMVStage();
+  #if HVQM_CFB_FORMAT == 1
+      osViSetMode(&osViModeNtscLan1);
+  #else 
+      osViSetMode(&osViModeNtscLan2);
+  #endif 
+  osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON
+     | OS_VI_GAMMA_OFF
+     | OS_VI_GAMMA_DITHER_OFF
+     | OS_VI_DIVOT_ON);
+  nuGfxFuncSet((NUGfxFunc)fmvtick);
+
+  nuGfxDisplayOn();
+
+  while(!changeScreensFlag);
+
+  nuGfxFuncRemove();
+
+  osViSetMode(&osViModeNtscLan1);
+  /* Turn OFF again because executing osViSetMode
+     enables View Screen. */
+  nuGfxDisplayOff();
+  /* Needs to reset other settings */
+  osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON
+       | OS_VI_GAMMA_OFF
+       | OS_VI_GAMMA_DITHER_OFF
+       | OS_VI_DIVOT_ON);
+
+  initAudio();
+
+  screenType = TitleScreen;
+  currentLevel = 0;
 
   while (1) {
     if (screenType == StageScreen) {
@@ -216,5 +266,18 @@ void titlescreen(int pendingGfx)
   }
 
   updateTitleScreen(); 
+}
+
+void fmvtick(int pendingGfx)
+{
+  if (changeScreensFlag != 0) {
+    return;
+  }
+
+  if(pendingGfx < 3) {
+    makeFMVDL();   
+  }
+
+  updateFMVStage(); 
 }
 

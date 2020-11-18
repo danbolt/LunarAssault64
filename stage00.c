@@ -1130,17 +1130,17 @@ void updateGame00(void) {
 
   noiseFactor = lerp(noiseFactor, DEFAULT_NOISE_LEVEL, 0.04f);
 
-  nuDebPerfMarkSet(0);
+  //nudebperfMarkSet(0);
   updateKaijuCallback(deltaSeconds);
-  nuDebPerfMarkSet(1);
+  //nudebperfMarkSet(1);
   updateKaijuHitboxes(deltaSeconds);
-  nuDebPerfMarkSet(2);
+  //nudebperfMarkSet(2);
   updatePlayer(deltaSeconds);
-  nuDebPerfMarkSet(3);
+  //nudebperfMarkSet(3);
   updateHitboxCheck();
-  nuDebPerfMarkSet(4);
+  //nudebperfMarkSet(4);
   updateDivineLine(deltaSeconds);
-  nuDebPerfMarkSet(5);
+  //nudebperfMarkSet(5);
   checkIfPlayerHasWonOrLost(deltaSeconds);
 
 }
