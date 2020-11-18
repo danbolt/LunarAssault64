@@ -147,7 +147,7 @@ endseg
 beginseg
 	name	"hvqmdata"
 	flags	RAW
-	include "../sample/sample2.hvqm"
+	include "fmv/sample2.hvqm"
 endseg
 
 beginwave
