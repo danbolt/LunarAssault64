@@ -77,11 +77,10 @@ void updateFMVStage(void)
     /* Controller 1 data read */
     nuContDataGetEx(contdata,0);
 
-    /* Restart with A button */
+    // Remove this when finaling
     if(contdata[0].trigger & A_BUTTON) {
 	   hvqmStart(HVQM_DATA);
     }
-
 
     if(contdata[0].trigger & START_BUTTON) {
         changeScreensFlag = 1;
