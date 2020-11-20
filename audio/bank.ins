@@ -7,6 +7,24 @@ envelope synth1env
     releaseTime   = 714000;
 }
 
+envelope elecguitarenv
+{
+    attackTime    = 197000;
+    attackVolume  = 127;
+    decayTime   = 596000;
+    decayVolume   = 100;
+    releaseTime   = 195000;
+}
+
+envelope elecbassenv
+{
+    attackTime    = 0;
+    attackVolume  = 127;
+    decayTime   = 392000;
+    decayVolume   = 100;
+    releaseTime   = 345000;
+}
+
 keymap synth1mapc4
 {
     velocityMin = 0;
@@ -26,6 +44,47 @@ keymap synth1mapc5
     keyBase     = 72;
     detune      = 0;
 }
+
+keymap elecguitarmapc4
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 0;
+    keyMax      = 63;
+    keyBase     = 60;
+    detune      = 0;
+}
+
+keymap elecguitarmapc5
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 64;
+    keyMax      = 80;
+    keyBase     = 72;
+    detune      = 0;
+}
+
+keymap elecguitarmapc6
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 81;
+    keyMax      = 127;
+    keyBase     = 84;
+    detune      = 0;
+}
+
+keymap elecbassmapg3
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 0;
+    keyMax      = 60;
+    keyBase     = 48;
+    detune      = 0;
+}
+
 
 sound synth1soundc4
 {
@@ -47,6 +106,46 @@ sound synth1soundc5
     envelope = synth1env;
 }
 
+sound electricguitarsoundc4
+{
+    use ("sample/elec_guitar_c4.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = elecguitarmapc4;
+    envelope = elecguitarenv;
+}
+
+sound electricguitarsoundc5
+{
+    use ("sample/elec_guitar_c5.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = elecguitarmapc5;
+    envelope = elecguitarenv;
+}
+
+sound electricguitarsoundc6
+{
+    use ("sample/elec_guitar_c6.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = elecguitarmapc6;
+    envelope = elecguitarenv;
+}
+
+sound electricbasssoundg3
+{
+    use ("sample/bass_synth_g3.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = elecbassmapg3;
+    envelope = elecbassenv;
+}
+
 instrument synth1
 {
     volume = 127;
@@ -57,11 +156,42 @@ instrument synth1
 }
 
 
+instrument elecguitar
+{
+    volume = 127;
+    pan    = 64;
+
+    sound  = electricguitarsoundc4;
+    sound  = electricguitarsoundc5;
+    sound  = electricguitarsoundc6;
+}
+
+instrument elecbass
+{
+    volume = 127;
+    pan    = 64;
+
+    sound  = electricbasssoundg3;
+}
+
 bank SongBank 
 {
     sampleRate = 32000;
 
     instrument [0] = synth1;
+
+    instrument [26] = elecguitar;
+    instrument [27] = elecguitar;
+    instrument [28] = elecguitar;
+    instrument [29] = elecguitar;
+    instrument [30] = elecguitar;
+    instrument [31] = elecguitar;
+
+    instrument [33] = elecbass;
+    instrument [33] = elecbass;
+    instrument [34] = elecbass;
+    instrument [35] = elecbass;
+
     instrument [94] = synth1;
     instrument [95] = synth1;
     instrument [96] = synth1;
