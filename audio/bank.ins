@@ -40,8 +40,18 @@ keymap synth1mapc5
     velocityMin = 0;
     velocityMax = 127;
     keyMin      = 64;
-    keyMax      = 127;
+    keyMax      = 80;
     keyBase     = 72;
+    detune      = 0;
+}
+
+keymap synth1mapc6
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 81;
+    keyMax      = 127;
+    keyBase     = 84;
     detune      = 0;
 }
 
@@ -106,6 +116,16 @@ sound synth1soundc5
     envelope = synth1env;
 }
 
+sound synth1soundc6
+{
+    use ("sample/synth1_c6.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = synth1mapc6;
+    envelope = synth1env;
+}
+
 sound electricguitarsoundc4
 {
     use ("sample/elec_guitar_c4.aifc");
@@ -153,6 +173,7 @@ instrument synth1
 
     sound  = synth1soundc4;
     sound  = synth1soundc5;
+    sound  = synth1soundc6;
 }
 
 
@@ -191,6 +212,8 @@ bank SongBank
     instrument [33] = elecbass;
     instrument [34] = elecbass;
     instrument [35] = elecbass;
+
+    instrument [65] = synth1;
 
     instrument [94] = synth1;
     instrument [95] = synth1;

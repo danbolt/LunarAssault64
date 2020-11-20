@@ -11,6 +11,7 @@ void initTitleScreen(void) {
 	nuAuSeqPlayerPlay(0);
 }
 
+
 void makeDLTitleScreen(void) {
 	DisplayData* dynamicp;
 	char conbuf[20];

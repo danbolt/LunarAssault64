@@ -1,3 +1,7 @@
+
+#include <nusys.h>
+#include <nualsgi_n.h>
+
 #include "dialoguestage.h"
 
 #include "main.h"
@@ -86,6 +90,10 @@ void initDialogue(void) {
 	portratPositions[1].x = 320;
 	portratPositions[1].y = 240;
 	refreshTargetSpots(currentLine->speakerIndex);
+
+	nuAuSeqPlayerStop(0);
+	nuAuSeqPlayerSetNo(0, 4);
+	nuAuSeqPlayerPlay(0);
 }
 
 void getCharST(const char* character, int* s, int* t) {
@@ -268,6 +276,7 @@ void updateText(float deltaSeconds) {
 			// TODO: add a fadeout
 			changeScreensFlag = 1;
 			screenType = StageScreen;
+			nuAuSeqPlayerStop(0);
 		}
 	}
 }
@@ -293,6 +302,7 @@ void updateDialogue(void) {
 	if (contdata->trigger & START_BUTTON) {
 		changeScreensFlag = 1;
 		screenType = StageScreen;
+		nuAuSeqPlayerStop(0);
 		return;
 	}
 }
