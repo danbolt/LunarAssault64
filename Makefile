@@ -36,7 +36,7 @@ CODEFILES   = 	main.c graphic.c gfxinit.c gamemath.c hvqmgfxinit.c hvqmmain.c hv
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
 
-DATAFILES   =	kaiju1.c kaiju2.c titlescreenstage.c hvqmwork.c hvqmaudiobuf.c hvqmvideobuf.c
+DATAFILES   =	kaiju1.c kaiju2.c titlescreenstage.c hvqmwork.c hvqmaudiobuf.c hvqmvideobuf.c labbg.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 

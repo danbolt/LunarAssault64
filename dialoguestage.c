@@ -27,6 +27,8 @@
 #define BOSS_PORTRAIT_WIDTH 132
 #define BOSS_PORTRAIT_HEIGHT 206
 
+extern unsigned char lab_bg_bin[];
+
 DialogueLine closing = { "And the work began.", NULL, NOBODY_THERE };
 
 DialogueLine d2 = { "I'm on it!\nYou can count on me.", &closing, PROTAG_SPEAKING };
@@ -177,6 +179,15 @@ void drawString(int x, int y, const char* str, int cutoff) {
 	drawString_impl(x, y, str, cutoff);
 }
 
+void drawLabBackground(int x, int y) {
+	int i;
+
+	for (i = 0; i < (240 / 5); i++) {
+		gDPLoadTextureTile(glistp++, lab_bg_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, 240, 0, (i * 5), 320 - 1, ((i + 1) * 5) - 1, 0, G_TX_WRAP, G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD );
+		gSPScisTextureRectangle(glistp++, x << 2, (y + (i * 5)) << 2, (x + 320) << 2, (y + ((i + 1) * 5)) << 2, 0, 0 << 5, (i * 5) << 5, 1 << 10, 1 << 10);
+	}
+}
+
 void drawProtagonist(int x, int y) {
 	int i;
 
@@ -224,6 +235,7 @@ void makeDLDialogue(void) {
 	gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
 
+	drawLabBackground(0, 0);
 	drawBosss(portratPositions[0].x, portratPositions[0].y);
 	drawProtagonist(portratPositions[1].x, portratPositions[1].y);
 

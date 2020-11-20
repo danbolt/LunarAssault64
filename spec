@@ -47,6 +47,7 @@ beginseg
 	after "code"
 	align 32
 	include "dialoguestage.o"
+	include "labbg.o"
 endseg
 
 beginseg
