@@ -41,7 +41,7 @@
 #define PLAYER_MOVE_SPEED 10.f
 #define GRAVITY -3.2f
 #define JUMP_VELOCITY 3.f
-#define STEP_HEIGHT_CUTOFF 0.15f
+#define STEP_HEIGHT_CUTOFF 0.0915f
 
 #define NOT_ZOOMED_IN -1
 #define ZOOMED_IN 1
