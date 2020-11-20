@@ -886,8 +886,8 @@ void updatePlayer(float deltaSeconds) {
   stepY = playerPos.y + (playerVelocity.y * deltaSeconds);
   stepZ = playerPos.z + (playerVelocity.z * deltaSeconds);
 
-  stepX = clamp(stepX, 0, MAP_WIDTH);
-  stepY = clamp(stepY, 0, MAP_LENGTH);
+  stepX = clamp(stepX, 1.f, 127.f);
+  stepY = clamp(stepY, 1.f, 127.f);
 
   groundHeight = MAX(stepZ, getHeight(stepX, stepY));
   currentAltitude = MAX(stepZ, getHeight(playerPos.x, playerPos.y));
