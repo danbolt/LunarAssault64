@@ -519,7 +519,7 @@ void initStage00(void) {
   divineLineStartSpot = (vec3){ MAP_WIDTH * 0.5f, MAP_LENGTH * 0.5f, 60.f };
   divineLineEndSpot = (vec3){ 0.f, 0.f, 0.f };
 
-  timeRemaining = 130.f;
+  timeRemaining = 150.f;
 
   initKaijuCallback();
 

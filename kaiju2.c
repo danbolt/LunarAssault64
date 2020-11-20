@@ -130,22 +130,6 @@ void initKaiju2() {
   hitboxes[9].parent = NULL;
   parentHitboxes(&(hitboxes[9]), &(hitboxes[0]));
 
-  hitboxes[2].alive = 1;
-  hitboxes[2].destroyable = 1;
-  hitboxes[2].isTransformDirty = 1;
-  hitboxes[2].position = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[2].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[2].scale = (vec3){ 1.f / hitboxes[0].scale.x, 1.f / hitboxes[0].scale.y, 1.f / hitboxes[0].scale.z };
-  guMtxIdentF(hitboxes[2].computedTransform.data);
-  hitboxes[2].displayCommands = red_octahedron_commands;
-  hitboxes[2].check = sdOctahedron;
-  hitboxes[2].numberOfChildren = 0;
-  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
-    hitboxes[2].children[i] = NULL;
-  }
-  hitboxes[2].parent = NULL;
-  parentHitboxes(&(hitboxes[2]), &(hitboxes[1]));
-
   hitboxes[3].alive = 1;
   hitboxes[3].destroyable = 1;
   hitboxes[3].isTransformDirty = 1;
