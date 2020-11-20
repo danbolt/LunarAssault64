@@ -57,7 +57,7 @@ void updateTitleScreen(void) {
 		nuAuSeqPlayerStop(0);
 		changeScreensFlag = 1;
 		screenType = DialogueScreen;
-		currentLevel = 0;
+		currentLevel = 1;
 		return;
 	}
 }

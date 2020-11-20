@@ -91,6 +91,18 @@ beginseg
 endseg
 
 beginseg
+	name "level2_terrain"
+	flags "RAW"
+	include "terrain/level2.bin"
+endseg
+
+beginseg
+	name "level2_topography"
+	flags "RAW"
+	include "topography/level2.bin"
+endseg
+
+beginseg
 	name "audiobank_table"
 	flags "RAW"
 	include "audio/bank.tbl"

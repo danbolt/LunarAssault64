@@ -71,12 +71,18 @@ vec2 walkPoints2[] = {
 #define NUMBER_OF_WALK_POINTS (sizeof(walkPoints2)/sizeof(walkPoints2[0]))
 #define LOOPED_WALK_POINT(index) ((index + NUMBER_OF_WALK_POINTS) % NUMBER_OF_WALK_POINTS)
 
+extern vec3 playerPos;
+extern vec3 cameraRotation;
+
 void initKaiju2() {
   int i;
 
   kaijuTime = 0.f;
   pointIndex = 0;
   timeBetweenPoints = 30.f;
+
+  playerPos = (vec3){120, 120, 0};
+  cameraRotation = (vec3){0, 0, 170};
 
 	 for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
     hitboxes[0].alive = 0;

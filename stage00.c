@@ -463,13 +463,13 @@ static Gfx zoomed_in_dl[] = {
   gsSPEndDisplayList()
 };
 
-static vec3 cameraPos = { 0.f, 0.f, 0.f };
-static vec3 cameraTarget = { 0.f, 0.f, 0.f };
-static vec3 cameraRotation = { 0.f, 0.f, 0.f };
+vec3 cameraPos = { 0.f, 0.f, 0.f };
+vec3 cameraTarget = { 0.f, 0.f, 0.f };
+vec3 cameraRotation = { 0.f, 0.f, 0.f };
 static const s8 cameraYInvert = 1;
 
-static vec3 playerPos = { 0.f, 0.f, 0.f };
-static vec3 playerVelocity = { 0.f, 0.f, 0.f };
+vec3 playerPos = { 0.f, 0.f, 0.f };
+vec3 playerVelocity = { 0.f, 0.f, 0.f };
 static float playerDisplayRotation = 0.f;
 static int playerIsOnTheGround = 0;
 
@@ -885,6 +885,9 @@ void updatePlayer(float deltaSeconds) {
   stepX = playerPos.x + (playerVelocity.x * deltaSeconds);
   stepY = playerPos.y + (playerVelocity.y * deltaSeconds);
   stepZ = playerPos.z + (playerVelocity.z * deltaSeconds);
+
+  stepX = clamp(stepX, 0, MAP_WIDTH);
+  stepY = clamp(stepY, 0, MAP_LENGTH);
 
   groundHeight = MAX(stepZ, getHeight(stepX, stepY));
   currentAltitude = MAX(stepZ, getHeight(playerPos.x, playerPos.y));

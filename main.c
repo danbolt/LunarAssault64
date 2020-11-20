@@ -45,8 +45,14 @@ void loadInStageState(int levelNumber) {
   segment.bssEnd    = _stageSegmentBssEnd;
 
   groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
-  terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
-  topographyROMAddress = (u32)_level1_topographySegmentRomStart;
+
+  if (levelNumber == 0) {
+    terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
+    topographyROMAddress = (u32)_level1_topographySegmentRomStart;
+  }  else if (levelNumber == 1) {
+    terrainROMAddress = (u32)_level2_terrainSegmentRomStart;
+    topographyROMAddress = (u32)_level2_topographySegmentRomStart;
+  }
 
   nuPiReadRomOverlay(&segment);
 }
