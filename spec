@@ -103,6 +103,18 @@ beginseg
 endseg
 
 beginseg
+	name "sfxbank_table"
+	flags "RAW"
+	include "audio/sfx/sfx.tbl"
+endseg
+
+beginseg
+	name "sfxbank_control"
+	flags "RAW"
+	include "audio/sfx/sfx.ctl"
+endseg
+
+beginseg
 	name "audiobank_table"
 	flags "RAW"
 	include "audio/bank.tbl"

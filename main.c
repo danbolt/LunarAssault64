@@ -1,4 +1,5 @@
 #include <nusys.h>
+#include <nualsgi_n.h>
 #include "main.h"
 #include "segmentinfo.h"
 #include "hvqm.h"
@@ -150,6 +151,9 @@ void initAudio(void)
 
   nuAuSeqPlayerBankSet(_audiobank_controlSegmentRomStart, _audiobank_controlSegmentRomEnd - _audiobank_controlSegmentRomStart, _audiobank_tableSegmentRomStart);
   nuAuSeqPlayerSeqSet(_songsSegmentRomStart);
+  nuAuSeqPlayerSetVol(0, 0x6000);
+
+  nuAuSndPlayerBankSet(_sfxbank_controlSegmentRomStart, _sfxbank_controlSegmentRomEnd - _sfxbank_controlSegmentRomStart, _sfxbank_tableSegmentRomStart);
 }
 
 /*------------------------

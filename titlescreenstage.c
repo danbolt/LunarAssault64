@@ -4,6 +4,7 @@
 #include <nusys.h>
 #include <nualsgi_n.h>
 #include "main.h"
+#include "soundid.h"
 
 void initTitleScreen(void) {
 	nuAuSeqPlayerStop(0);
@@ -35,6 +36,14 @@ void makeDLTitleScreen(void) {
 		sprintf(conbuf, "LASERSCOPE MOON SPOTTER");
 		nuDebConCPuts(0, conbuf);
 
+
+		nuDebConTextPos(0,2,6);
+		sprintf(conbuf, "audio heap used %d", nuAuHeapGetUsed());
+		nuDebConCPuts(0, conbuf);
+		nuDebConTextPos(0,2,7);
+		sprintf(conbuf, "audio heap free %d", nuAuHeapGetFree());
+		nuDebConCPuts(0, conbuf);
+
 		nuDebConTextPos(0,4,20);
 		sprintf(conbuf, "press start");
 		nuDebConCPuts(0, conbuf);
@@ -57,7 +66,7 @@ void updateTitleScreen(void) {
 		nuAuSeqPlayerStop(0);
 		changeScreensFlag = 1;
 		screenType = DialogueScreen;
-		currentLevel = 1;
+		currentLevel = 0;
 		return;
 	}
 }

@@ -82,12 +82,18 @@ extern u8 _fmvSegmentDataEnd[];
 extern u8 _fmvSegmentBssStart[];
 extern u8 _fmvSegmentBssEnd[];
 
-// Audio
+// bgm
 extern u8 _songsSegmentRomStart[];
 extern u8 _songsSegmentRomEnd[];
 extern u8 _audiobank_tableSegmentRomStart[];
 extern u8 _audiobank_tableSegmentRomEnd[];
 extern u8 _audiobank_controlSegmentRomStart[];
 extern u8 _audiobank_controlSegmentRomEnd[];
+
+// sfx
+extern u8 _sfxbank_tableSegmentRomStart[];
+extern u8 _sfxbank_tableSegmentRomEnd[];
+extern u8 _sfxbank_controlSegmentRomStart[];
+extern u8 _sfxbank_controlSegmentRomEnd[];
 
 #endif
