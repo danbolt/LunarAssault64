@@ -1,0 +1,381 @@
+envelope defaultenv
+{
+    attackTime    = 0;
+    attackVolume  = 127;
+    decayTime   = 500000;
+    decayVolume   = 100;
+    releaseTime   = 200000;
+    
+}
+
+keymap boss_bipKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 10;
+    keyMax      = 10;
+    keyBase     = 10;
+    detune      = 0;
+}
+
+sound boss_bipSound
+{
+    use ("compressed/boss_bip.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = boss_bipKeymap;
+    envelope = defaultenv;
+}
+
+keymap explosion1Keymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 11;
+    keyMax      = 11;
+    keyBase     = 11;
+    detune      = 0;
+}
+
+sound explosion1Sound
+{
+    use ("compressed/explosion1.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = explosion1Keymap;
+    envelope = defaultenv;
+}
+
+keymap explosion2Keymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 12;
+    keyMax      = 12;
+    keyBase     = 12;
+    detune      = 0;
+}
+
+sound explosion2Sound
+{
+    use ("compressed/explosion2.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = explosion2Keymap;
+    envelope = defaultenv;
+}
+
+keymap explosion3Keymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 13;
+    keyMax      = 13;
+    keyBase     = 13;
+    detune      = 0;
+}
+
+sound explosion3Sound
+{
+    use ("compressed/explosion3.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = explosion3Keymap;
+    envelope = defaultenv;
+}
+
+keymap jumpKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 14;
+    keyMax      = 14;
+    keyBase     = 14;
+    detune      = 0;
+}
+
+sound jumpSound
+{
+    use ("compressed/jump.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = jumpKeymap;
+    envelope = defaultenv;
+}
+
+keymap jump2Keymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 15;
+    keyMax      = 15;
+    keyBase     = 15;
+    detune      = 0;
+}
+
+sound jump2Sound
+{
+    use ("compressed/jump2.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = jump2Keymap;
+    envelope = defaultenv;
+}
+
+keymap laser1Keymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 16;
+    keyMax      = 16;
+    keyBase     = 16;
+    detune      = 0;
+}
+
+sound laser1Sound
+{
+    use ("compressed/laser1.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = laser1Keymap;
+    envelope = defaultenv;
+}
+
+keymap laser2Keymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 17;
+    keyMax      = 17;
+    keyBase     = 17;
+    detune      = 0;
+}
+
+sound laser2Sound
+{
+    use ("compressed/laser2.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = laser2Keymap;
+    envelope = defaultenv;
+}
+
+keymap laser3Keymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 18;
+    keyMax      = 18;
+    keyBase     = 18;
+    detune      = 0;
+}
+
+sound laser3Sound
+{
+    use ("compressed/laser3.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = laser3Keymap;
+    envelope = defaultenv;
+}
+
+keymap laser_chargeKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 19;
+    keyMax      = 19;
+    keyBase     = 19;
+    detune      = 0;
+}
+
+sound laser_chargeSound
+{
+    use ("compressed/laser_charge.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = laser_chargeKeymap;
+    envelope = defaultenv;
+}
+
+keymap no_targetKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 20;
+    keyMax      = 20;
+    keyBase     = 20;
+    detune      = 0;
+}
+
+sound no_targetSound
+{
+    use ("compressed/no_target.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = no_targetKeymap;
+    envelope = defaultenv;
+}
+
+keymap nobody_bipKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 21;
+    keyMax      = 21;
+    keyBase     = 21;
+    detune      = 0;
+}
+
+sound nobody_bipSound
+{
+    use ("compressed/nobody_bip.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = nobody_bipKeymap;
+    envelope = defaultenv;
+}
+
+keymap player_bipKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 22;
+    keyMax      = 22;
+    keyBase     = 22;
+    detune      = 0;
+}
+
+sound player_bipSound
+{
+    use ("compressed/player_bip.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = player_bipKeymap;
+    envelope = defaultenv;
+}
+
+keymap successKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 23;
+    keyMax      = 23;
+    keyBase     = 23;
+    detune      = 0;
+}
+
+sound successSound
+{
+    use ("compressed/success.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = successKeymap;
+    envelope = defaultenv;
+}
+
+keymap time_overKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 24;
+    keyMax      = 24;
+    keyBase     = 24;
+    detune      = 0;
+}
+
+sound time_overSound
+{
+    use ("compressed/time_over.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = time_overKeymap;
+    envelope = defaultenv;
+}
+
+keymap zoom_inKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 25;
+    keyMax      = 25;
+    keyBase     = 25;
+    detune      = 0;
+}
+
+sound zoom_inSound
+{
+    use ("compressed/zoom_in.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = zoom_inKeymap;
+    envelope = defaultenv;
+}
+
+keymap zoom_outKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 26;
+    keyMax      = 26;
+    keyBase     = 26;
+    detune      = 0;
+}
+
+sound zoom_outSound
+{
+    use ("compressed/zoom_out.aifc");
+    
+    pan    = 64;
+    volume = 127;
+    keymap = zoom_outKeymap;
+    envelope = defaultenv;
+}
+
+instrument sfx
+{
+    volume = 127;
+    pan    = 64;
+    
+    sound = boss_bipSound;
+    sound = explosion1Sound;
+    sound = explosion2Sound;
+    sound = explosion3Sound;
+    sound = jumpSound;
+    sound = jump2Sound;
+    sound = laser1Sound;
+    sound = laser2Sound;
+    sound = laser3Sound;
+    sound = laser_chargeSound;
+    sound = no_targetSound;
+    sound = nobody_bipSound;
+    sound = player_bipSound;
+    sound = successSound;
+    sound = time_overSound;
+    sound = zoom_inSound;
+    sound = zoom_outSound;
+}
+
+bank sfxbank
+{
+    sampleRate = 32000;
+    
+    instrument [0] = sfx;
+}
+
