@@ -9,6 +9,7 @@
 #include "graphic.h"
 #include "gamemath.h"
 #include "segmentinfo.h"
+#include "soundid.h"
 
 #include "doc/protag_portrait.h"
 #include "doc/boss_portrait.h"
@@ -255,10 +256,20 @@ void makeDLDialogue(void) {
 }
 
 void updateText(float deltaSeconds) {
+	u32 currentSpeakerSound = SOUND_NOBODY_BIP;
+	if (currentLine->speakerIndex == BOSS_SPEAKING) {
+		currentSpeakerSound = SOUND_BOSS_BIP;
+	} else if (currentLine->speakerIndex == PROTAG_SPEAKING) {
+		currentSpeakerSound = SOUND_PLAYER_BIP;
+	}
+
 	if (tickingText) {
 		textTime += deltaSeconds;
 		if (textTime > TIME_PER_LETTER) {
 			textTime = 0;
+			if ((currentLine->data[letterIndex] != ' ') && (currentLine->data[letterIndex] != '\n')) {
+				nuAuSndPlayerPlay(currentSpeakerSound);
+			}
 			letterIndex++;
 
 			if (currentLine->data[letterIndex] == '\0') {

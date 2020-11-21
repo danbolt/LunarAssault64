@@ -4,6 +4,7 @@
 #include "stage00.h"
 #include "main.h"
 #include "segmentinfo.h"
+#include "soundid.h"
 
 #include "map.h"
 #include "graphic.h"
@@ -783,10 +784,6 @@ void makeDL00(void) {
       gSPTextureRectangle(glistp++, (211 +  8 + 4) << 2, (200) << 2, (211 + 16 + 4) << 2, (200 + 8) << 2, 0, s0 << 5, t0 << 5, 1 << 10, 1 << 10);
       gSPTextureRectangle(glistp++, (211 + 16 + 4) << 2, (200) << 2, (211 + 24 + 4) << 2, (200 + 8) << 2, 0, s1 << 5, t1 << 5, 1 << 10, 1 << 10);
     }
-
-    // if (zoomState == ZOOMED_IN) {
-    //   gSPDisplayList(glistp++, zoomed_in_dl);
-    // }
   }
 
   gDPFullSync(glistp++);
@@ -887,6 +884,7 @@ void updatePlayer(float deltaSeconds) {
   if (playerIsOnTheGround && (contdata->trigger & A_BUTTON)) {
     playerIsOnTheGround = 0;
     playerVelocity.z = JUMP_VELOCITY;
+    nuAuSndPlayerPlay(SOUND_JUMP1);
   }
 
   stepX = playerPos.x + (playerVelocity.x * deltaSeconds);
@@ -928,9 +926,11 @@ void updatePlayer(float deltaSeconds) {
 
   if ((zoomState == NOT_ZOOMED_IN) && ((contdata->trigger & L_TRIG))) {
     zoomState = ZOOMED_IN;
+    nuAuSndPlayerPlay(SOUND_ZOOM_IN);
   }
   if ((zoomState == ZOOMED_IN) && (!(contdata->button & L_TRIG))) {
     zoomState = NOT_ZOOMED_IN;
+    nuAuSndPlayerPlay(SOUND_ZOOM_OUT);
   }
 
   playerZoomFactor = clamp(playerZoomFactor + (ZOOM_IN_OUT_SPEED * deltaSeconds * zoomState), 0.f, 1.f);
@@ -976,6 +976,7 @@ void updateKaijuHitboxes(float delta) {
 }
 
 void fireLaser(const vec3* location) {
+  int roll = ((int)timeRemaining) % 3;
   laserChargeFactor = 0.f;
 
   divineLineStartSpot = (vec3){ location->x, location->y, DIVINE_LINE_START_HEIGHT };
@@ -983,6 +984,14 @@ void fireLaser(const vec3* location) {
 
   divineLineState = DIVINE_LINE_ON;
   divineLineTimePassed = 0.f;
+
+  if (roll == 0) {
+    nuAuSndPlayerPlay(SOUND_LASER3);
+  } else if (roll == 1) {
+    nuAuSndPlayerPlay(SOUND_LASER2);
+  }else {
+    nuAuSndPlayerPlay(SOUND_LASER1);
+  }
 }
 
 void getParentAdjustedInverses(mat4* result, KaijuHitbox* hitbox) {
@@ -1053,6 +1062,7 @@ void raymarchAimLineAgainstHitboxes() {
       if (closestHitbox->destroyable) {
         closestHitbox->alive = 0;
         noiseFactor = 0.70f;
+        nuAuSndPlayerPlay(SOUND_EXPLOSION1);
       }
       break;
     }
@@ -1063,6 +1073,7 @@ void raymarchAimLineAgainstHitboxes() {
   if (!hitAnything) {
     laserChargeFactor = 0.f;
     noiseFactor = 0.f;
+    nuAuSndPlayerPlay(SOUND_NO_TARGET);
   }
 }
 
