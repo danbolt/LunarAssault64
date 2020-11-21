@@ -22,8 +22,10 @@
 #define CAMERA_BASE_FOV 60
 #define CAMERA_ZOOM_FOV_CHANGE -35
 #define CAMERA_MOVE_SPEED 10.f
-#define CAMERA_TURN_SPEED_X 2.373f
-#define CAMERA_TURN_SPEED_Y 2.373f
+#define CAMERA_TURN_SPEED_X 4.373f
+#define CAMERA_TURN_SPEED_Y 5.373f
+#define CAMERA_TURN_SPEED_X_DIGITAL 2.373f
+#define CAMERA_TURN_SPEED_Y_DIGITAL 2.373f
 #define CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED -2.2f
 #define CAMERA_DISTANCE 3.f
 #define CAMERA_LIFT_FRONT 0.7f
@@ -38,9 +40,9 @@
 #define HIGH_DETAIL_CUTOFF 45.f
 #define HIGH_DETAIL_CUTOFF_SQ (HIGH_DETAIL_CUTOFF * HIGH_DETAIL_CUTOFF)
 
-#define PLAYER_MOVE_SPEED 10.f
-#define GRAVITY -3.2f
-#define JUMP_VELOCITY 3.f
+#define PLAYER_MOVE_SPEED 6.f
+#define GRAVITY -5.2f
+#define JUMP_VELOCITY 6.f
 #define STEP_HEIGHT_CUTOFF 0.0915f
 
 #define NOT_ZOOMED_IN -1
@@ -466,7 +468,7 @@ static Gfx zoomed_in_dl[] = {
 vec3 cameraPos = { 0.f, 0.f, 0.f };
 vec3 cameraTarget = { 0.f, 0.f, 0.f };
 vec3 cameraRotation = { 0.f, 0.f, 0.f };
-static const s8 cameraYInvert = 1;
+static const s8 cameraYInvert = -1;
 
 vec3 playerPos = { 0.f, 0.f, 0.f };
 vec3 playerVelocity = { 0.f, 0.f, 0.f };
@@ -838,35 +840,40 @@ void updatePlayer(float deltaSeconds) {
   float groundHeightStepY;
   float currentAltitude;
   float groundHeight;
-  float inputDirectionX = contdata->stick_x / 255.f;
-  float inputDirectionY = contdata->stick_y / 255.f;
+  float walkDirectionX = 0.f;
+  float walkDirectionY = 0.f;
+  float inputDirectionX = MAX(-65, MIN(65, contdata->stick_x)) / 255.f;
+  float inputDirectionY = MAX(-65, MIN(65, contdata->stick_y)) / 255.f;
   float inputDirectionXRotated;
   float inputDirectionYRotated;
   float cosCameraRot, sinCameraRot;
 
-  if (contdata->button & L_CBUTTONS) {
-    cameraRotation.z += (CAMERA_TURN_SPEED_X + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds;
-  }
-  else if (contdata->button & R_CBUTTONS) {
-    cameraRotation.z -= (CAMERA_TURN_SPEED_X + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds;
-  }
-
-  if (contdata->button & U_CBUTTONS) {
-    cameraRotation.y = MAX(-M_PI * 0.35f, cameraRotation.y - ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert));
-  }
-  else if (contdata->button & D_CBUTTONS) {
-    cameraRotation.y = MIN(M_PI * 0.35f, cameraRotation.y + ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert));
-  }
-
-  if (contdata->button & Z_TRIG) {
+  if (fabs_d(inputDirectionX) < 0.025f) {
     inputDirectionX = 0.f;
+  }
+  if (fabs_d(inputDirectionY) < 0.025f) {
     inputDirectionY = 0.f;
   }
 
+  if (contdata[0].button & L_JPAD) {
+    walkDirectionX = -1.f;
+  } else if (contdata[0].button & R_JPAD) {
+    walkDirectionX = 1.f;
+  }
+
+  if (contdata[0].button & D_JPAD) {
+    walkDirectionY = -1.f;
+  } else if (contdata[0].button & U_JPAD) {
+    walkDirectionY = 1.f;
+  }
+
+  cameraRotation.z -= inputDirectionX * (CAMERA_TURN_SPEED_X + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds;
+  cameraRotation.y = MAX(-M_PI * 0.35f, MIN(M_PI * 0.35f, cameraRotation.y + ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert * inputDirectionY)));
+
   cosCameraRot = cosf(cameraRotation.z + M_PI * 0.5f);
   sinCameraRot = sinf(cameraRotation.z + M_PI * 0.5f);
-  inputDirectionXRotated = (cosCameraRot * inputDirectionX) - (sinCameraRot * inputDirectionY);
-  inputDirectionYRotated = (sinCameraRot * inputDirectionX) + (cosCameraRot * inputDirectionY);
+  inputDirectionXRotated = (cosCameraRot * walkDirectionX) - (sinCameraRot * walkDirectionY);
+  inputDirectionYRotated = (sinCameraRot * walkDirectionX) + (cosCameraRot * walkDirectionY);
 
   playerVelocity.x = inputDirectionXRotated * PLAYER_MOVE_SPEED;
   playerVelocity.y = inputDirectionYRotated * PLAYER_MOVE_SPEED;
@@ -919,20 +926,20 @@ void updatePlayer(float deltaSeconds) {
   cameraPos.y = cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y));
   cameraPos.z = cameraTarget.z + (CAMERA_DISTANCE * sinf(cameraRotation.y)) + CAMERA_LIFT_BACK;
 
-  if ((zoomState == NOT_ZOOMED_IN) && (contdata->trigger & R_TRIG)) {
+  if ((zoomState == NOT_ZOOMED_IN) && ((contdata->trigger & L_TRIG))) {
     zoomState = ZOOMED_IN;
   }
-  if ((zoomState == ZOOMED_IN) && (!(contdata->button & R_TRIG))) {
+  if ((zoomState == ZOOMED_IN) && (!(contdata->button & L_TRIG))) {
     zoomState = NOT_ZOOMED_IN;
   }
 
   playerZoomFactor = clamp(playerZoomFactor + (ZOOM_IN_OUT_SPEED * deltaSeconds * zoomState), 0.f, 1.f);
 
-  if (laserChargeFactor < 0.01f && (zoomState == ZOOMED_IN) && (contdata->trigger & Z_TRIG)) {
+  if (laserChargeFactor < 0.01f && (zoomState == ZOOMED_IN) && ((contdata->trigger & Z_TRIG) || contdata->trigger & R_TRIG)) {
     laserChargeFactor = 0.01f;
   }
 
-  if ((laserChargeFactor >= 0.01f) && (contdata->button & Z_TRIG) && (zoomState == ZOOMED_IN)) {
+  if ((laserChargeFactor >= 0.01f) && ((contdata->button & Z_TRIG) || contdata->button & R_TRIG) && (zoomState == ZOOMED_IN)) {
     laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * 1), 0.f, 1.f);
   } else {
     laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * -1), 0.f, 1.f);
@@ -1060,7 +1067,7 @@ void raymarchAimLineAgainstHitboxes() {
 }
 
 void updateHitboxCheck() {
-  if ((zoomState == ZOOMED_IN) && (contdata->button & Z_TRIG) && (laserChargeFactor > 0.98f)) {
+  if ((zoomState == ZOOMED_IN) && (((contdata->button & Z_TRIG) || contdata->button & R_TRIG)) && (laserChargeFactor > 0.98f)) {
     raymarchAimLineAgainstHitboxes();
   }
 }
