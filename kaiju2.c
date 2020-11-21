@@ -5,8 +5,7 @@
 #include "gamemath.h"
 #include "map.h"
 
-#define ORBIT_ROTATION_SPEED 18.4f
-
+#define ORBIT_ROTATION_SPEED 14.4f
 
 static Vtx red_octahedron_geo[] = {
   {  1,  0,  0, 0, 16 << 6, 24 << 6, 0xaa, 0, 0x00, 0xff },
@@ -62,11 +61,16 @@ float kaijuTime;
 int pointIndex;
 float timeBetweenPoints;
 
+int bufferTickCount;
+
 vec2 walkPoints2[] = {
-  { 48.f, 48.f },
-  { 96.f, 48.f },
-  { 96.f, 96.f },
-  { 48.f, 96.f },
+  { 50.f, 16.f },
+  { 50.f, 64.f },
+  { 40.f, 70.f },
+  { 0.f, 70.f },
+  { 10.f, 70.f },
+  { 30.f, 64.f },
+  { 50.f, 16.f },
 };
 #define NUMBER_OF_WALK_POINTS (sizeof(walkPoints2)/sizeof(walkPoints2[0]))
 #define LOOPED_WALK_POINT(index) ((index + NUMBER_OF_WALK_POINTS) % NUMBER_OF_WALK_POINTS)
@@ -79,10 +83,12 @@ void initKaiju2() {
 
   kaijuTime = 0.f;
   pointIndex = 0;
-  timeBetweenPoints = 30.f;
+  timeBetweenPoints = 10.f;
 
-  playerPos = (vec3){120, 120, 0};
-  cameraRotation = (vec3){0, 0, 170};
+  bufferTickCount = 0;
+
+  playerPos = (vec3){125, 125, 0};
+  cameraRotation = (vec3){0, -0.2f, 170};
 
 	 for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
     hitboxes[0].alive = 0;
@@ -235,6 +241,21 @@ void initKaiju2() {
 
 void updateKaiju2(float deltaSeconds) {
   float tVal = 0.f;
+  int remainingHitboxes = 0;
+  int i;
+
+  if (bufferTickCount < 5) {
+    bufferTickCount++;
+    return;
+  }
+
+  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+    if (hitboxes[i].alive && hitboxes[i].destroyable) {
+      remainingHitboxes++;
+    }
+  }
+
+
   kaijuTime += deltaSeconds;
   if (kaijuTime > timeBetweenPoints) {
     pointIndex = LOOPED_WALK_POINT(pointIndex + 1);
@@ -245,7 +266,7 @@ void updateKaiju2(float deltaSeconds) {
 
 	hitboxes[0].position.x = catmullRom(tVal, walkPoints2[LOOPED_WALK_POINT(pointIndex - 1)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex + 1)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex + 2)].x);
   hitboxes[0].position.y = catmullRom(tVal, walkPoints2[LOOPED_WALK_POINT(pointIndex - 1)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex + 1)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex + 2)].y);
-  hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 25.f;
+  hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 20.f;
   hitboxes[0].isTransformDirty = 1;
 
   hitboxes[1].rotation.z += deltaSeconds * ORBIT_ROTATION_SPEED;
