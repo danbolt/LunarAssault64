@@ -65,6 +65,8 @@
 
 #define TIME_PER_CHARGE_BIP 0.10161f
 
+#define CINEMA_DURATION 5.f
+
 static Vtx divine_line_geo[] = {
   {  0,   2,     0, 0, 0, 0, 0xDD, 0xDD, 0x00, 0xff },
   {  1,  -1,     0, 0, 0, 0, 0xDD, 0xDD, 0x00, 0xff },
@@ -579,6 +581,8 @@ static OSTime delta = 0;
 static float noiseFactor = 0.f;
 
 static u8 cinemaMode = 0;
+static float cinemaTime = 0;
+static u8 ending = 0;
 
 void initStage00(void) {
   int i;
@@ -588,7 +592,7 @@ void initStage00(void) {
   cameraRotation = (vec3){0.f, 0.f, M_PI};
   playerDisplayRotation = cameraRotation.z;
 
-  playerPos = (vec3){24.f, 24.f, 10.f};
+  playerPos = (vec3){32.f, 32.f, 0.f};
 
   playerZoomFactor = 0.f;
   zoomState = NOT_ZOOMED_IN;
@@ -619,7 +623,8 @@ void initStage00(void) {
   time = OS_CYCLES_TO_USEC(osGetTime());
   delta = 0;
 
-  cinemaMode = 0;
+  cinemaMode = 1;
+  cinemaTime = 0;
 }
 
 void renderDivineLine(DisplayData* dynamicp) {
@@ -1218,7 +1223,16 @@ void updateDivineLine(float deltaSeconds) {
 }
 
 void checkIfPlayerHasWonOrLost(float deltaSeconds) {
-  if (cinemaMode) { return; }
+  if (cinemaMode) {
+    cinemaTime += deltaSeconds;
+
+    if (cinemaTime < CINEMA_DURATION) {
+      return;
+    }
+
+    cinemaTime = 0.f;
+    cinemaMode = 0;
+  }
 
   // Check if we broke all the enemy hitboxes
   {
