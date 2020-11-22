@@ -518,14 +518,14 @@ static Gfx portrait_commands[] = {
   gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
   gsDPSetRenderMode(G_RM_TEX_EDGE, G_RM_TEX_EDGE),
   gsDPSetTextureFilter(G_TF_POINT),
-  gsDPLoadTextureTile(portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 48, 0, 0, 32 - 1, 32 - 1, 0, G_TX_NOMIRROR, G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD ),
-  gsSPTextureRectangle(0 << 2, 0 << 2, 32 << 2, 32 << 2, 0, 0 << 5, 0 << 5, 1 << 10, 1 << 10),
+  gsDPSetTexturePersp(G_TP_NONE),
+  gsDPLoadTextureTile(portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 48, 0, 0, 48 - 1, 42 - 1, 0, G_TX_NOMIRROR, G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD ),
+  gsSPTextureRectangle((SCREEN_WD - SCISSOR_SIDES - 48) << 2, (SCREEN_HT - SCISSOR_HIGH) << 2, (SCREEN_WD - SCISSOR_SIDES) << 2, (SCREEN_HT - SCISSOR_HIGH + 42) << 2, 0, 0 << 5, 0 << 5, 1 << 10, 1 << 10),
   gsSPEndDisplayList()
 };
 
 static Gfx time_prefix_commands[] = {
   gsDPPipeSync(),
-  gsDPSetTexturePersp(G_TP_NONE),
   gsDPLoadTextureBlock(time_tex_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
 
   gsSPTextureRectangle((211 + 0) << 2, (192) << 2, (211 + 32) << 2, (192 + 8) << 2, 0, 0 << 5, 0 << 5, 1 << 10, 1 << 10),
