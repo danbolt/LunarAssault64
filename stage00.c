@@ -518,9 +518,8 @@ static Gfx portrait_commands[] = {
   gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
   gsDPSetRenderMode(G_RM_TEX_EDGE, G_RM_TEX_EDGE),
   gsDPSetTextureFilter(G_TF_POINT),
-  gsDPLoadTextureBlock(portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 48, 0, G_TX_CLAMP, G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-
-  gsSP2Triangles(16 + 4, 17 + 4, 18 + 4, 0, 16 + 4, 18 + 4, 19 + 4, 0),
+  gsDPLoadTextureTile(portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 48, 0, 0, 32 - 1, 32 - 1, 0, G_TX_NOMIRROR, G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD ),
+  gsSPTextureRectangle(0 << 2, 0 << 2, 32 << 2, 32 << 2, 0, 0 << 5, 0 << 5, 1 << 10, 1 << 10),
   gsSPEndDisplayList()
 };
 
@@ -579,6 +578,8 @@ static OSTime delta = 0;
 
 static float noiseFactor = 0.f;
 
+static u8 cinemaMode = 0;
+
 void initStage00(void) {
   int i;
 
@@ -617,6 +618,8 @@ void initStage00(void) {
 
   time = OS_CYCLES_TO_USEC(osGetTime());
   delta = 0;
+
+  cinemaMode = 0;
 }
 
 void renderDivineLine(DisplayData* dynamicp) {
@@ -674,7 +677,9 @@ void makeDL00(void) {
     gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
   }
 
-  gDPSetScissor(glistp++, G_SC_NON_INTERLACE, SCISSOR_SIDES, SCISSOR_LOW, SCREEN_WD - SCISSOR_SIDES, SCREEN_HT - SCISSOR_HIGH);
+  if (!cinemaMode) {
+    gDPSetScissor(glistp++, G_SC_NON_INTERLACE, SCISSOR_SIDES, SCISSOR_LOW, SCREEN_WD - SCISSOR_SIDES, SCREEN_HT - SCISSOR_HIGH);
+  }
 
   // The map
   {
@@ -819,6 +824,7 @@ void makeDL00(void) {
   }
 
   // HUD
+  if (!cinemaMode)
   {
     gDPPipeSync(glistp++);
     gDPSetCombineMode(glistp++, G_CC_SHADE, G_CC_SHADE);
@@ -1053,6 +1059,16 @@ void updatePlayer(float deltaSeconds) {
   }
 }
 
+void updateCinemaMode(float deltaSeconds) {
+  cameraTarget.x = hitboxes[0].position.x;
+  cameraTarget.y = hitboxes[0].position.y;
+  cameraTarget.z = hitboxes[0].position.z;
+
+  cameraPos.x = hitboxes[0].position.x + 20;
+  cameraPos.y = hitboxes[0].position.y + 20;
+  cameraPos.z = hitboxes[0].position.z + 30;
+}
+
 // TODO: move this to its own "parent kaiju" file
 void updateKaijuHitboxes(float delta) {
   int i;
@@ -1202,6 +1218,8 @@ void updateDivineLine(float deltaSeconds) {
 }
 
 void checkIfPlayerHasWonOrLost(float deltaSeconds) {
+  if (cinemaMode) { return; }
+
   // Check if we broke all the enemy hitboxes
   {
     int i;
@@ -1262,7 +1280,12 @@ void updateGame00(void) {
   //nudebperfMarkSet(1);
   updateKaijuHitboxes(deltaSeconds);
   //nudebperfMarkSet(2);
-  updatePlayer(deltaSeconds);
+  if (!cinemaMode) {
+    updatePlayer(deltaSeconds);
+  } else {
+    updateCinemaMode(deltaSeconds);
+  }
+  
   //nudebperfMarkSet(3);
   updateHitboxCheck();
   //nudebperfMarkSet(4);
