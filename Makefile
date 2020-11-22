@@ -104,6 +104,7 @@ FORCELINK =	-u guOrtho \
 			-u nuAuSeqPlayerPlay \
 			-u nuAuSndPlayerPlay \
 			-u nuAuSeqPlayerSetVol \
+			-u n_alSndpSetPitch \
 			-u hvqm2InitSP1 \
 			-u hvqm2SetupSP1 \
 			-u hvqm2DecodeSP1 \

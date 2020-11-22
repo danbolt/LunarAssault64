@@ -63,6 +63,8 @@
 #define INV_DIVINE_LINE_DURATION (1.f / DIVINE_LINE_DURATION)
 #define DIVINE_LINE_START_HEIGHT 70
 
+#define TIME_PER_CHARGE_BIP 0.10161f
+
 static Vtx divine_line_geo[] = {
   {  0,   2,     0, 0, 0, 0, 0xDD, 0xDD, 0x00, 0xff },
   {  1,  -1,     0, 0, 0, 0, 0xDD, 0xDD, 0x00, 0xff },
@@ -480,6 +482,7 @@ static float playerZoomFactor = 0.f;
 static s8 zoomState = NOT_ZOOMED_IN;
 
 static float laserChargeFactor = 0.f;
+static float laserChargeDelta = 0.2f;
 
 static u8 divineLineState = DIVINE_LINE_OFF;
 static float divineLineTimePassed = 0.f;
@@ -941,6 +944,18 @@ void updatePlayer(float deltaSeconds) {
 
   if ((laserChargeFactor >= 0.01f) && ((contdata->button & Z_TRIG) || contdata->button & R_TRIG) && (zoomState == ZOOMED_IN)) {
     laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * 1), 0.f, 1.f);
+
+    laserChargeDelta += deltaSeconds;
+    if ((laserChargeFactor < 1.f) && (laserChargeDelta > TIME_PER_CHARGE_BIP)) {
+      ALSndId chargeSoundId = nuAuSndPlayerPlay(SOUND_LASER_CHARGE);
+      if (chargeSoundId != -1) {
+        nuAuSndPlayerSetSound(chargeSoundId);
+        nuAuSndPlayerSetPitch(1.f + laserChargeFactor);
+      }
+
+      laserChargeDelta = 0.f;
+
+    }
   } else {
     laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * -1), 0.f, 1.f);
   }

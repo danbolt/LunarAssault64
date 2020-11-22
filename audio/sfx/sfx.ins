@@ -2,6 +2,16 @@ envelope defaultenv
 {
     attackTime    = 0;
     attackVolume  = 127;
+    decayTime   = 500000;
+    decayVolume   = 100;
+    releaseTime   = 0;
+    
+}
+
+envelope announceenv
+{
+    attackTime    = 0;
+    attackVolume  = 127;
     decayTime   = 1000000;
     decayVolume   = 100;
     releaseTime   = 200000;
@@ -15,7 +25,6 @@ envelope bipenv
     decayTime   = 105000;
     decayVolume   = 127;
     releaseTime   = 0;
-    
 }
 
 keymap boss_bipKeymap
@@ -33,7 +42,7 @@ sound boss_bipSound
     use ("compressed/boss_bip.aifc");
     
     pan    = 64;
-    volume = 127;
+    volume = 64;
     keymap = boss_bipKeymap;
     envelope = bipenv;
 }
@@ -41,7 +50,7 @@ sound boss_bipSound
 keymap explosion1Keymap
 {
     velocityMin = 0;
-    velocityMax = 127;
+    velocityMax = 100;
     keyMin      = 11;
     keyMax      = 11;
     keyBase     = 11;
@@ -61,7 +70,7 @@ sound explosion1Sound
 keymap explosion2Keymap
 {
     velocityMin = 0;
-    velocityMax = 127;
+    velocityMax = 100;
     keyMin      = 12;
     keyMax      = 12;
     keyBase     = 12;
@@ -81,7 +90,7 @@ sound explosion2Sound
 keymap explosion3Keymap
 {
     velocityMin = 0;
-    velocityMax = 127;
+    velocityMax = 100;
     keyMin      = 13;
     keyMax      = 13;
     keyBase     = 13;
@@ -213,9 +222,9 @@ sound laser_chargeSound
     use ("compressed/laser_charge.aifc");
     
     pan    = 64;
-    volume = 127;
+    volume = 100;
     keymap = laser_chargeKeymap;
-    envelope = defaultenv;
+    envelope = bipenv;
 }
 
 keymap no_targetKeymap
@@ -295,7 +304,7 @@ sound successSound
     pan    = 64;
     volume = 127;
     keymap = successKeymap;
-    envelope = defaultenv;
+    envelope = announceenv;
 }
 
 keymap time_overKeymap
@@ -315,7 +324,7 @@ sound time_overSound
     pan    = 64;
     volume = 127;
     keymap = time_overKeymap;
-    envelope = defaultenv;
+    envelope = announceenv;
 }
 
 keymap zoom_inKeymap
