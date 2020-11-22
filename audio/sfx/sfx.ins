@@ -8,6 +8,16 @@ envelope defaultenv
     
 }
 
+envelope bipenv
+{
+    attackTime    = 0;
+    attackVolume  = 127;
+    decayTime   = 105000;
+    decayVolume   = 127;
+    releaseTime   = 0;
+    
+}
+
 keymap boss_bipKeymap
 {
     velocityMin = 0;
@@ -25,7 +35,7 @@ sound boss_bipSound
     pan    = 64;
     volume = 127;
     keymap = boss_bipKeymap;
-    envelope = defaultenv;
+    envelope = bipenv;
 }
 
 keymap explosion1Keymap
@@ -245,7 +255,7 @@ sound nobody_bipSound
     pan    = 64;
     volume = 127;
     keymap = nobody_bipKeymap;
-    envelope = defaultenv;
+    envelope = bipenv;
 }
 
 keymap player_bipKeymap
@@ -265,7 +275,7 @@ sound player_bipSound
     pan    = 64;
     volume = 127;
     keymap = player_bipKeymap;
-    envelope = defaultenv;
+    envelope = bipenv;
 }
 
 keymap successKeymap
