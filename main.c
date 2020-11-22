@@ -151,7 +151,7 @@ void initAudio(void)
 
   nuAuSeqPlayerBankSet(_audiobank_controlSegmentRomStart, _audiobank_controlSegmentRomEnd - _audiobank_controlSegmentRomStart, _audiobank_tableSegmentRomStart);
   nuAuSeqPlayerSeqSet(_songsSegmentRomStart);
-  nuAuSeqPlayerSetVol(0, 0x6000);
+  // nuAuSeqPlayerSetVol(0, 0x6A0F);
 
   nuAuSndPlayerBankSet(_sfxbank_controlSegmentRomStart, _sfxbank_controlSegmentRomEnd - _sfxbank_controlSegmentRomStart, _sfxbank_tableSegmentRomStart);
 }
