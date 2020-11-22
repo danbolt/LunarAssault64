@@ -419,11 +419,38 @@ static Vtx hud_zoomed_in_geo[] = {
   { SCREEN_WD / 2 - 2,  SCREEN_HT / 2 + 2,  5, 0,  0 << 6,  0 << 6, 0xFF, 0x00, 0x00, 0xff },
   { SCREEN_WD / 2 - 2,  SCREEN_HT / 2 - 2,  5, 0,  0 << 6, 32 << 6, 0xFF, 0x33, 0x00, 0xff },
   { SCREEN_WD / 2 + 2,  SCREEN_HT / 2 - 2,  5, 0, 32 << 6, 32 << 6, 0xFF, 0x33, 0x00, 0xff },
+
+  { SCREEN_WD / 2 + 32 + 4 + 16,  SCISSOR_HIGH + 16,  5, 0, 32 << 6, 32 << 6, 0xAC, 0x12, 0x12, 0xff },
+  { SCREEN_WD / 2 + 32 + 0 + 16,  SCISSOR_HIGH + 14,  5, 0, 32 << 6, 32 << 6, 0xAC, 0x12, 0x12, 0xff },
+  { SCREEN_WD / 2 + 32 + 0,  SCISSOR_HIGH +  0,  5, 0, 32 << 6, 32 << 6, 0xAC, 0x12, 0x12, 0xff },
+  { SCREEN_WD / 2 + 32 + 4,  SCISSOR_HIGH +  0,  5, 0, 32 << 6, 32 << 6, 0xAC, 0x12, 0x12, 0xff },
+
+  { SCREEN_WD / 2 + 32 + 4 + 24,  SCISSOR_HIGH + 32,  5, 0, 32 << 6, 32 << 6, 0xAC, 0x12, 0x12, 0xff },
+  { SCREEN_WD / 2 + 32 + 0 + 24,  SCISSOR_HIGH + 30,  5, 0, 32 << 6, 32 << 6, 0xAC, 0x12, 0x12, 0xff },
+  { SCREEN_WD / 2 + 32 + 4 + 24,  SCISSOR_HIGH + 64,  5, 0, 32 << 6, 32 << 6, 0xAC, 0x12, 0x12, 0xff },
+  { SCREEN_WD / 2 + 32 + 0 + 24,  SCISSOR_HIGH + 60,  5, 0, 32 << 6, 32 << 6, 0xAC, 0x12, 0x12, 0xff },
+
+  { SCREEN_WD / 2 + 32 + 4,  SCISSOR_HIGH + 64,  5, 0, 32 << 6, 32 << 6, 0xAC, 0x00, 0x00, 0xff },
+  { SCREEN_WD / 2 + 32 + 0,  SCISSOR_HIGH + 60,  5, 0, 32 << 6, 32 << 6, 0xAC, 0x00, 0x00, 0xff },
 };
 
 static Gfx hud_zoomed_in_commands[] = {
-  gsSPVertex(&hud_zoomed_in_geo, 4, 0),
+  gsSPVertex(&hud_zoomed_in_geo, 14, 0),
   gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+  gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
+  gsSP2Triangles(4, 8, 5, 0, 4, 8, 9, 0),
+  gsSP2Triangles(8, 10, 9, 0, 8, 10, 11, 0),
+  gsSP2Triangles(10, 12, 11, 0, 10, 11, 13, 0),
+
+  gsDPPipeSync(),
+  gsDPSetCycleType(G_CYC_FILL),
+  gsDPSetFillColor((GPACK_RGBA5551(16, 0, 0, 1) << 16 | GPACK_RGBA5551(16, 0, 0, 1))),
+  gsDPFillRectangle(SCISSOR_SIDES + 2, SCISSOR_LOW + 2, SCISSOR_SIDES + 3, SCISSOR_LOW + (SCREEN_HT - SCISSOR_LOW - SCISSOR_HIGH - 2)),
+  gsDPFillRectangle((SCREEN_WD - SCISSOR_SIDES) - 4, SCISSOR_LOW + 2, (SCREEN_WD - SCISSOR_SIDES) - 3, SCISSOR_LOW + (SCREEN_HT - SCISSOR_LOW - SCISSOR_HIGH - 2)),
+  gsDPFillRectangle(SCREEN_WD / 2 + 6, SCREEN_HT / 2, SCREEN_WD / 2 + 10, SCREEN_HT / 2 + 1),
+  gsDPFillRectangle(SCREEN_WD / 2 + 6, SCREEN_HT / 2 + 3, SCREEN_WD / 2 + 10, SCREEN_HT / 2 + 4),
+  gsDPFillRectangle(SCREEN_WD / 2 + 6, SCREEN_HT / 2 + 6, SCREEN_WD / 2 + 10, SCREEN_HT / 2 + 10),
+  gsDPSetCycleType(G_CYC_1CYCLE),
   gsSPEndDisplayList()
 };
 
@@ -853,6 +880,11 @@ void updatePlayer(float deltaSeconds) {
   }
   if (fabs_d(inputDirectionY) < 0.025f) {
     inputDirectionY = 0.f;
+  }
+
+  if (zoomState == ZOOMED_IN && contdata->button & Z_TRIG) {
+    walkDirectionX = 0;
+    walkDirectionY = 0;
   }
 
   if (contdata[0].button & L_JPAD) {
