@@ -55,7 +55,7 @@
 #define MAX_STEP_COUNT 64
 #define INITIAL_STEP_DISTANCE 4.0f
 
-#define DEFAULT_NOISE_LEVEL 0.035f
+#define DEFAULT_NOISE_LEVEL 0.039f
 
 #define DIVINE_LINE_OFF 0
 #define DIVINE_LINE_ON 1
@@ -382,6 +382,53 @@ static Vtx hud_geo[] = {
   { SCISSOR_SIDES + 224 - 38,  SCISSOR_HIGH - 2 - 10,   5, 0,  0 << 6,  0 << 6, 0x23, 0x23, 0x23, 0xff },
   { SCISSOR_SIDES + 224 - 38,  SCISSOR_HIGH - 2 - 12 - 24,  5, 0,  0 << 6, 32 << 6, 0x18, 0x18, 0x18, 0xff },
   { SCISSOR_SIDES + 224,       SCISSOR_HIGH - 2 - 12 - 24,   5, 0, 32 << 6, 32 << 6, 0x18, 0x18, 0x18, 0xff },
+};
+
+static Vtx hud_remaining_targets[] = {
+  {  SCISSOR_SIDES + 2 +  0, 28 + 12,  5, 0, 8 << 6, 0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  SCISSOR_SIDES + 2 + 24, 28 + 12,  5, 0, 0 << 6, 0 << 6, 0xEC, 0x55, 0x50, 0xff },
+  {  SCISSOR_SIDES + 2 + 12, 28 + 24,  5, 0, 0 << 6, 8 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  SCISSOR_SIDES + 2 + 12, 28 +  0,  5, 0, 8 << 6, 8 << 6, 0x55, 0x00, 0x00, 0xff },
+
+  {  12 + SCISSOR_SIDES + 2 +  0, 28 + 12,  5, 0, 8 << 6, 0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  12 + SCISSOR_SIDES + 2 + 24, 28 + 12,  5, 0, 0 << 6, 0 << 6, 0xEC, 0x55, 0x50, 0xff },
+  {  12 + SCISSOR_SIDES + 2 + 12, 28 + 24,  5, 0, 0 << 6, 8 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  12 + SCISSOR_SIDES + 2 + 12, 28 +  0,  5, 0, 8 << 6, 8 << 6, 0x55, 0x00, 0x00, 0xff },
+
+  {  24 + SCISSOR_SIDES + 2 +  0, 28 + 12,  5, 0, 8 << 6, 0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  24 + SCISSOR_SIDES + 2 + 24, 28 + 12,  5, 0, 0 << 6, 0 << 6, 0xEC, 0x55, 0x50, 0xff },
+  {  24 + SCISSOR_SIDES + 2 + 12, 28 + 24,  5, 0, 0 << 6, 8 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  24 + SCISSOR_SIDES + 2 + 12, 28 +  0,  5, 0, 8 << 6, 8 << 6, 0x55, 0x00, 0x00, 0xff },
+
+  {  36 + SCISSOR_SIDES + 2 +  0, 28 + 12,  5, 0, 8 << 6, 0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  36 + SCISSOR_SIDES + 2 + 24, 28 + 12,  5, 0, 0 << 6, 0 << 6, 0xEC, 0x55, 0x50, 0xff },
+  {  36 + SCISSOR_SIDES + 2 + 12, 28 + 24,  5, 0, 0 << 6, 8 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  36 + SCISSOR_SIDES + 2 + 12, 28 +  0,  5, 0, 8 << 6, 8 << 6, 0x55, 0x00, 0x00, 0xff },
+
+  {  48 + SCISSOR_SIDES + 2 +  0, 28 + 12,  5, 0, 8 << 6, 0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  48 + SCISSOR_SIDES + 2 + 24, 28 + 12,  5, 0, 0 << 6, 0 << 6, 0xEC, 0x55, 0x50, 0xff },
+  {  48 + SCISSOR_SIDES + 2 + 12, 28 + 24,  5, 0, 0 << 6, 8 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  48 + SCISSOR_SIDES + 2 + 12, 28 +  0,  5, 0, 8 << 6, 8 << 6, 0x55, 0x00, 0x00, 0xff },
+
+  {  60 + SCISSOR_SIDES + 2 +  0, 28 + 12,  5, 0, 8 << 6, 0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  60 + SCISSOR_SIDES + 2 + 24, 28 + 12,  5, 0, 0 << 6, 0 << 6, 0xEC, 0x55, 0x50, 0xff },
+  {  60 + SCISSOR_SIDES + 2 + 12, 28 + 24,  5, 0, 0 << 6, 8 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  60 + SCISSOR_SIDES + 2 + 12, 28 +  0,  5, 0, 8 << 6, 8 << 6, 0x55, 0x00, 0x00, 0xff },
+
+  {  72 + SCISSOR_SIDES + 2 +  0, 28 + 12,  5, 0, 8 << 6, 0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  72 + SCISSOR_SIDES + 2 + 24, 28 + 12,  5, 0, 0 << 6, 0 << 6, 0xEC, 0x55, 0x50, 0xff },
+  {  72 + SCISSOR_SIDES + 2 + 12, 28 + 24,  5, 0, 0 << 6, 8 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  72 + SCISSOR_SIDES + 2 + 12, 28 +  0,  5, 0, 8 << 6, 8 << 6, 0x55, 0x00, 0x00, 0xff },
+
+  {  84 + SCISSOR_SIDES + 2 +  0, 28 + 12,  5, 0, 8 << 6, 0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  84 + SCISSOR_SIDES + 2 + 24, 28 + 12,  5, 0, 0 << 6, 0 << 6, 0xEC, 0x55, 0x50, 0xff },
+  {  84 + SCISSOR_SIDES + 2 + 12, 28 + 24,  5, 0, 0 << 6, 8 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  84 + SCISSOR_SIDES + 2 + 12, 28 +  0,  5, 0, 8 << 6, 8 << 6, 0x55, 0x00, 0x00, 0xff },
+
+  {  96 + SCISSOR_SIDES + 2 +  0, 28 + 12,  5, 0, 8 << 6, 0 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  96 + SCISSOR_SIDES + 2 + 24, 28 + 12,  5, 0, 0 << 6, 0 << 6, 0xEC, 0x55, 0x50, 0xff },
+  {  96 + SCISSOR_SIDES + 2 + 12, 28 + 24,  5, 0, 0 << 6, 8 << 6, 0xFF, 0x00, 0x00, 0xff },
+  {  96 + SCISSOR_SIDES + 2 + 12, 28 +  0,  5, 0, 8 << 6, 8 << 6, 0x55, 0x00, 0x00, 0xff },
 };
 
 static Vtx laser_charge_bar_geo[] = {
@@ -805,6 +852,19 @@ void makeDL00(void) {
     }
     gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
 
+    {
+      int it = 0;
+      gSPVertex(glistp++, OS_K0_TO_PHYSICAL(hud_remaining_targets), (9 * 4), 0);
+      for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+        if (hitboxes[i].destroyable && hitboxes[i].alive) {
+          gSP2Triangles(glistp++, it + 0, it + 1, it + 2, 0, it + 0, it + 3, it + 1, 0);
+          it += 4;
+        }
+      }
+        
+    }
+
+
     gSPDisplayList(glistp++, portrait_commands);
 
     // Show the remaining time in seconds
@@ -1150,7 +1210,6 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
     for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
       if (hitboxes[i].alive && hitboxes[i].destroyable) {
         defeatedAllHitboxes = 0;
-        break;
       }
     }
 
