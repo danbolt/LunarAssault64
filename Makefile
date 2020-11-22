@@ -24,7 +24,7 @@ LCINCS =	-I. -I$(NUSYSINCDIR) -I$(HVQMLIBDIR) -I$(ROOT)/usr/include/PR
 LCOPTS =	-G 0
 LDFLAGS = $(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) -L$(HVQMLIBDIR) $(NUAUDIOLIB) -lhvqm2 -lnusys -lgultra -L$(GCCDIR)/mipse/lib -lkmc
 
-OPTIMIZER =	-g
+OPTIMIZER =
 
 APP =		jam.out
 
