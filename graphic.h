@@ -34,6 +34,8 @@ typedef struct {
   Mtx     laserBarTranslation;
   Mtx     laserBarScale;
 
+  Mtx     horizonTranslation;
+
   Vtx     playerLegVerts[56];
 } DisplayData;
 

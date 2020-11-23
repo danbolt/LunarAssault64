@@ -134,120 +134,6 @@ static Vtx divine_line_geo[] = {
   { -1,  -1,   -82, 0, 0, 0, 0xDD, 0xDD, 0x00, 0xff },
 };
 
-// static Vtx skybox_geo[] = {
-//   { 75, 75, -75, 0, 0, 0, 25, 32, 71, 255 },
-//   { 183, -3, 8, 0, 0, 0, 26, 34, 71, 255 },
-//   { 34, -52, 8, 0, 0, 0, 26, 34, 71, 255 },
-//   { -59, 75, 8, 0, 0, 0, 28, 34, 88, 255 },
-//   { 34, 202, 8, 0, 0, 0, 24, 23, 73, 255 },
-//   { 183, 153, 8, 0, 0, 0, 42, 56, 117, 255 },
-//   { 116, -52, 142, 0, 0, 0, 21, 22, 72, 255 },
-//   { -46, 5, 131, 0, 0, 0, 19, 18, 71, 255 },
-//   { -33, 153, 142, 0, 0, 0, 42, 56, 117, 255 },
-//   { 116, 202, 142, 0, 0, 0, 19, 18, 71, 255 },
-//   { 209, 75, 142, 0, 0, 0, 27, 33, 80, 255 },
-//   { 75, 75, 225, 0, 0, 0, 40, 54, 114, 255 },
-//   { 51, 1, -52, 0, 0, 0, 26, 34, 71, 255 },
-//   { 138, 29, -52, 0, 0, 0, 26, 34, 71, 255 },
-//   { 114, -46, -3, 0, 0, 0, 42, 56, 117, 255 },
-//   { 202, 75, -3, 0, 0, 0, 27, 33, 83, 255 },
-//   { 138, 121, -52, 0, 0, 0, 19, 18, 71, 255 },
-//   { -3, 75, -52, 0, 0, 0, 20, 19, 71, 255 },
-//   { -28, 1, -3, 0, 0, 0, 19, 18, 71, 255 },
-//   { 51, 149, -52, 0, 0, 0, 19, 18, 71, 255 },
-//   { -28, 149, -3, 0, 0, 0, 32, 41, 95, 255 },
-//   { 114, 196, -3, 0, 0, 0, 42, 56, 117, 255 },
-//   { 217, 29, 75, 0, 0, 0, 26, 34, 71, 255 },
-//   { 217, 121, 75, 0, 0, 0, 242, 231, 107, 255 },
-//   { 75, -74, 75, 0, 0, 0, 26, 34, 71, 255 },
-//   { 163, -46, 75, 0, 0, 0, 42, 56, 117, 255 },
-//   { -46, 26, 61, 0, 0, 0, 63, 112, 145, 255 },
-//   { -13, -46, 75, 0, 0, 0, 23, 29, 71, 255 },
-//   { -13, 196, 75, 0, 0, 0, 26, 32, 85, 255 },
-//   { -67, 121, 75, 0, 0, 0, 38, 50, 109, 255 },
-//   { 163, 196, 75, 0, 0, 0, 19, 20, 71, 255 },
-//   { 75, 224, 75, 0, 0, 0, 19, 18, 71, 255 },
-//   { 178, 1, 153, 0, 0, 0, 42, 56, 117, 255 },
-//   { 36, -46, 153, 0, 0, 0, 19, 18, 71, 255 },
-//   { -52, 75, 153, 0, 0, 0, 19, 18, 71, 255 },
-//   { 36, 196, 153, 0, 0, 0, 19, 20, 73, 255 },
-//   { 178, 149, 153, 0, 0, 0, 41, 54, 114, 255 },
-//   { 99, 1, 202, 0, 0, 0, 19, 19, 71, 255 },
-//   { 153, 75, 202, 0, 0, 0, 19, 18, 71, 255 },
-//   { 12, 29, 202, 0, 0, 0, 21, 22, 75, 255 },
-//   { 12, 121, 202, 0, 0, 0, 42, 56, 117, 255 },
-//   { 99, 149, 202, 0, 0, 0, 20, 19, 72, 255 },
-//   { -62, 64, 135, 0, 0, 0, 36, 72, 232, 255 },
-//   { -42, 7, 18, 0, 0, 0, 36, 73, 232, 255 },
-//   { -27, -34, 79, 0, 0, 0, 21, 24, 71, 255 },
-//   { -67, 69, 25, 0, 0, 0, 74, 128, 66, 255 },
-//   { -73, 95, 79, 0, 0, 0, 73, 127, 68, 255 },
-//   { -59, 40, 21, 0, 0, 0, 74, 128, 65, 255 },
-//   { -56, 59, 61, 0, 0, 0, 45, 83, 216, 255 },
-//   { -41, -11, 41, 0, 0, 0, 43, 76, 232, 255 },
-//   { -44, -13, 108, 0, 0, 0, 74, 128, 65, 255 },
-// };
-
-// static Gfx skybox_commands[] = {
-//   gsSPClipRatio(FRUSTRATIO_6),
-//   gsDPPipeSync(),
-//   gsDPSetCombineLERP(NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE),
-//   gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
-//   gsSPClearGeometryMode(0xFFFFFFFF),
-//   gsSPSetGeometryMode(G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK),
-//   gsSPVertex(&skybox_geo, 51, 0),
-//   gsSP2Triangles(0, 12, 13, 0, 1, 15, 13, 0),
-//   gsSP2Triangles(0, 17, 12, 0, 0, 19, 17, 0),
-//   gsSP2Triangles(0, 16, 19, 0, 1, 22, 15, 0),
-//   gsSP2Triangles(2, 24, 14, 0, 3, 45, 43, 0),
-//   gsSP2Triangles(4, 28, 20, 0, 5, 30, 21, 0),
-//   gsSP2Triangles(1, 25, 22, 0, 2, 27, 24, 0),
-//   gsSP2Triangles(3, 29, 46, 0, 4, 31, 28, 0),
-//   gsSP2Triangles(5, 23, 30, 0, 6, 37, 32, 0),
-//   gsSP2Triangles(7, 39, 33, 0, 8, 40, 34, 0),
-//   gsSP2Triangles(9, 41, 35, 0, 10, 38, 36, 0),
-//   gsSP2Triangles(38, 11, 41, 0, 38, 41, 36, 0),
-//   gsSP2Triangles(36, 41, 9, 0, 41, 11, 40, 0),
-//   gsSP2Triangles(41, 40, 35, 0, 35, 40, 8, 0),
-//   gsSP2Triangles(40, 11, 39, 0, 40, 39, 34, 0),
-//   gsSP2Triangles(34, 39, 7, 0, 39, 11, 37, 0),
-//   gsSP2Triangles(39, 37, 33, 0, 33, 37, 6, 0),
-//   gsSP2Triangles(37, 11, 38, 0, 37, 38, 32, 0),
-//   gsSP2Triangles(32, 38, 10, 0, 23, 10, 36, 0),
-//   gsSP2Triangles(23, 36, 30, 0, 30, 36, 9, 0),
-//   gsSP2Triangles(31, 9, 35, 0, 31, 35, 28, 0),
-//   gsSP2Triangles(28, 35, 8, 0, 29, 8, 34, 0),
-//   gsSP2Triangles(29, 34, 42, 0, 26, 42, 7, 0),
-//   gsSP2Triangles(27, 7, 33, 0, 27, 33, 24, 0),
-//   gsSP2Triangles(24, 33, 6, 0, 25, 6, 32, 0),
-//   gsSP2Triangles(25, 32, 22, 0, 22, 32, 10, 0),
-//   gsSP2Triangles(30, 9, 31, 0, 30, 31, 21, 0),
-//   gsSP2Triangles(21, 31, 4, 0, 28, 8, 29, 0),
-//   gsSP2Triangles(28, 29, 20, 0, 20, 29, 3, 0),
-//   gsSP2Triangles(26, 44, 49, 0, 18, 27, 2, 0),
-//   gsSP2Triangles(24, 6, 25, 0, 24, 25, 14, 0),
-//   gsSP2Triangles(14, 25, 1, 0, 22, 10, 23, 0),
-//   gsSP2Triangles(22, 23, 15, 0, 15, 23, 5, 0),
-//   gsSP2Triangles(16, 5, 21, 0, 16, 21, 19, 0),
-//   gsSP2Triangles(19, 21, 4, 0, 19, 4, 20, 0),
-//   gsSP2Triangles(19, 20, 17, 0, 17, 20, 3, 0),
-//   gsSP2Triangles(17, 3, 18, 0, 17, 18, 12, 0),
-//   gsSP2Triangles(12, 18, 2, 0, 15, 5, 16, 0),
-//   gsSP2Triangles(15, 16, 13, 0, 13, 16, 0, 0),
-//   gsSP2Triangles(12, 2, 14, 0, 12, 14, 13, 0),
-//   gsSP2Triangles(13, 14, 1, 0, 42, 34, 7, 0),
-//   gsSP2Triangles(44, 27, 18, 0, 43, 45, 47, 0),
-//   gsSP2Triangles(45, 48, 47, 0, 50, 7, 44, 0),
-//   gsSP2Triangles(42, 26, 48, 0, 49, 44, 43, 0),
-//   gsSP2Triangles(49, 43, 26, 0, 7, 50, 26, 0),
-//   gsSP2Triangles(3, 43, 18, 0, 3, 46, 45, 0),
-//   gsSP2Triangles(29, 42, 46, 0, 26, 50, 44, 0),
-//   gsSP2Triangles(44, 18, 43, 0, 7, 27, 44, 0),
-//   gsSP2Triangles(46, 48, 45, 0, 42, 48, 46, 0),
-//   gsSP2Triangles(26, 47, 48, 0, 47, 26, 43, 0),
-//   gsSPClipRatio(FRUSTRATIO_2),
-//   gsSPEndDisplayList()
-// };
 
 static Gfx divine_line_commands[] = {
   gsSPVertex(&divine_line_geo, 63, 0),
@@ -649,6 +535,18 @@ void renderDivineLine(DisplayData* dynamicp) {
   gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
 }
 
+static Vtx horizon_geo[] = {
+  {  SCREEN_WD, SCREEN_HT * 3,  5, 0, 8 << 6, 0 << 6, 0x00, 0, 0x00, 0xff },
+  {   0, SCREEN_HT * 3,         5, 0, 0 << 6, 0 << 6, 0x00, 0, 0x00, 0xff },
+  {   0,             SCREEN_HT / 2,         5, 0, 0 << 6, 8 << 6, 0x04, 0, 0x1C, 0xff },
+  {  SCREEN_WD,             SCREEN_HT / 2,  5, 0, 8 << 6, 8 << 6, 0x04, 0, 0x1C, 0xff },
+
+  {  SCREEN_WD, SCREEN_HT / 2,  5, 0, 8 << 6, 0 << 6, 0x80, 0x80, 0x80, 0xff },
+  {   0, SCREEN_HT / 2,         5, 0, 0 << 6, 0 << 6, 0x88, 0x88, 0x88, 0xff },
+  {   0,             -SCREEN_HT * 2,         5, 0, 0 << 6, 8 << 6, 0x8a, 0x8a, 0x8a, 0xff },
+  {  SCREEN_WD,             -SCREEN_HT * 2,  5, 0, 8 << 6, 8 << 6, 0x88, 0x88, 0x88, 0xff },
+};
+
 void makeDL00(void) {
   int i;
   DisplayData* dynamicp;
@@ -672,20 +570,34 @@ void makeDL00(void) {
   gDPSetEnvColor(glistp++, envVal, envVal, envVal, 255);
   gDPSetCycleType(glistp++, G_CYC_1CYCLE);
 
+  // hud camera
+  guOrtho(&(dynamicp->orthoHudProjection), 0, SCREEN_WD - 1, 0, SCREEN_HT - 1, 0.f, 10.f, 1.f);
+  guMtxIdent(&(dynamicp->orthoHudModelling));
+
+  // The "skybox"
+  {
+    //guMtxIdent(&(dynamicp->horizonTranslation));
+    guTranslate(&(dynamicp->horizonTranslation), 0.f, (cameraRotation.y / (M_PI * 0.35f)) * SCREEN_HT * 0.5f + (SCISSOR_HIGH), 0.f);
+
+    gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudProjection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->horizonTranslation)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPClearGeometryMode(glistp++, 0xFFFFFFFF);
+    gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
+    gSPClipRatio(glistp++, FRUSTRATIO_6);
+    gDPPipeSync(glistp++);
+    gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
+    gSPVertex(glistp++, OS_K0_TO_PHYSICAL(horizon_geo), 8, 0);
+    gSP2Triangles(glistp++, 0, 1, 2, 0, 0, 2, 3, 0);
+    gSP2Triangles(glistp++, 4, 5, 6, 0, 4, 6, 7, 0);
+    gSPClipRatio(glistp++, FRUSTRATIO_2);
+  }
+
   // The camera
   {
     guPerspective(&dynamicp->projection, &perspNorm, CAMERA_BASE_FOV + (CAMERA_ZOOM_FOV_CHANGE * playerZoomFactor), (float)SCREEN_WD/(float)SCREEN_HT, 0.90f, 1000.0f, 1.0f);
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->projection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
     guLookAt(&dynamicp->camera, cameraPos.x ,cameraPos.y, cameraPos.z, cameraTarget.x, cameraTarget.y, cameraTarget.z, 0, 0, 1);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-  }
-
-  // The skybox
-  {
-    guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
-    // gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
-    // gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(skybox_commands));
-    // gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
   }
 
   if (!cinemaMode) {
@@ -815,6 +727,7 @@ void makeDL00(void) {
     guRotate(&(dynamicp->playerRotation), (playerDisplayRotation - (M_PI * 1.5f)) * RAD_TO_DEG, 0.f, 0.f, 1.f);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerRotation)), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
 
+    guTranslate(&(dynamicp->playerTranslation), playerPos.x, playerPos.y, playerPos.z);
     guScale(&(dynamicp->playerScale), protag_scale, protag_scale, protag_scale);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH);
     gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(protag_head_commands));
@@ -844,9 +757,7 @@ void makeDL00(void) {
     gSPClearGeometryMode(glistp++,0xFFFFFFFF);
     gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
 
-    guOrtho(&(dynamicp->orthoHudProjection), 0, SCREEN_WD - 1, 0, SCREEN_HT - 1, 0.f, 10.f, 1.f);
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudProjection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-    guMtxIdent(&(dynamicp->orthoHudModelling));
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudModelling)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
 
     // Hud background
