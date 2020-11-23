@@ -1071,13 +1071,24 @@ void updatePlayer(float deltaSeconds) {
 }
 
 void updateCinemaMode(float deltaSeconds) {
-  cameraTarget.x = hitboxes[0].position.x;
-  cameraTarget.y = hitboxes[0].position.y;
-  cameraTarget.z = hitboxes[0].position.z;
+  if ((!ending )&& (cinemaTime > (CINEMA_DURATION - 1.f))) {
+    const float t = cinemaTime - (CINEMA_DURATION - 1.f);
 
-  cameraPos.x = hitboxes[0].position.x + 20;
-  cameraPos.y = hitboxes[0].position.y + 20;
-  cameraPos.z = hitboxes[0].position.z + 30;
+    cameraTarget.x = lerp( hitboxes[0].position.x, playerPos.x, t);
+    cameraTarget.y = lerp( hitboxes[0].position.y, playerPos.y, t);
+    cameraTarget.z = lerp( hitboxes[0].position.z, playerPos.z + CAMERA_LIFT_FRONT, t);
+    cameraPos.x = lerp(hitboxes[0].position.x + 20, cameraTarget.x + (cosf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y)), t);
+    cameraPos.y = lerp(hitboxes[0].position.y + 20, cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y)), t);
+    cameraPos.z = lerp(hitboxes[0].position.z + 10, cameraTarget.z + (CAMERA_DISTANCE * sinf(cameraRotation.y)) + CAMERA_LIFT_BACK, t);
+  } else {
+    cameraTarget.x = hitboxes[0].position.x;
+    cameraTarget.y = hitboxes[0].position.y;
+    cameraTarget.z = hitboxes[0].position.z;
+
+    cameraPos.x = hitboxes[0].position.x + 20;
+    cameraPos.y = hitboxes[0].position.y + 20;
+    cameraPos.z = MAX(20, hitboxes[0].position.z + 10);
+  }
 }
 
 // TODO: move this to its own "parent kaiju" file
@@ -1273,6 +1284,7 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
       sinking = 1;
       cinemaMode = 1;
       cinemaTime = 0.f;
+      playerZoomFactor = 0.f;
       nuAuSndPlayerPlay(SOUND_SUCCESS);
     }
   }
@@ -1286,6 +1298,7 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
       cinemaMode = 1;
       explosionTime = -9999.f;
       cinemaTime = 0.f;
+      playerZoomFactor = 0.f;
       nuAuSndPlayerPlay(SOUND_TIME_OVER);
     }
 
@@ -1319,7 +1332,7 @@ void updateGame00(void) {
   if (!sinking) {
     updateKaijuCallback(deltaSeconds);
   } else if (ending) {
-    hitboxes[0].position.z -= deltaSeconds * 2.f;
+    hitboxes[0].position.z -= deltaSeconds * 4.1f;
     hitboxes[0].isTransformDirty = 1;
   }
 
