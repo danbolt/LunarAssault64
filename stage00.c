@@ -584,6 +584,7 @@ static float noiseFactor = 0.f;
 static u8 cinemaMode = 0;
 static float cinemaTime = 0;
 static u8 ending = 0;
+static u8 sinking = 0;
 static float explosionTime = 0;
 
 void initStage00(void) {
@@ -628,6 +629,7 @@ void initStage00(void) {
   cinemaMode = 1;
   cinemaTime = 0;
   ending = 0;
+  sinking = 0;
   explosionTime = 0;
 }
 
@@ -1230,9 +1232,9 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
   if (cinemaMode) {
     cinemaTime += deltaSeconds;
 
-    if (ending) {
+    if (ending && sinking) {
       explosionTime += deltaSeconds;
-      if (explosionTime > 0.7f) {
+      if (explosionTime > 0.815515f) {
         explosionTime = 0.f;
         nuAuSndPlayerPlay(SOUND_EXPLOSION1);
       }
@@ -1246,7 +1248,7 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
       nuAuSeqPlayerStop(0);
       screenType = DialogueScreen;
       changeScreensFlag = 1;
-      currentLevel++;
+      return;
     } else {
       cinemaTime = 0.f;
       cinemaMode = 0;
@@ -1266,7 +1268,9 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
     }
 
     if (defeatedAllHitboxes && (!cinemaMode)) {
+      currentLevel++;
       ending = 1;
+      sinking = 1;
       cinemaMode = 1;
       cinemaTime = 0.f;
       nuAuSndPlayerPlay(SOUND_SUCCESS);
@@ -1278,9 +1282,11 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
     u32 timeLeft;
     timeRemaining -= deltaSeconds;
     if (timeRemaining < 0.f) {
-      nuAuSeqPlayerStop(0);
-      screenType = DialogueScreen;
-      changeScreensFlag = 1;
+      ending = 1;
+      cinemaMode = 1;
+      explosionTime = -9999.f;
+      cinemaTime = 0.f;
+      nuAuSndPlayerPlay(SOUND_TIME_OVER);
     }
 
     timeLeft = clamp(timeRemaining, 0, 255);
@@ -1310,9 +1316,9 @@ void updateGame00(void) {
   noiseFactor = lerp(noiseFactor, DEFAULT_NOISE_LEVEL, 0.04f);
 
   //nudebperfMarkSet(0);
-  if (!ending) {
+  if (!sinking) {
     updateKaijuCallback(deltaSeconds);
-  } else {
+  } else if (ending) {
     hitboxes[0].position.z -= deltaSeconds * 2.f;
     hitboxes[0].isTransformDirty = 1;
   }
