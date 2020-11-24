@@ -32,6 +32,9 @@ extern unsigned char lab_bg_bin[];
 
 DialogueLine closing = { "And the work began.", NULL, NOBODY_THERE };
 
+DialogueLine prologueIntro2 = { "I'm a little nervous,\nbut I'll give it my\nbest shot!", NULL, JUST_PROTAG_THERE };
+DialogueLine prologueIntro1 = { "Okay, let's try a\nround on the simulator\nagain.", &prologueIntro2, JUST_PROTAG_THERE };
+
 DialogueLine d2 = { "I'm on it!\nYou can count on me.", &closing, PROTAG_SPEAKING };
 DialogueLine d1 = { "Previous operators have\ntaken advantage of\nthe hill in the middle.", &d2, BOSS_SPEAKING };
 DialogueLine dBrief = { "A mark IV Lunarbeast\nhas been spotted there.", &d1, BOSS_SPEAKING };
@@ -44,6 +47,7 @@ DialogueLine dSecondStage0 = { "Okay, this is the\nsecond piece of dia-\nlogue."
 DialogueLine dSecondStageIntro = { "Lunar Fufillment Centre\n08:15 Earth Time, CST", &dSecondStage0, NOBODY_THERE };
 
 DialogueLine* stageDialogues[NUMBER_OF_LEVELS] = {
+	&prologueIntro1,
 	&dIntro,
 	&dSecondStageIntro
 };
@@ -73,6 +77,11 @@ void refreshTargetSpots(int speakerIndex) {
 	} else if (speakerIndex == PROTAG_SPEAKING) {
 		portratTargetSpots[0].x = -32;
 		portratTargetSpots[0].y = (240 - (BOSS_PORTRAIT_HEIGHT - 64));
+		portratTargetSpots[1].x = (320 - (PROTAG_PORTRAIT_WIDTH - 0));
+		portratTargetSpots[1].y = (240 - (PROTAG_PORTRAIT_HEIGHT - 32));
+	} else if (speakerIndex == JUST_PROTAG_THERE) {
+		portratTargetSpots[0].x = -BOSS_PORTRAIT_WIDTH;
+		portratTargetSpots[0].y = 240;
 		portratTargetSpots[1].x = (320 - (PROTAG_PORTRAIT_WIDTH - 0));
 		portratTargetSpots[1].y = (240 - (PROTAG_PORTRAIT_HEIGHT - 32));
 	}
@@ -260,6 +269,8 @@ void updateText(float deltaSeconds) {
 	if (currentLine->speakerIndex == BOSS_SPEAKING) {
 		currentSpeakerSound = SOUND_BOSS_BIP;
 	} else if (currentLine->speakerIndex == PROTAG_SPEAKING) {
+		currentSpeakerSound = SOUND_PLAYER_BIP;
+	} else if (currentLine->speakerIndex == JUST_PROTAG_THERE) {
 		currentSpeakerSound = SOUND_PLAYER_BIP;
 	}
 

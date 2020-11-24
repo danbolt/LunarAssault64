@@ -59,6 +59,13 @@ beginseg
 endseg
 
 beginseg
+	name "kaiju0"
+	flags OBJECT
+	after "stage"
+	include "kaiju0.o"
+endseg
+
+beginseg
 	name "kaiju1"
 	flags OBJECT
 	after "stage"
@@ -174,6 +181,13 @@ beginseg
 	flags	RAW
 	include "fmv/sample2.hvqm"
 endseg
+
+beginwave
+	name	"gameplay_wave_stage0"
+	include	"code"
+	include	"stage"
+	include	"kaiju0"
+endwave
 
 beginwave
 	name	"gameplay_wave_stage1"

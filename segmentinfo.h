@@ -1,6 +1,19 @@
 #ifndef _SEGMENT_INFO_H_
 #define _SEGMENT_INFO_H_
 
+
+// Prologue kaiju
+extern u8 _kaiju0SegmentStart[];
+extern u8 _kaiju0SegmentEnd[];
+extern u8 _kaiju0SegmentRomStart[];
+extern u8 _kaiju0SegmentRomEnd[];
+extern u8 _kaiju0SegmentTextStart[];
+extern u8 _kaiju0SegmentTextEnd[];
+extern u8 _kaiju0SegmentDataStart[];
+extern u8 _kaiju0SegmentDataEnd[];
+extern u8 _kaiju0SegmentBssStart[];
+extern u8 _kaiju0SegmentBssEnd[];
+
 // First kaiju
 extern u8 _kaiju1SegmentStart[];
 extern u8 _kaiju1SegmentEnd[];
@@ -25,8 +38,12 @@ extern u8 _kaiju2SegmentDataEnd[];
 extern u8 _kaiju2SegmentBssStart[];
 extern u8 _kaiju2SegmentBssEnd[];
 
-// First stage data
+// Prologue stage data
+
+
 extern u8 _moon_geoSegmentRomStart[];
+
+// First stage data
 extern u8 _level1_terrainSegmentRomStart[];
 extern u8 _level1_topographySegmentRomStart[];
 

@@ -13,7 +13,7 @@ typedef enum {
 	FMVScreen
 } ScreenSetting;
 
-#define NUMBER_OF_LEVELS 2
+#define NUMBER_OF_LEVELS 3
 
 extern volatile int changeScreensFlag;
 extern volatile ScreenSetting screenType;

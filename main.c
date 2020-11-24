@@ -9,6 +9,7 @@
 #include "dialoguestage.h"
 #include "titlescreenstage.h"
 
+#include "kaiju0.h"
 #include "kaiju1.h"
 #include "kaiju2.h"
 
@@ -45,12 +46,16 @@ void loadInStageState(int levelNumber) {
   segment.bssStart  = _stageSegmentBssStart;
   segment.bssEnd    = _stageSegmentBssEnd;
 
+  // TODO: level-specific textures
   groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
 
   if (levelNumber == 0) {
     terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
     topographyROMAddress = (u32)_level1_topographySegmentRomStart;
   }  else if (levelNumber == 1) {
+    terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
+    topographyROMAddress = (u32)_level1_topographySegmentRomStart;
+  } else if (levelNumber == 2) {
     terrainROMAddress = (u32)_level2_terrainSegmentRomStart;
     topographyROMAddress = (u32)_level2_topographySegmentRomStart;
   }
@@ -62,6 +67,16 @@ void loadInKaiju(int levelNumber) {
   NUPiOverlaySegment segment;
 
   if (levelNumber == 0) {
+    segment.romStart  = _kaiju0SegmentRomStart;
+    segment.romEnd    = _kaiju0SegmentRomEnd;
+    segment.ramStart  = _kaiju0SegmentStart;
+    segment.textStart = _kaiju0SegmentTextStart;
+    segment.textEnd   = _kaiju0SegmentTextEnd;
+    segment.dataStart = _kaiju0SegmentDataStart;
+    segment.dataEnd   = _kaiju0SegmentDataEnd;
+    segment.bssStart  = _kaiju0SegmentBssStart;
+    segment.bssEnd    = _kaiju0SegmentBssEnd;
+  } else if (levelNumber == 1) {
     segment.romStart  = _kaiju1SegmentRomStart;
     segment.romEnd    = _kaiju1SegmentRomEnd;
     segment.ramStart  = _kaiju1SegmentStart;
@@ -71,7 +86,7 @@ void loadInKaiju(int levelNumber) {
     segment.dataEnd   = _kaiju1SegmentDataEnd;
     segment.bssStart  = _kaiju1SegmentBssStart;
     segment.bssEnd    = _kaiju1SegmentBssEnd;
-  } else if (levelNumber == 1) {
+  } else if (levelNumber == 2) {
     segment.romStart  = _kaiju2SegmentRomStart;
     segment.romEnd    = _kaiju2SegmentRomEnd;
     segment.ramStart  = _kaiju2SegmentStart;
@@ -86,10 +101,14 @@ void loadInKaiju(int levelNumber) {
   nuPiReadRomOverlay(&segment);
 
   if (levelNumber == 0) {
+    initKaijuCallback = &initKaiju0;
+    updateKaijuCallback = &updateKaiju0;
+    renderKaijuCallback = &renderKaiju0;
+  } else if (levelNumber == 1) {
     initKaijuCallback = &initKaiju1;
     updateKaijuCallback = &updateKaiju1;
     renderKaijuCallback = &renderKaiju1;
-  } else if (levelNumber == 1) {
+  } else if (levelNumber == 2) {
     initKaijuCallback = &initKaiju2;
     updateKaijuCallback = &updateKaiju2;
     renderKaijuCallback = &renderKaiju2;
