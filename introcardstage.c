@@ -9,8 +9,19 @@
 extern unsigned char doc_gimp_chapter_images_bin[];
 extern unsigned int doc_gimp_chapter_images_bin_len;
 
+#define FADE_TIME 0.6f
+#define HOLD_TIME 1.2f
+
+static OSTime time = 0;
+static OSTime delta = 0;
+static float timepassed = 0;
+static u8 firedLaser = 0;
+
 void initIntroScreen(void) {
-	//
+    time = OS_CYCLES_TO_USEC(osGetTime());
+	delta = 0;
+	timepassed = 0;
+	firedLaser = 0;
 }
 
 
@@ -19,7 +30,7 @@ void makeDLIntroScreen(void) {
 	char conbuf[20];
 	int i;
 	int x = 0;
-	int y = 112;
+	int y = 96;
 	int t = currentLevel * 64;
 
 	dynamicp = &gfx_dynamic[gfx_gtask_no];
@@ -44,7 +55,16 @@ void makeDLIntroScreen(void) {
 	gDPPipeSync(glistp++);
 	gDPSetTextureFilter(glistp++, G_TF_BILERP);
 	gDPSetRenderMode(glistp++, G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE);
-	gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
+	if (timepassed < FADE_TIME) {
+		int fadeVal = (int)(timepassed / FADE_TIME * 255.f);
+		gDPSetPrimColor(glistp++, 0, 0, fadeVal, fadeVal, fadeVal, fadeVal);
+	} else if (timepassed > (FADE_TIME + HOLD_TIME)) {
+		int fadeVal = (int)((1.f - ((timepassed - (FADE_TIME + HOLD_TIME)) / FADE_TIME)) * 255.f);
+		gDPSetPrimColor(glistp++, 0, 0, fadeVal, fadeVal, fadeVal, fadeVal);
+	} else {
+		gDPSetPrimColor(glistp++, 0, 0, 255, 255, 255, 255);
+	}
+	gDPSetCombineMode(glistp++,G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
 
 	for (i = 0; i < (64 / 4); i++) {
@@ -61,9 +81,18 @@ void makeDLIntroScreen(void) {
 }
 
 void updateIntroScreen(void) {
+	OSTime newTime = OS_CYCLES_TO_USEC(osGetTime());
+	float deltaSeconds = 0.f;
+
+	delta = newTime - time;
+	time = newTime;
+	deltaSeconds = delta * 0.000001f;
+
+	timepassed += deltaSeconds;
+
 	nuContDataGetEx(contdata,0);
 
-	if (contdata->trigger & START_BUTTON) {
+	if (timepassed > ( HOLD_TIME + (FADE_TIME * 2))) {
 		changeScreensFlag = 1;
 		screenType = DialogueScreen;
 		return;
