@@ -10,7 +10,7 @@ extern unsigned char doc_gimp_chapter_images_bin[];
 extern unsigned int doc_gimp_chapter_images_bin_len;
 
 #define FADE_TIME 0.6f
-#define HOLD_TIME 1.2f
+#define HOLD_TIME 2.84765f
 
 static OSTime time = 0;
 static OSTime delta = 0;
@@ -92,9 +92,19 @@ void updateIntroScreen(void) {
 
 	nuContDataGetEx(contdata,0);
 
+	if (!firedLaser && timepassed > 0.2f) {
+		firedLaser = 1;
+
+		nuAuSeqPlayerStop(0);
+		nuAuSeqPlayerSetNo(0, 5 + currentLevel);
+		nuAuSeqPlayerPlay(0);
+	}
+
 	if (timepassed > ( HOLD_TIME + (FADE_TIME * 2))) {
 		changeScreensFlag = 1;
 		screenType = DialogueScreen;
+
+		nuAuSeqPlayerStop(0);
 		return;
 	}
 }
