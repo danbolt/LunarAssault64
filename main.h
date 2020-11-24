@@ -18,6 +18,7 @@ typedef enum {
 extern volatile int changeScreensFlag;
 extern volatile ScreenSetting screenType;
 extern volatile int currentLevel;
+extern volatile u8 finishedLevel;
 
 extern NUContData	contdata[1];
 extern u8 contPattern;

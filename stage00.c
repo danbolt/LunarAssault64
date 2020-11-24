@@ -1195,9 +1195,9 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
     }
 
     if (defeatedAllHitboxes && (!cinemaMode)) {
-      currentLevel++;
       ending = 1;
       sinking = 1;
+      finishedLevel = 1;
       cinemaMode = 1;
       cinemaTime = 0.f;
       playerZoomFactor = 0.f;

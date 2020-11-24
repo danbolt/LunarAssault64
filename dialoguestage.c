@@ -52,6 +52,16 @@ DialogueLine* stageDialogues[NUMBER_OF_LEVELS] = {
 	&dSecondStageIntro
 };
 
+
+DialogueLine prologueOutro2 = { "I feel like I'm in a\ngood spot for my first\nday tomorrow.", NULL, JUST_PROTAG_THERE };
+DialogueLine prologueOutro1 = { "Whew!\nThat was tricky, but fun!", &prologueOutro2, JUST_PROTAG_THERE };
+
+DialogueLine* stagePostDialogues[NUMBER_OF_LEVELS] = {
+	&prologueOutro1,
+	&dIntro,
+	&dSecondStageIntro
+};
+
 static OSTime time = 0;
 static OSTime delta = 0;
 
@@ -90,7 +100,7 @@ void refreshTargetSpots(int speakerIndex) {
 void initDialogue(void) {
 	// TODO: add a fadein
 	letterIndex = 0;
-	currentLine = stageDialogues[currentLevel];
+	currentLine = finishedLevel ? stagePostDialogues[currentLevel] : stageDialogues[currentLevel];
 	tickingText = 1;
 	textTime = 0.f;
 
@@ -309,7 +319,13 @@ void updateText(float deltaSeconds) {
 		} else {
 			// TODO: add a fadeout
 			changeScreensFlag = 1;
-			screenType = StageScreen;
+			if (finishedLevel) {
+				finishedLevel = 0;
+				screenType = DialogueScreen;
+      			currentLevel++;
+			} else {
+				screenType = StageScreen;
+			}
 			nuAuSeqPlayerStop(0);
 		}
 	}

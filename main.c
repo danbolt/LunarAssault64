@@ -21,6 +21,7 @@ void fmvtick(int);
 volatile int changeScreensFlag;
 volatile ScreenSetting screenType;
 volatile int currentLevel;
+volatile u8 finishedLevel;
 
 NUContData	contdata[1];
 u8 contPattern;
@@ -223,6 +224,7 @@ void mainproc(void)
 
   screenType = TitleScreen;
   currentLevel = 0;
+  finishedLevel = 0;
 
   while (1) {
     if (screenType == StageScreen) {
