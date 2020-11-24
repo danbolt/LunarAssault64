@@ -50,8 +50,8 @@ void loadInStageState(int levelNumber) {
   groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
 
   if (levelNumber == 0) {
-    terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
-    topographyROMAddress = (u32)_level1_topographySegmentRomStart;
+    terrainROMAddress = (u32)_level0_terrainSegmentRomStart;
+    topographyROMAddress = (u32)_level0_topographySegmentRomStart;
   }  else if (levelNumber == 1) {
     terrainROMAddress = (u32)_level1_terrainSegmentRomStart;
     topographyROMAddress = (u32)_level1_topographySegmentRomStart;

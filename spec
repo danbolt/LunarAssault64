@@ -86,6 +86,18 @@ beginseg
 endseg
 
 beginseg
+	name "level0_terrain"
+	flags "RAW"
+	include "terrain/level0.bin"
+endseg
+
+beginseg
+	name "level0_topography"
+	flags "RAW"
+	include "topography/level0.bin"
+endseg
+
+beginseg
 	name "level1_terrain"
 	flags "RAW"
 	include "terrain/level1.bin"

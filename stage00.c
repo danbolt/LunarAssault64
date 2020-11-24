@@ -506,7 +506,12 @@ void initStage00(void) {
   generateSectionDLs();
 
   nuAuSeqPlayerStop(0);
-  nuAuSeqPlayerSetNo(0, 3);
+
+  if (currentLevel == 0) {
+    nuAuSeqPlayerSetNo(0, 1);
+  } else {
+    nuAuSeqPlayerSetNo(0, 3);
+  }
   nuAuSeqPlayerPlay(0);
 
   time = OS_CYCLES_TO_USEC(osGetTime());
