@@ -62,6 +62,7 @@ FORCELINK =	-u guOrtho \
 			-u guRotate \
 			-u guScale \
 			-u guTranslate \
+			-u guRandom \
 			-u guMtxIdent \
 			-u guTranslateF \
 			-u guRotateF \

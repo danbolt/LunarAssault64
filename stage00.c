@@ -1158,7 +1158,7 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
       explosionTime += deltaSeconds;
       if (explosionTime > 0.815515f) {
         explosionTime = 0.f;
-        nuAuSndPlayerPlay(SOUND_EXPLOSION1);
+        nuAuSndPlayerPlay(SOUND_EXPLOSION1 + (guRandom() % 3));
       }
     }
 
