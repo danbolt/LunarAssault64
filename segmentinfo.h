@@ -64,6 +64,18 @@ extern u8 _stageSegmentDataEnd[];
 extern u8 _stageSegmentBssStart[];
 extern u8 _stageSegmentBssEnd[];
 
+// The gameplay stage
+extern u8 _introcardstageSegmentStart[];
+extern u8 _introcardstageSegmentEnd[];
+extern u8 _introcardstageSegmentRomStart[];
+extern u8 _introcardstageSegmentRomEnd[];
+extern u8 _introcardstageSegmentTextStart[];
+extern u8 _introcardstageSegmentTextEnd[];
+extern u8 _introcardstageSegmentDataStart[];
+extern u8 _introcardstageSegmentDataEnd[];
+extern u8 _introcardstageSegmentBssStart[];
+extern u8 _introcardstageSegmentBssEnd[];
+
 // Dialogue skits
 extern u8 _dialogueSegmentStart[];
 extern u8 _dialogueSegmentEnd[];

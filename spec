@@ -59,6 +59,15 @@ beginseg
 endseg
 
 beginseg
+	name "introcardstage"
+	flags OBJECT
+	after "code"
+	align 32
+	include "introcardstage.o"
+	include "chapterimages.o"
+endseg
+
+beginseg
 	name "kaiju0"
 	flags OBJECT
 	after "stage"
@@ -225,6 +234,12 @@ beginwave
 	name	"titlescreen_wave"
 	include	"code"
 	include	"titlescreen"
+endwave
+
+beginwave
+	name	"introcard_wave"
+	include	"code"
+	include	"introcardstage"
 endwave
 
 beginwave

@@ -10,7 +10,8 @@ typedef enum {
 	StageScreen,
 	DialogueScreen,
 	TitleScreen,
-	FMVScreen
+	FMVScreen,
+	IntroCardScreen
 } ScreenSetting;
 
 #define NUMBER_OF_LEVELS 3

@@ -65,7 +65,7 @@ void updateTitleScreen(void) {
 	if (contdata->trigger & START_BUTTON) {
 		nuAuSeqPlayerStop(0);
 		changeScreensFlag = 1;
-		screenType = DialogueScreen;
+		screenType = IntroCardScreen;
 		currentLevel = 0;
 		return;
 	}

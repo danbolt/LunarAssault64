@@ -321,7 +321,7 @@ void updateText(float deltaSeconds) {
 			changeScreensFlag = 1;
 			if (finishedLevel) {
 				finishedLevel = 0;
-				screenType = DialogueScreen;
+				screenType = IntroCardScreen;
       			currentLevel++;
 			} else {
 				screenType = StageScreen;

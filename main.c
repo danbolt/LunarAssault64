@@ -8,6 +8,7 @@
 #include "fmvstage.h"
 #include "dialoguestage.h"
 #include "titlescreenstage.h"
+#include "introcardstage.h"
 
 #include "kaiju0.h"
 #include "kaiju1.h"
@@ -16,6 +17,7 @@
 void stage00(int);
 void dialogue(int);
 void titlescreen(int);
+void introcard(int);
 void fmvtick(int);
 
 volatile int changeScreensFlag;
@@ -133,6 +135,22 @@ void loadInDialogueState() {
   nuPiReadRomOverlay(&segment);
 }
 
+void loadInIntroState() {
+  NUPiOverlaySegment segment;
+
+  segment.romStart  = _introcardstageSegmentRomStart;
+  segment.romEnd    = _introcardstageSegmentRomEnd;
+  segment.ramStart  = _introcardstageSegmentStart;
+  segment.textStart = _introcardstageSegmentTextStart;
+  segment.textEnd   = _introcardstageSegmentTextEnd;
+  segment.dataStart = _introcardstageSegmentDataStart;
+  segment.dataEnd   = _introcardstageSegmentDataEnd;
+  segment.bssStart  = _introcardstageSegmentBssStart;
+  segment.bssEnd    = _introcardstageSegmentBssEnd;
+
+  nuPiReadRomOverlay(&segment);
+}
+
 void loadInTitleScreenState() {
   NUPiOverlaySegment segment;
 
@@ -240,6 +258,11 @@ void mainproc(void)
       loadInTitleScreenState();
       initTitleScreen();
       nuGfxFuncSet((NUGfxFunc)titlescreen);
+    } else if (screenType == IntroCardScreen) {
+      loadInIntroState();
+      initIntroScreen();
+      nuGfxFuncSet((NUGfxFunc)introcard);
+
     }
 
     nuGfxDisplayOn();
@@ -297,6 +320,20 @@ void titlescreen(int pendingGfx)
   }
 
   updateTitleScreen(); 
+}
+
+
+void introcard(int pendingGfx)
+{
+  if (changeScreensFlag != 0) {
+    return;
+  }
+
+  if(pendingGfx < 3) {
+    makeDLIntroScreen();   
+  }
+
+  updateIntroScreen(); 
 }
 
 void fmvtick(int pendingGfx)
