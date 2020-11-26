@@ -779,9 +779,9 @@ void makeDL00(void) {
     }
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->laserBarTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->laserBarScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH);
-    gSPDisplayList(glistp++, laser_charge_bar_commands);
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(laser_charge_bar_commands));
     if (laserChargeFactor > 0.9f) {
-      gSPDisplayList(glistp++, laser_charge_almost_max);
+      gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(laser_charge_almost_max));
     }
     gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
 
@@ -798,11 +798,11 @@ void makeDL00(void) {
     }
 
 
-    gSPDisplayList(glistp++, portrait_commands);
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(portrait_commands));
 
     // Show the remaining time in seconds
     {
-      gSPDisplayList(glistp++, time_prefix_commands);
+      gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(time_prefix_commands));
       gSPTextureRectangle(glistp++, (211 +  0 + 4) << 2, (200) << 2, (211 +  8 + 4) << 2, (200 + 8) << 2, 0, s2 << 5, t2 << 5, 1 << 10, 1 << 10);
       gSPTextureRectangle(glistp++, (211 +  8 + 4) << 2, (200) << 2, (211 + 16 + 4) << 2, (200 + 8) << 2, 0, s0 << 5, t0 << 5, 1 << 10, 1 << 10);
       gSPTextureRectangle(glistp++, (211 + 16 + 4) << 2, (200) << 2, (211 + 24 + 4) << 2, (200 + 8) << 2, 0, s1 << 5, t1 << 5, 1 << 10, 1 << 10);
@@ -1202,6 +1202,10 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
       cinemaTime = 0.f;
       playerZoomFactor = 0.f;
       nuAuSndPlayerPlay(SOUND_SUCCESS);
+    }
+
+    if (currentLevel == 0) {
+      sinking = 0;
     }
   }
 
