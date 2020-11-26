@@ -32,6 +32,7 @@ void makeDLIntroScreen(void) {
 	int x = 0;
 	int y = 96;
 	int t = currentLevel * 64;
+	int backingX = timepassed / (HOLD_TIME + (FADE_TIME * 2) * 1.44262f) * 640;
 
 	dynamicp = &gfx_dynamic[gfx_gtask_no];
 	glistp = &gfx_glist[gfx_gtask_no][0];
@@ -55,12 +56,34 @@ void makeDLIntroScreen(void) {
 	gDPPipeSync(glistp++);
 	gDPSetTextureFilter(glistp++, G_TF_BILERP);
 	gDPSetRenderMode(glistp++, G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE);
+
+	// fade image
+	gDPSetRenderMode(glistp++, G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE);
+	if (timepassed < FADE_TIME) {
+		int fadeVal = (int)(timepassed / FADE_TIME * 255.f * 0.25f);
+		gDPSetPrimColor(glistp++, 0, 0, fadeVal, fadeVal, fadeVal, 255);
+	} else if (timepassed > (FADE_TIME + HOLD_TIME)) {
+		int fadeVal = (int)((1.f - ((timepassed - (FADE_TIME + HOLD_TIME)) / FADE_TIME)) * 255.f * 0.25f);
+		gDPSetPrimColor(glistp++, 0, 0, fadeVal, fadeVal, fadeVal, 255);
+	} else {
+		gDPSetPrimColor(glistp++, 0, 0, 64, 64, 64, 255);
+	}
+	gDPSetCombineMode(glistp++,G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
+	gDPSetTexturePersp(glistp++, G_TP_NONE);
+
+	for (i = 0; i < (64 / 4); i++) {
+		gDPLoadTextureTile(glistp++, doc_gimp_chapter_images_bin, G_IM_FMT_IA, G_IM_SIZ_16b, 320, 64, 0, t + (i * 4), 320 - 1, t + ((i + 1) * 4) - 1, 0, G_TX_WRAP, G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD );
+		gSPScisTextureRectangle(glistp++, (backingX - 320) << 2, (-64 + (i * 8)) << 2, ((backingX + 320)) << 2, (-64 + ((i + 1) * 8)) << 2, 0, 0 << 5, (t + (i * 4)) << 5, (0 << 10) | (1 << 9), (0 << 10) | (1 << 9));
+		gSPScisTextureRectangle(glistp++, ((320 - backingX) - 320) << 2, (240 -96 + (i * 8)) << 2, (((320 - backingX) + 320)) << 2, (240 -64 + ((i + 1) * 8)) << 2, 0, 0 << 5, (t + (i * 4)) << 5, (0 << 10) | (1 << 9), (0 << 10) | (1 << 9));
+	}
+
+	// Regular image
 	if (timepassed < FADE_TIME) {
 		int fadeVal = (int)(timepassed / FADE_TIME * 255.f);
-		gDPSetPrimColor(glistp++, 0, 0, fadeVal, fadeVal, fadeVal, fadeVal);
+		gDPSetPrimColor(glistp++, 0, 0, fadeVal, fadeVal, fadeVal, 255);
 	} else if (timepassed > (FADE_TIME + HOLD_TIME)) {
 		int fadeVal = (int)((1.f - ((timepassed - (FADE_TIME + HOLD_TIME)) / FADE_TIME)) * 255.f);
-		gDPSetPrimColor(glistp++, 0, 0, fadeVal, fadeVal, fadeVal, fadeVal);
+		gDPSetPrimColor(glistp++, 0, 0, fadeVal, fadeVal, fadeVal, 255);
 	} else {
 		gDPSetPrimColor(glistp++, 0, 0, 255, 255, 255, 255);
 	}
