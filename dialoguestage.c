@@ -269,10 +269,10 @@ void makeDLDialogue(void) {
 		}
 		tVal = t * 255;
 		gDPSetPrimColor(glistp++, 0, 0, tVal, tVal, tVal, tVal);
+		gDPSetCombineMode(glistp++,G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
 	} else {
-		gDPSetPrimColor(glistp++, 0, 0, 255, 255, 255, 255);
+		gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
 	}
-	gDPSetCombineMode(glistp++,G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
 
 	drawLabBackground(0, 0);
