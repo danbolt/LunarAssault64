@@ -62,6 +62,12 @@ DialogueLine* stagePostDialogues[NUMBER_OF_LEVELS] = {
 	&dSecondStageIntro
 };
 
+#define FADE_IN_OUT_DURATION 1.3f
+
+static int isFading = 0;
+static float fadeTime = 0.f;
+static int isFadingOut = 0;
+
 static OSTime time = 0;
 static OSTime delta = 0;
 
@@ -98,11 +104,14 @@ void refreshTargetSpots(int speakerIndex) {
 }
 
 void initDialogue(void) {
-	// TODO: add a fadein
 	letterIndex = 0;
 	currentLine = finishedLevel ? stagePostDialogues[currentLevel] : stageDialogues[currentLevel];
 	tickingText = 1;
 	textTime = 0.f;
+
+	isFading = 1;
+	fadeTime = 0.f;
+	isFadingOut = 0;
 
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;
@@ -252,16 +261,29 @@ void makeDLDialogue(void) {
 	gDPPipeSync(glistp++);
 	gDPSetTextureFilter(glistp++, G_TF_BILERP);
 	gDPSetRenderMode(glistp++, G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE);
-	gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
+	if (isFading) {
+		int tVal;
+		float t = fadeTime / FADE_IN_OUT_DURATION;
+		if (isFadingOut) {
+			t = 1.f - t;
+		}
+		tVal = t * 255;
+		gDPSetPrimColor(glistp++, 0, 0, tVal, tVal, tVal, tVal);
+	} else {
+		gDPSetPrimColor(glistp++, 0, 0, 255, 255, 255, 255);
+	}
+	gDPSetCombineMode(glistp++,G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
 
 	drawLabBackground(0, 0);
 	drawBosss(portratPositions[0].x, portratPositions[0].y);
 	drawProtagonist(portratPositions[1].x, portratPositions[1].y);
 
-    drawString(72, 128, currentLine->data, letterIndex);
-    if ((!tickingText) && (currentLine->data[letterIndex] == '\0')) {
-    	drawString(256, 200, "(A)", -1);
+	if (!isFading) {
+	    drawString(72, 128, currentLine->data, letterIndex);
+	    if ((!tickingText) && (currentLine->data[letterIndex] == '\0')) {
+	    	drawString(256, 200, "(A)", -1);
+		}
 	}
 
 	gDPFullSync(glistp++);
@@ -317,16 +339,9 @@ void updateText(float deltaSeconds) {
 			textTime = 0;
 			tickingText = 1;
 		} else {
-			// TODO: add a fadeout
-			changeScreensFlag = 1;
-			if (finishedLevel) {
-				finishedLevel = 0;
-				screenType = IntroCardScreen;
-      			currentLevel++;
-			} else {
-				screenType = StageScreen;
-			}
-			nuAuSeqPlayerStop(0);
+			isFading = 1;
+			isFadingOut = 1;
+			fadeTime = 0.f;
 		}
 	}
 }
@@ -341,18 +356,30 @@ void updateDialogue(void) {
 	time = newTime;
 	deltaSeconds = delta * 0.000001f;
 
-	updateText(deltaSeconds);
+	if (isFading) {
+		fadeTime += deltaSeconds;
+		if (fadeTime > FADE_IN_OUT_DURATION) {
+			isFading = 0;
 
+			if (isFadingOut) {
+				if (finishedLevel) {
+					finishedLevel = 0;
+					screenType = IntroCardScreen;
+	      			currentLevel++;
+				} else {
+					screenType = StageScreen;
+				}
+				
+				changeScreensFlag = 1;
+				nuAuSeqPlayerStop(0);
+			}
+		}
+	} else {
+		updateText(deltaSeconds);
 
-	portratPositions[0].x = lerp(portratPositions[0].x, portratTargetSpots[0].x, 0.17f);
-	portratPositions[0].y = lerp(portratPositions[0].y, portratTargetSpots[0].y, 0.17f);
-	portratPositions[1].x = lerp(portratPositions[1].x, portratTargetSpots[1].x, 0.17f);
-	portratPositions[1].y = lerp(portratPositions[1].y, portratTargetSpots[1].y, 0.17f);
-
-	if (contdata->trigger & START_BUTTON) {
-		changeScreensFlag = 1;
-		screenType = StageScreen;
-		nuAuSeqPlayerStop(0);
-		return;
+		portratPositions[0].x = lerp(portratPositions[0].x, portratTargetSpots[0].x, 0.17f);
+		portratPositions[0].y = lerp(portratPositions[0].y, portratTargetSpots[0].y, 0.17f);
+		portratPositions[1].x = lerp(portratPositions[1].x, portratTargetSpots[1].x, 0.17f);
+		portratPositions[1].y = lerp(portratPositions[1].y, portratTargetSpots[1].y, 0.17f);
 	}
 }
