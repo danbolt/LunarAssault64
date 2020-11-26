@@ -95,6 +95,12 @@ beginseg
 endseg
 
 beginseg
+	name "simulator_geo"
+	flags "RAW"
+	include "geotex/simulator_geo.bin"
+endseg
+
+beginseg
 	name "level0_terrain"
 	flags "RAW"
 	include "terrain/level0.bin"

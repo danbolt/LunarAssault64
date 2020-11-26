@@ -50,7 +50,11 @@ void loadInStageState(int levelNumber) {
   segment.bssEnd    = _stageSegmentBssEnd;
 
   // TODO: level-specific textures
-  groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
+  if (levelNumber == 0) {
+    groundTextureROMAddress = (u32)_simulator_geoSegmentRomStart;
+  } else {
+    groundTextureROMAddress = (u32)_moon_geoSegmentRomStart;
+  }
 
   if (levelNumber == 0) {
     terrainROMAddress = (u32)_level0_terrainSegmentRomStart;

@@ -38,6 +38,7 @@ extern u8 _kaiju2SegmentDataEnd[];
 extern u8 _kaiju2SegmentBssStart[];
 extern u8 _kaiju2SegmentBssEnd[];
 
+extern u8 _simulator_geoSegmentRomStart[];
 extern u8 _moon_geoSegmentRomStart[];
 
 // Prologue stage data
