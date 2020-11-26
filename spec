@@ -89,6 +89,12 @@ beginseg
 endseg
 
 beginseg
+	name "base_bg"
+	flags "RAW"
+	include "base_render_bg.bin"
+endseg
+
+beginseg
 	name "moon_geo"
 	flags "RAW"
 	include "geotex/moon_geo.bin"

@@ -89,6 +89,9 @@ extern u8 _dialogueSegmentDataEnd[];
 extern u8 _dialogueSegmentBssStart[];
 extern u8 _dialogueSegmentBssEnd[];
 
+// Dialogue backgrounds
+extern u8 _base_bgSegmentRomStart[];
+
 // Title screen
 extern u8 _titlescreenSegmentStart[];
 extern u8 _titlescreenSegmentEnd[];

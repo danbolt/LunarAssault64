@@ -29,6 +29,7 @@
 #define BOSS_PORTRAIT_HEIGHT 206
 
 extern unsigned char lab_bg_bin[];
+extern unsigned int lab_bg_bin_len;
 
 DialogueLine closing = { "And the work began.", NULL, NOBODY_THERE };
 
@@ -115,6 +116,8 @@ void initDialogue(void) {
 
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;
+
+	nuPiReadRom(_base_bgSegmentRomStart, lab_bg_bin, lab_bg_bin_len);
 
 	portratPositions[0].x = -BOSS_PORTRAIT_WIDTH;
 	portratPositions[0].y = 240;
