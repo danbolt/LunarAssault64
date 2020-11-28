@@ -232,15 +232,15 @@ void mainproc(void)
 
   nuGfxFuncRemove();
 
-  osViSetMode(&osViModeNtscLan1);
+  // osViSetMode(&osViModeNtscLan1);
   /* Turn OFF again because executing osViSetMode
      enables View Screen. */
-  nuGfxDisplayOff();
+  // nuGfxDisplayOff();
   /* Needs to reset other settings */
-  osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON
-       | OS_VI_GAMMA_OFF
-       | OS_VI_GAMMA_DITHER_OFF
-       | OS_VI_DIVOT_ON);
+  // osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON
+  //      | OS_VI_GAMMA_OFF
+  //      | OS_VI_GAMMA_DITHER_OFF
+  //      | OS_VI_DIVOT_ON);
 
   initAudio();
 
