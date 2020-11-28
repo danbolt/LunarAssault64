@@ -7,11 +7,15 @@
 #include "soundid.h"
 #include "segmentinfo.h"
 
-#define FADE_IN_TIME 0.7f
+#define FADE_IN_TIME 1.2f
+#define FADE_OUT_TIME 1.2f
+
+#define STICK_Y_DEADZONE 20
 
 u8 titleScreenBackgroundBuffer[153600];
 float fadeTimePassed;
 u32 isFading = 0;
+u32 isFadingOut = 0;
 
 static OSTime time = 0;
 static OSTime delta = 0;
@@ -24,6 +28,8 @@ const char* menuStrings[] = {
 	"Credits"
 };
 
+u32 stickPressed = 0;
+
 void initTitleScreen(void) {
 	// nuAuSeqPlayerStop(0);
 	// nuAuSeqPlayerSetNo(0, 0);
@@ -33,6 +39,7 @@ void initTitleScreen(void) {
 
 	fadeTimePassed = 0.f;
 	isFading = 1;
+	isFadingOut = 0;
 
 	nuAuSndPlayerPlay(SOUND_INTRO);
 
@@ -40,6 +47,7 @@ void initTitleScreen(void) {
 	delta = 0;
 
 	menuIndex = 0;
+	stickPressed = 0;
 }
 
 
@@ -54,10 +62,12 @@ void makeDLTitleScreen(void) {
 	gfxRCPInit();
 	gfxClearCfb();
 
-	gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD, osVirtualToPhysical(nuGfxCfb_ptr));
-	gDPSetFillColor(glistp++, (GPACK_RGBA5551(255, 255, 255, 1) << 16 | GPACK_RGBA5551(255, 255, 255, 1)));
-	gDPFillRectangle(glistp++, 0, 0, SCREEN_WD-1, SCREEN_HT-1);
-	gDPPipeSync(glistp++);
+	if (!isFadingOut) {
+		gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD, osVirtualToPhysical(nuGfxCfb_ptr));
+		gDPSetFillColor(glistp++, (GPACK_RGBA5551(255, 255, 255, 1) << 16 | GPACK_RGBA5551(255, 255, 255, 1)));
+		gDPFillRectangle(glistp++, 0, 0, SCREEN_WD-1, SCREEN_HT-1);
+		gDPPipeSync(glistp++);
+	}
 
 	gDPSetCycleType(glistp++, G_CYC_1CYCLE);
     gDPSetCombineMode(glistp++, G_CC_SHADE, G_CC_SHADE);
@@ -82,6 +92,13 @@ void makeDLTitleScreen(void) {
 		tVal = t * 255;
 		gDPSetPrimColor(glistp++, 0, 0, (255), (255), (255), (tVal));
 
+		gDPSetCombineMode(glistp++,G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
+	} else if (isFadingOut) {
+		int tVal;
+		float t = 1.f - (fadeTimePassed / FADE_OUT_TIME);
+
+		tVal = t * 255;
+		gDPSetPrimColor(glistp++, 0, 0, tVal, tVal, tVal, tVal);
 		gDPSetCombineMode(glistp++,G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
 	} else {
 		gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
@@ -114,7 +131,7 @@ void makeDLTitleScreen(void) {
 		sprintf(conbuf, "audio heap free %d", nuAuHeapGetFree());
 		nuDebConCPuts(0, conbuf);
 
-		if (!isFading) {
+		if (!isFading && !isFadingOut) {
 			for (i = 0; i < NUMBER_OF_MENU_ITEMS; i++) {
 				nuDebConTextPos(0, 20 - 6,20 + i);
 				if (i == menuIndex) {
@@ -125,14 +142,13 @@ void makeDLTitleScreen(void) {
 				nuDebConCPuts(0, conbuf);
 			}
 
+			nuDebConTextPos(0,2,27);
+			sprintf(conbuf, "N64Brew Game Jam Submission");
+			nuDebConCPuts(0, conbuf);
 
-		nuDebConTextPos(0,2,27);
-		sprintf(conbuf, "N64Brew Game Jam Submission");
-		nuDebConCPuts(0, conbuf);
-
-		nuDebConTextPos(0,2,28);
-		sprintf(conbuf, "http://danbolt.itch.io/");
-		nuDebConCPuts(0, conbuf);
+			nuDebConTextPos(0,2,28);
+			sprintf(conbuf, "http://danbolt.itch.io/");
+			nuDebConCPuts(0, conbuf);
 		}
 	}
 	else
@@ -165,19 +181,48 @@ void updateTitleScreen(void) {
 		}
 	}
 
-	if ((contdata->trigger & D_JPAD)) {
-		menuIndex = (menuIndex + 1) % NUMBER_OF_MENU_ITEMS;
-		nuAuSndPlayerPlay(SOUND_PLAYER_BIP);
-	} else if ((contdata->trigger & U_JPAD)) {
-		menuIndex = (menuIndex - 1 + NUMBER_OF_MENU_ITEMS) % NUMBER_OF_MENU_ITEMS;
-		nuAuSndPlayerPlay(SOUND_PLAYER_BIP);
-	}
+	if (isFadingOut) {
+		fadeTimePassed += deltaSeconds;
 
-	if ((contdata->trigger & A_BUTTON) || ((contdata->trigger & START_BUTTON))) {
-		nuAuSeqPlayerStop(0);
-		changeScreensFlag = 1;
-		screenType = IntroCardScreen;
-		currentLevel = 0;
-		return;
+		if (fadeTimePassed > FADE_OUT_TIME) {
+			nuAuSeqPlayerStop(0);
+			changeScreensFlag = 1;
+			screenType = IntroCardScreen;
+			currentLevel = 0;
+		}
+	} else {
+
+		if ((contdata->trigger & D_JPAD)) {
+			menuIndex = (menuIndex + 1) % NUMBER_OF_MENU_ITEMS;
+			nuAuSndPlayerPlay(SOUND_PLAYER_BIP);
+		} else if ((contdata->trigger & U_JPAD)) {
+			menuIndex = (menuIndex - 1 + NUMBER_OF_MENU_ITEMS) % NUMBER_OF_MENU_ITEMS;
+			nuAuSndPlayerPlay(SOUND_PLAYER_BIP);
+		}
+
+		if (stickPressed) {
+			if ((contdata->stick_y < STICK_Y_DEADZONE) && (contdata->stick_y > -STICK_Y_DEADZONE)) {
+				stickPressed = 0;
+			}
+		} else {
+			if (contdata->stick_y > STICK_Y_DEADZONE) {
+				menuIndex = (menuIndex + 1) % NUMBER_OF_MENU_ITEMS;
+				nuAuSndPlayerPlay(SOUND_PLAYER_BIP);
+				stickPressed = 1;
+			} else if (contdata->stick_y < -STICK_Y_DEADZONE) {
+				menuIndex = (menuIndex - 1 + NUMBER_OF_MENU_ITEMS) % NUMBER_OF_MENU_ITEMS;
+				nuAuSndPlayerPlay(SOUND_PLAYER_BIP);
+				stickPressed = 1;
+			}
+		}
+
+		if ((contdata->trigger & A_BUTTON) || ((contdata->trigger & START_BUTTON))) {
+			
+
+			isFadingOut = 1;
+			fadeTimePassed = 0.f;
+
+			nuAuSndPlayerPlay(SOUND_LASER1);
+		}
 	}
 }
