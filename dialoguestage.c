@@ -271,7 +271,7 @@ void makeDLDialogue(void) {
 			t = 1.f - t;
 		}
 		tVal = t * 255;
-		gDPSetPrimColor(glistp++, 0, 0, tVal, tVal, tVal, tVal);
+		gDPSetPrimColor(glistp++, 0, 0, tVal, tVal, tVal, 255);
 		gDPSetCombineMode(glistp++,G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
 	} else {
 		gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
