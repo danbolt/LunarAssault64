@@ -79,6 +79,7 @@ FORCELINK =	-u guOrtho \
 			-u nuContDataGetEx \
 			-u nuDebConTextPos \
 			-u nuDebConTextColor \
+			-u nuDebConClear \
 			-u sprintf \
 			-u gfxRCPInit \
 			-u gfxClearCfb \

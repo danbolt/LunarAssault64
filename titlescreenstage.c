@@ -16,6 +16,14 @@ u32 isFading = 0;
 static OSTime time = 0;
 static OSTime delta = 0;
 
+#define NUMBER_OF_MENU_ITEMS 2
+u32 menuIndex = 0;
+
+const char* menuStrings[] = {
+	" Start ",
+	"Credits"
+};
+
 void initTitleScreen(void) {
 	// nuAuSeqPlayerStop(0);
 	// nuAuSeqPlayerSetNo(0, 0);
@@ -30,6 +38,8 @@ void initTitleScreen(void) {
 
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;
+
+	menuIndex = 0;
 }
 
 
@@ -93,20 +103,36 @@ void makeDLTitleScreen(void) {
 
 	nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0], (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx), NU_GFX_UCODE_F3DLP_REJ , NU_SC_NOSWAPBUFFER);
 
+	nuDebConClear(0);
 	nuDebConTextColor(0, NU_DEB_CON_TEXT_BLACK);
 	if(contPattern & 0x1)
     {
-		nuDebConTextPos(0,2,28);
+		nuDebConTextPos(0,2,0);
 		sprintf(conbuf, "audio heap used %d", nuAuHeapGetUsed());
 		nuDebConCPuts(0, conbuf);
-		nuDebConTextPos(0,2,29);
+		nuDebConTextPos(0,2,1);
 		sprintf(conbuf, "audio heap free %d", nuAuHeapGetFree());
 		nuDebConCPuts(0, conbuf);
 
 		if (!isFading) {
-			nuDebConTextPos(0,20 - 6,20);
-			sprintf(conbuf, "press start!");
-			nuDebConCPuts(0, conbuf);
+			for (i = 0; i < NUMBER_OF_MENU_ITEMS; i++) {
+				nuDebConTextPos(0, 20 - 6,20 + i);
+				if (i == menuIndex) {
+					sprintf(conbuf, ">> %s <<", menuStrings[i]);
+				} else {
+					sprintf(conbuf, "   %s   ", menuStrings[i]);
+				}
+				nuDebConCPuts(0, conbuf);
+			}
+
+
+		nuDebConTextPos(0,2,27);
+		sprintf(conbuf, "N64Brew Game Jam Submission");
+		nuDebConCPuts(0, conbuf);
+
+		nuDebConTextPos(0,2,28);
+		sprintf(conbuf, "http://danbolt.itch.io/");
+		nuDebConCPuts(0, conbuf);
 		}
 	}
 	else
@@ -139,7 +165,15 @@ void updateTitleScreen(void) {
 		}
 	}
 
-	if (contdata->trigger & START_BUTTON) {
+	if ((contdata->trigger & D_JPAD)) {
+		menuIndex = (menuIndex + 1) % NUMBER_OF_MENU_ITEMS;
+		nuAuSndPlayerPlay(SOUND_PLAYER_BIP);
+	} else if ((contdata->trigger & U_JPAD)) {
+		menuIndex = (menuIndex - 1 + NUMBER_OF_MENU_ITEMS) % NUMBER_OF_MENU_ITEMS;
+		nuAuSndPlayerPlay(SOUND_PLAYER_BIP);
+	}
+
+	if ((contdata->trigger & A_BUTTON) || ((contdata->trigger & START_BUTTON))) {
 		nuAuSeqPlayerStop(0);
 		changeScreensFlag = 1;
 		screenType = IntroCardScreen;
