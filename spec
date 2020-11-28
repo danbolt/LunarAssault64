@@ -59,6 +59,14 @@ beginseg
 endseg
 
 beginseg
+	name "creditsscreen"
+	flags OBJECT
+	after "code"
+	align 32
+	include "creditsscreen.o"
+endseg
+
+beginseg
 	name "introcardstage"
 	flags OBJECT
 	after "code"
@@ -253,6 +261,12 @@ beginwave
 	name	"titlescreen_wave"
 	include	"code"
 	include	"titlescreen"
+endwave
+
+beginwave
+	name	"creditsscreen_wave"
+	include	"code"
+	include	"creditsscreen"
 endwave
 
 beginwave

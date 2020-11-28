@@ -179,16 +179,19 @@ void updateTitleScreen(void) {
 			fadeTimePassed = FADE_IN_TIME;
 			isFading = 0;
 		}
-	}
-
-	if (isFadingOut) {
+	} else if (isFadingOut) {
 		fadeTimePassed += deltaSeconds;
 
 		if (fadeTimePassed > FADE_OUT_TIME) {
 			nuAuSeqPlayerStop(0);
 			changeScreensFlag = 1;
-			screenType = IntroCardScreen;
-			currentLevel = 0;
+
+			if (menuIndex == 0) {
+				screenType = IntroCardScreen;
+				currentLevel = 0;
+			} else if (menuIndex == 1) {
+				screenType = CreditsScreen;
+			}
 		}
 	} else {
 

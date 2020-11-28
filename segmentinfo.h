@@ -105,6 +105,18 @@ extern u8 _titlescreenSegmentDataEnd[];
 extern u8 _titlescreenSegmentBssStart[];
 extern u8 _titlescreenSegmentBssEnd[];
 
+// Credits screen
+extern u8 _creditsscreenSegmentStart[];
+extern u8 _creditsscreenSegmentEnd[];
+extern u8 _creditsscreenSegmentRomStart[];
+extern u8 _creditsscreenSegmentRomEnd[];
+extern u8 _creditsscreenSegmentTextStart[];
+extern u8 _creditsscreenSegmentTextEnd[];
+extern u8 _creditsscreenSegmentDataStart[];
+extern u8 _creditsscreenSegmentDataEnd[];
+extern u8 _creditsscreenSegmentBssStart[];
+extern u8 _creditsscreenSegmentBssEnd[];
+
 // FMVs
 extern u8 _fmvSegmentStart[];
 extern u8 _fmvSegmentEnd[];

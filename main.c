@@ -9,6 +9,7 @@
 #include "dialoguestage.h"
 #include "titlescreenstage.h"
 #include "introcardstage.h"
+#include "creditsscreen.h"
 
 #include "kaiju0.h"
 #include "kaiju1.h"
@@ -19,6 +20,7 @@ void dialogue(int);
 void titlescreen(int);
 void introcard(int);
 void fmvtick(int);
+void credits(int);
 
 volatile int changeScreensFlag;
 volatile ScreenSetting screenType;
@@ -171,6 +173,22 @@ void loadInTitleScreenState() {
   nuPiReadRomOverlay(&segment);
 }
 
+void loadInCreditsState() {
+  NUPiOverlaySegment segment;
+
+  segment.romStart  = _creditsscreenSegmentRomStart;
+  segment.romEnd    = _creditsscreenSegmentRomEnd;
+  segment.ramStart  = _creditsscreenSegmentStart;
+  segment.textStart = _creditsscreenSegmentTextStart;
+  segment.textEnd   = _creditsscreenSegmentTextEnd;
+  segment.dataStart = _creditsscreenSegmentDataStart;
+  segment.dataEnd   = _creditsscreenSegmentDataEnd;
+  segment.bssStart  = _creditsscreenSegmentBssStart;
+  segment.bssEnd    = _creditsscreenSegmentBssEnd;
+
+  nuPiReadRomOverlay(&segment);
+}
+
 void loadInFMVScreenState() {
   NUPiOverlaySegment segment;
 
@@ -266,7 +284,10 @@ void mainproc(void)
       loadInIntroState();
       initIntroScreen();
       nuGfxFuncSet((NUGfxFunc)introcard);
-
+    } else if (screenType == CreditsScreen) {
+      loadInCreditsState();
+      initCreditscreen();
+      nuGfxFuncSet((NUGfxFunc)credits);
     }
 
     nuGfxDisplayOn();
@@ -351,5 +372,18 @@ void fmvtick(int pendingGfx)
   }
 
   updateFMVStage(); 
+}
+
+void credits(int pendingGfx)
+{
+  if (changeScreensFlag != 0) {
+    return;
+  }
+
+  if(pendingGfx < 3) {
+    makeDLCreditsScreen();   
+  }
+
+  updateCreditsScreen(); 
 }
 
