@@ -7,7 +7,7 @@
 #include "soundid.h"
 #include "segmentinfo.h"
 
-#define FADE_IN_TIME 0.4f
+#define FADE_IN_TIME 0.7f
 
 u8 titleScreenBackgroundBuffer[153600];
 float fadeTimePassed;
@@ -95,30 +95,18 @@ void makeDLTitleScreen(void) {
 	nuDebConTextColor(0, NU_DEB_CON_TEXT_BLACK);
 	if(contPattern & 0x1)
     {
-		nuDebConTextPos(0,4,4);
-		sprintf(conbuf, "LASERSCOPE MOON SPOTTER");
-		nuDebConCPuts(0, conbuf);
-
-
-		nuDebConTextPos(0,2,6);
+		nuDebConTextPos(0,2,28);
 		sprintf(conbuf, "audio heap used %d", nuAuHeapGetUsed());
 		nuDebConCPuts(0, conbuf);
-		nuDebConTextPos(0,2,7);
+		nuDebConTextPos(0,2,29);
 		sprintf(conbuf, "audio heap free %d", nuAuHeapGetFree());
 		nuDebConCPuts(0, conbuf);
 
-
-		nuDebConTextPos(0,2,16);
-		sprintf(conbuf, "isFading %d", isFading);
-		nuDebConCPuts(0, conbuf);
-
-		nuDebConTextPos(0,2,16);
-		sprintf(conbuf, "fadeTimePassed %4.5f", fadeTimePassed);
-		nuDebConCPuts(0, conbuf);
-
-		nuDebConTextPos(0,4,20);
-		sprintf(conbuf, "press start");
-		nuDebConCPuts(0, conbuf);
+		if (!isFading) {
+			nuDebConTextPos(0,20 - 6,20);
+			sprintf(conbuf, "press start!");
+			nuDebConCPuts(0, conbuf);
+		}
 	}
 	else
 	{
