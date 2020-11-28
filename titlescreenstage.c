@@ -26,6 +26,7 @@ void initTitleScreen(void) {
 	fadeTimePassed = 0.f;
 	isFading = 1;
 
+	nuAuSndPlayerPlay(SOUND_INTRO);
 
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;

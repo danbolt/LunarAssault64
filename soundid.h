@@ -20,6 +20,7 @@
 #define SOUND_TIME_OVER (_SOUND_BASE + 14)
 #define SOUND_ZOOM_IN (_SOUND_BASE + 15)
 #define SOUND_ZOOM_OUT (_SOUND_BASE + 16)
+#define SOUND_INTRO (_SOUND_BASE + 17)
 
 
 #endif

@@ -367,6 +367,36 @@ sound zoom_outSound
     envelope = defaultenv;
 }
 
+keymap intro_lineKeymap
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 27;
+    keyMax      = 27;
+    keyBase     = 27;
+    detune      = 0;
+}
+
+envelope introenv
+{
+    attackTime    = 0;
+    attackVolume  = 127;
+    decayTime   = 5000000;
+    decayVolume   = 100;
+    releaseTime   = 0;
+    
+}
+
+sound intro_lineSound
+{
+    use ("compressed/intro_line.aifc");
+    
+    pan    = 64;
+    volume = 120;
+    keymap = intro_lineKeymap;
+    envelope = introenv;
+}
+
 instrument sfx
 {
     volume = 127;
@@ -389,6 +419,7 @@ instrument sfx
     sound = time_overSound;
     sound = zoom_inSound;
     sound = zoom_outSound;
+    sound = intro_lineSound;
 }
 
 bank sfxbank
