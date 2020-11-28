@@ -78,6 +78,7 @@ FORCELINK =	-u guOrtho \
 			-u nuPiReadRom \
 			-u nuContDataGetEx \
 			-u nuDebConTextPos \
+			-u nuDebConTextColor \
 			-u sprintf \
 			-u gfxRCPInit \
 			-u gfxClearCfb \

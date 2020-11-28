@@ -88,6 +88,13 @@ beginseg
 	include "kaiju2.o"
 endseg
 
+
+beginseg
+	name "title_screen_bg"
+	flags "RAW"
+	include "doc/intro/title_screen.bin"
+endseg
+
 beginseg
 	name "base_bg"
 	flags "RAW"
@@ -212,7 +219,7 @@ endseg
 beginseg
 	name	"hvqmdata"
 	flags	RAW
-	include "fmv/sample2.hvqm"
+	include "fmv/intro.hvqm"
 endseg
 
 beginwave
