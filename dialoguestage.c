@@ -33,8 +33,21 @@ extern unsigned int lab_bg_bin_len;
 
 DialogueLine closing = { "And the work began.", NULL, NOBODY_THERE };
 
-DialogueLine prologueIntro2 = { "I'm a little nervous,\nbut I'll give it my\nbest shot!", NULL, JUST_PROTAG_THERE };
-DialogueLine prologueIntro1 = { "Okay, let's try a\nround on the simulator\nagain.", &prologueIntro2, JUST_PROTAG_THERE };
+DialogueLine prologueIntro14 = { "Whew.\nOkay, let's give it\na go!", NULL, JUST_PROTAG_THERE };
+DialogueLine prologueIntro13 = { "8. DON'T SCREW UP.", &prologueIntro14, JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING };
+DialogueLine prologueIntro12 = { "7. DON'T RUN OUT OF\nTIME.", &prologueIntro13, JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING };
+DialogueLine prologueIntro11 = { "6. HAVE THE SATELLITE\nSTRIKE THE RED WEAK\nPOINTS.", &prologueIntro12, JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING };
+DialogueLine prologueIntro10 = { "5. WHILE HOLDING L,\nHOLD Z TO CHARGE THE\nSATELLITE", &prologueIntro11, JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING };
+DialogueLine prologueIntro9 = { "4. LOOK THROUGH YOUR\nSPOTTER SCOPE WITH\nTHE L BUTTON.", &prologueIntro10, JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING };
+DialogueLine prologueIntro8 = { "3. JUMP WITH THE BLUE\nA BUTTON. THIS CAN\nHELP YOU CLIMB STUFF.", &prologueIntro9, JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING };
+DialogueLine prologueIntro7 = { "3. TURN WITH THE\nJOYSTICK. LIKE A\nMODERN SHOOTER GAME.", &prologueIntro8, JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING };
+DialogueLine prologueIntro6 = { "2. MOVE WITH THE\nDIRECTIONAL PAD.", &prologueIntro7, JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING };
+DialogueLine prologueIntro5 = { "1. HOLD THE LEFT AND\nMIDDLE HANDLES OF THE\nN64 CONTROLLER.", &prologueIntro6, JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING };
+DialogueLine prologueIntro4 = { "I'm just going to\nreview the controls\nfirst:", &prologueIntro5, JUST_PROTAG_THERE };
+DialogueLine prologueIntro3 = { "How about a round on\nthe simulator to\npractice?", &prologueIntro4, JUST_PROTAG_THERE };
+DialogueLine prologueIntro2 = { "I'm so excited, but\nI'm a little nervous\nas well.", &prologueIntro3, JUST_PROTAG_THERE };
+DialogueLine prologueIntro1 = { "Alright, I start my\nfirst day tomorrow\nas a lunar spotter!", &prologueIntro2, JUST_PROTAG_THERE };
+DialogueLine prologueIntro0 = { "June 10\nLunar Residence 14", &prologueIntro1, NOBODY_THERE };
 
 DialogueLine d2 = { "I'm on it!\nYou can count on me.", &closing, PROTAG_SPEAKING };
 DialogueLine d1 = { "Previous operators have\ntaken advantage of\nthe hill in the middle.", &d2, BOSS_SPEAKING };
@@ -48,14 +61,14 @@ DialogueLine dSecondStage0 = { "Okay, this is the\nsecond piece of dia-\nlogue."
 DialogueLine dSecondStageIntro = { "Lunar Fufillment Centre\n08:15 Earth Time, CST", &dSecondStage0, NOBODY_THERE };
 
 DialogueLine* stageDialogues[NUMBER_OF_LEVELS] = {
-	&prologueIntro1,
+	&prologueIntro0,
 	&dIntro,
 	&dSecondStageIntro
 };
 
 
-DialogueLine prologueOutro2 = { "I feel like I'm in a\ngood spot for my first\nday tomorrow.", NULL, JUST_PROTAG_THERE };
-DialogueLine prologueOutro1 = { "Whew!\nThat was tricky, but fun!", &prologueOutro2, JUST_PROTAG_THERE };
+DialogueLine prologueOutro2 = { "I feel like I'm in a\ngood spot for my\nfirst day tomorrow.", NULL, JUST_PROTAG_THERE };
+DialogueLine prologueOutro1 = { "Whew!\nThat was tricky,\nbut fun!", &prologueOutro2, JUST_PROTAG_THERE };
 
 DialogueLine* stagePostDialogues[NUMBER_OF_LEVELS] = {
 	&prologueOutro1,
@@ -101,7 +114,14 @@ void refreshTargetSpots(int speakerIndex) {
 		portratTargetSpots[0].y = 240;
 		portratTargetSpots[1].x = (320 - (PROTAG_PORTRAIT_WIDTH - 0));
 		portratTargetSpots[1].y = (240 - (PROTAG_PORTRAIT_HEIGHT - 32));
+	} else if (speakerIndex == JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING) {
+		portratTargetSpots[0].x = -BOSS_PORTRAIT_WIDTH;
+		portratTargetSpots[0].y = 240;
+		portratTargetSpots[1].x = (320 - (PROTAG_PORTRAIT_WIDTH - 0));
+		portratTargetSpots[1].y = (240 - (PROTAG_PORTRAIT_HEIGHT - 32));
 	}
+
+
 }
 
 void initDialogue(void) {

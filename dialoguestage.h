@@ -7,6 +7,7 @@
 #define BOSS_SPEAKING 0
 #define PROTAG_SPEAKING 1
 #define JUST_PROTAG_THERE 2
+#define JUST_PROTAG_THERE_BUT_NO_PEOPLE_SPEAKING 3
 
 typedef struct DialogueLine {
 	const char* data;
