@@ -117,7 +117,11 @@ void initDialogue(void) {
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;
 
-	nuPiReadRom(_base_bgSegmentRomStart, lab_bg_bin, lab_bg_bin_len);
+	if (currentLevel == 0) {
+		nuPiReadRom((u32)_player_room_bgSegmentRomStart, lab_bg_bin, lab_bg_bin_len);
+	} else {
+		nuPiReadRom((u32)_base_bgSegmentRomStart, lab_bg_bin, lab_bg_bin_len);
+	}
 
 	portratPositions[0].x = -BOSS_PORTRAIT_WIDTH;
 	portratPositions[0].y = 240;

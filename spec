@@ -110,6 +110,12 @@ beginseg
 endseg
 
 beginseg
+	name "player_room_bg"
+	flags "RAW"
+	include "player_room_bg.bin"
+endseg
+
+beginseg
 	name "moon_geo"
 	flags "RAW"
 	include "geotex/moon_geo.bin"
