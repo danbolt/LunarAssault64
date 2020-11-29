@@ -49,11 +49,25 @@ DialogueLine prologueIntro2 = { "I'm so excited, but\nI'm a little nervous\nas w
 DialogueLine prologueIntro1 = { "Alright, I start my\nfirst day tomorrow\nas a lunar spotter!", &prologueIntro2, JUST_PROTAG_THERE };
 DialogueLine prologueIntro0 = { "June 10\nLunar Residence 14", &prologueIntro1, NOBODY_THERE };
 
-DialogueLine d2 = { "I'm on it!\nYou can count on me.", &closing, PROTAG_SPEAKING };
-DialogueLine d1 = { "Previous operators have\ntaken advantage of\nthe hill in the middle.", &d2, BOSS_SPEAKING };
-DialogueLine dBrief = { "A mark IV Lunarbeast\nhas been spotted there.", &d1, BOSS_SPEAKING };
-DialogueLine d0 = { "Your first task today\nwill be at Crater Pit.", &dBrief, BOSS_SPEAKING };
-DialogueLine dIntro = { "Lunar Fufillment Centre\n13:53 Earth Time, CST", &d0, NOBODY_THERE };
+DialogueLine level01Intro18 = { "Okay, then go get it.", &closing, BOSS_SPEAKING };
+DialogueLine level01Intro17 = { "Of course!", &level01Intro18, PROTAG_SPEAKING };
+DialogueLine level01Intro16 = { "Are you passionate?", &level01Intro17, BOSS_SPEAKING };
+DialogueLine level01Intro15 = { "Yeah, I think I\nshould be able to hit\nits weak spots.", &level01Intro16, PROTAG_SPEAKING };
+DialogueLine level01Intro14 = { "Anyway, we need you\nto kill it. Can you\ndo that?", &level01Intro15, BOSS_SPEAKING };
+DialogueLine level01Intro13 = { "Uh, yeah, sure...", &level01Intro14, BOSS_SPEAKING };
+DialogueLine level01Intro12 = { "Wow, that's a lot for\na Mark VI. Especially\nduring this equinox.", &level01Intro13, PROTAG_SPEAKING };
+DialogueLine level01Intro11 = { "Intel indicates that\nit wields the despair\nof 99 remote workers.", &level01Intro12, BOSS_SPEAKING };
+DialogueLine level01Intro10 = { "Listen, a Mark VI\nLunarbeast appeared\nnear the 19th suburb.", &level01Intro11, BOSS_SPEAKING };
+DialogueLine level01Intro9 = { "Oh, okay! Sorry!", &level01Intro10, PROTAG_SPEAKING };
+DialogueLine level01Intro8 = { "Uhhh yeah, I'm goona\nstop you there, kid.", &level01Intro9, BOSS_SPEAKING };
+DialogueLine level01Intro7 = { "Or how the weak spots\nare shadows of a\n5-dimensional heart--", &level01Intro8, PROTAG_SPEAKING };
+DialogueLine level01Intro6 = { "Like how the laser\nionizes quantum light\nto stun the beasts.", &level01Intro7, PROTAG_SPEAKING };
+DialogueLine level01Intro5 = { "I love learning\nhow the lunar array\nworks. It's so cool!", &level01Intro6, PROTAG_SPEAKING };
+DialogueLine level01Intro4 = { "Yep! That's me! I'm\nhere to be a Lunar\nSpotter.", &level01Intro5, PROTAG_SPEAKING };
+DialogueLine level01Intro3 = { "You're Wren, right?\nWren Buster?", &level01Intro4, BOSS_SPEAKING };
+DialogueLine level01Intro2 = { "...whew,\nalright.\n...okay.", &level01Intro3, BOSS_SPEAKING };
+DialogueLine level01Intro1 = { "...", &level01Intro2, JUST_PROTAG_THERE };
+DialogueLine level01Intro0 = { "June 11\nLunar Fufillment Site\n(post-orientation)", &level01Intro1, NOBODY_THERE };
 
 DialogueLine dSecondStage2 = { "Whew, okay!", &closing, PROTAG_SPEAKING };
 DialogueLine dSecondStage1 = { "Don't mess it up\nkid.", &dSecondStage2, BOSS_SPEAKING };
@@ -62,7 +76,7 @@ DialogueLine dSecondStageIntro = { "Lunar Fufillment Centre\n08:15 Earth Time, C
 
 DialogueLine* stageDialogues[NUMBER_OF_LEVELS] = {
 	&prologueIntro0,
-	&dIntro,
+	&level01Intro0,
 	&dSecondStageIntro
 };
 
@@ -72,8 +86,8 @@ DialogueLine prologueOutro1 = { "Whew!\nThat was tricky,\nbut fun!", &prologueOu
 
 DialogueLine* stagePostDialogues[NUMBER_OF_LEVELS] = {
 	&prologueOutro1,
-	&dIntro,
-	&dSecondStageIntro
+	&closing,
+	&closing
 };
 
 #define FADE_IN_OUT_DURATION 1.3f
