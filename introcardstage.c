@@ -73,7 +73,7 @@ void makeDLIntroScreen(void) {
 
 	for (i = 0; i < (64 / 4); i++) {
 		gDPLoadTextureTile(glistp++, doc_gimp_chapter_images_bin, G_IM_FMT_IA, G_IM_SIZ_16b, 320, 64, 0, t + (i * 4), 320 - 1, t + ((i + 1) * 4) - 1, 0, G_TX_WRAP, G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD );
-		gSPScisTextureRectangle(glistp++, (backingX - 320) << 2, (-64 + (i * 8)) << 2, ((backingX + 320)) << 2, (-64 + ((i + 1) * 8)) << 2, 0, 0 << 5, (t + (i * 4)) << 5, (0 << 10) | (1 << 9), (0 << 10) | (1 << 9));
+		gSPScisTextureRectangle(glistp++, (backingX - 320) << 2, (-32 + (i * 8)) << 2, ((backingX + 320)) << 2, (-32 + ((i + 1) * 8)) << 2, 0, 0 << 5, (t + (i * 4)) << 5, (0 << 10) | (1 << 9), (0 << 10) | (1 << 9));
 		gSPScisTextureRectangle(glistp++, ((320 - backingX) - 320) << 2, (240 -96 + (i * 8)) << 2, (((320 - backingX) + 320)) << 2, (240 -64 + ((i + 1) * 8)) << 2, 0, 0 << 5, (t + (i * 4)) << 5, (0 << 10) | (1 << 9), (0 << 10) | (1 << 9));
 	}
 

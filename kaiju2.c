@@ -145,9 +145,9 @@ void initKaiju2() {
   hitboxes[3].alive = 1;
   hitboxes[3].destroyable = 1;
   hitboxes[3].isTransformDirty = 1;
-  hitboxes[3].position = (vec3){ -9.f, 0.f, 0.f };
+  hitboxes[3].position = (vec3){ -9.5f, 0.f, 0.f };
   hitboxes[3].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[3].scale = (vec3){ 1.f, 1.f, 1.f };
+  hitboxes[3].scale = (vec3){ 1.4f, 1.4f, 1.4f };
   guMtxIdentF(hitboxes[3].computedTransform.data);
   hitboxes[3].displayCommands = red_octahedron_commands;
   hitboxes[3].check = sdOctahedron;
@@ -161,9 +161,9 @@ void initKaiju2() {
   hitboxes[4].alive = 1;
   hitboxes[4].destroyable = 1;
   hitboxes[4].isTransformDirty = 1;
-  hitboxes[4].position = (vec3){ 9.f, 0.f, 0.f };
+  hitboxes[4].position = (vec3){ 9.5f, 0.f, 0.f };
   hitboxes[4].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[4].scale = (vec3){ 1.f, 1.f, 1.f };
+  hitboxes[4].scale = (vec3){ 1.4f, 1.4f, 1.4f };
   guMtxIdentF(hitboxes[4].computedTransform.data);
   hitboxes[4].displayCommands = red_octahedron_commands;
   hitboxes[4].check = sdOctahedron;
@@ -177,9 +177,9 @@ void initKaiju2() {
   hitboxes[5].alive = 1;
   hitboxes[5].destroyable = 1;
   hitboxes[5].isTransformDirty = 1;
-  hitboxes[5].position = (vec3){ 0.f, 9.f, 0.f };
+  hitboxes[5].position = (vec3){ 0.f, 9.5f, 0.f };
   hitboxes[5].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[5].scale = (vec3){ 1.f, 1.f, 1.f };
+  hitboxes[5].scale = (vec3){ 1.4f, 1.4f, 1.4f };
   guMtxIdentF(hitboxes[5].computedTransform.data);
   hitboxes[5].displayCommands = red_octahedron_commands;
   hitboxes[5].check = sdOctahedron;
@@ -193,9 +193,9 @@ void initKaiju2() {
   hitboxes[6].alive = 1;
   hitboxes[6].destroyable = 1;
   hitboxes[6].isTransformDirty = 1;
-  hitboxes[6].position = (vec3){ 0.f, -9.f, 0.f };
+  hitboxes[6].position = (vec3){ 0.f, -9.5f, 0.f };
   hitboxes[6].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[6].scale = (vec3){ 1.f, 1.f, 1.f };
+  hitboxes[6].scale = (vec3){ 1.4f, 1.4f, 1.4f };
   guMtxIdentF(hitboxes[6].computedTransform.data);
   hitboxes[6].displayCommands = red_octahedron_commands;
   hitboxes[6].check = sdOctahedron;
@@ -209,9 +209,9 @@ void initKaiju2() {
   hitboxes[7].alive = 1;
   hitboxes[7].destroyable = 1;
   hitboxes[7].isTransformDirty = 1;
-  hitboxes[7].position = (vec3){ 0.f, 0.f, 9.f };
+  hitboxes[7].position = (vec3){ 0.f, 0.f, 9.5f };
   hitboxes[7].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[7].scale = (vec3){ 1.f, 1.f, 1.f };
+  hitboxes[7].scale = (vec3){ 1.4f, 1.4f, 1.4f };
   guMtxIdentF(hitboxes[7].computedTransform.data);
   hitboxes[7].displayCommands = red_octahedron_commands;
   hitboxes[7].check = sdOctahedron;
@@ -225,9 +225,9 @@ void initKaiju2() {
   hitboxes[8].alive = 1;
   hitboxes[8].destroyable = 1;
   hitboxes[8].isTransformDirty = 1;
-  hitboxes[8].position = (vec3){ 0.f, 0.f, -9.f };
+  hitboxes[8].position = (vec3){ 0.f, 0.f, -9.5f };
   hitboxes[8].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[8].scale = (vec3){ 1.f, 1.f, 1.f };
+  hitboxes[8].scale = (vec3){ 1.4f, 1.4f, 1.4f };
   guMtxIdentF(hitboxes[8].computedTransform.data);
   hitboxes[8].displayCommands = red_octahedron_commands;
   hitboxes[8].check = sdOctahedron;
@@ -269,12 +269,10 @@ void updateKaiju2(float deltaSeconds) {
   hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 20.f;
   hitboxes[0].isTransformDirty = 1;
 
-  hitboxes[1].rotation.z += deltaSeconds * ORBIT_ROTATION_SPEED;
   hitboxes[1].rotation.y += deltaSeconds * ORBIT_ROTATION_SPEED;
   hitboxes[1].isTransformDirty = 1;
 
   hitboxes[9].rotation.x += deltaSeconds * ORBIT_ROTATION_SPEED;
-  hitboxes[9].rotation.y += deltaSeconds * ORBIT_ROTATION_SPEED;
   hitboxes[9].isTransformDirty = 1;
 }
 

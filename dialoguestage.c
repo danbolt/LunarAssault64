@@ -73,14 +73,14 @@ DialogueLine level02Intro20 = { "Got it.", &closing, PROTAG_SPEAKING };
 DialogueLine level02Intro19 = { "Then please go kill\nit.", &level02Intro20, BOSS_SPEAKING };
 DialogueLine level02Intro18 = { "Yeah, um, for sure.", &level02Intro19, PROTAG_SPEAKING };
 DialogueLine level02Intro17 = { "Okay, whatever. Are\nyou passionate about\nthe job?", &level02Intro18, BOSS_SPEAKING };
-DialogueLine level02Intro16 = { "I read that their\ntrue form exists only\nin infrared shadows.", &level02Intro17, PROTAG_SPEAKING };
+DialogueLine level02Intro16 = { "I read that their\ntrue form exists\nin infrared shadows.", &level02Intro17, PROTAG_SPEAKING };
 DialogueLine level02Intro15 = { "Uhh...\nI guess not?", &level02Intro16, BOSS_SPEAKING };
-DialogueLine level02Intro14 = { "A Mark II!? I thought\nthose were all gone\nnow.", &level02Intro15, PROTAG_SPEAKING };
+DialogueLine level02Intro14 = { "A Mark II!? Aren't\nthey all gone now?", &level02Intro15, PROTAG_SPEAKING };
 DialogueLine level02Intro13 = { "Anyway, intel found\nthat it's caused by\na Mark II's rampage.", &level02Intro14, BOSS_SPEAKING };
 DialogueLine level02Intro12 = { "Huh.", &level02Intro13, PROTAG_SPEAKING };
 DialogueLine level02Intro11 = { "I guess. Gotta get\nasses back in theatre\nseats on Earth.", &level02Intro12, BOSS_SPEAKING };
-DialogueLine level02Intro10 = { "Another one? Like for\nmovie production?", &level02Intro11, PROTAG_SPEAKING };
-DialogueLine level02Intro9 = { "I think they neeeded\nthe power for another\nCG render farm.", &level02Intro10, BOSS_SPEAKING };
+DialogueLine level02Intro10 = { "Another one? For\nmovie production?", &level02Intro11, PROTAG_SPEAKING };
+DialogueLine level02Intro9 = { "I think they needed\nthe power for a new\nCG render farm.", &level02Intro10, BOSS_SPEAKING };
 DialogueLine level02Intro8 = { "I thought the plant\nwas retired to stop\nthe Moonquakes.", &level02Intro9, PROTAG_SPEAKING };
 DialogueLine level02Intro7 = { "Power's gone down at\nthe geothermal energy\nplant in the south.", &level02Intro8, BOSS_SPEAKING };
 DialogueLine level02Intro6 = { "Okay, good. Let's get\ndown to it.", &level02Intro7, BOSS_SPEAKING };
@@ -132,7 +132,7 @@ DialogueLine level02Outro07 = { "Uh, it was really\nrough out there\ntoday.", &l
 DialogueLine level02Outro06 = { "That should cover our\nasses for funding\nthis quarter.", &level02Outro07, BOSS_SPEAKING };
 DialogueLine level02Outro05 = { "They're still behind\nschedule, but it\nwon't look as bad.", &level02Outro06, BOSS_SPEAKING };
 DialogueLine level02Outro04 = { "Looks like the render\ngroup was able to get\nthe plant online.", &level02Outro05, BOSS_SPEAKING };
-DialogueLine level02Outro03 = { "I didn't expect the\nbeam signal to affect\nme this much.", &level02Outro04, PROTAG_SPEAKING };
+DialogueLine level02Outro03 = { "I didn't expect the\nbeam signal to affect\nme this much.", &level02Outro04, JUST_PROTAG_THERE };
 DialogueLine level02Outro02 = { "Ugh that was intense!", &level02Outro03, JUST_PROTAG_THERE };
 DialogueLine level02Outro01 = { "(after the Mark II)", &level02Outro02, NOBODY_THERE };
 
@@ -372,9 +372,9 @@ void makeDLDialogue(void) {
 	drawProtagonist(portratPositions[1].x, portratPositions[1].y);
 
 	if (!isFading) {
-	    drawString(72, 128, currentLine->data, letterIndex);
+	    drawString(72, 138, currentLine->data, letterIndex);
 	    if ((!tickingText) && (currentLine->data[letterIndex] == '\0')) {
-	    	drawString(256, 200, "(A)", -1);
+	    	drawString(208, 190, "(A)", -1);
 		}
 	}
 

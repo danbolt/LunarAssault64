@@ -299,7 +299,7 @@ void mainproc(void)
 
     if (currentLevel == NUMBER_OF_LEVELS) {
       currentLevel = 0;
-      screenType = TitleScreen;
+      screenType = CreditsScreen;
     }
 
     changeScreensFlag = 0;
