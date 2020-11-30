@@ -274,9 +274,11 @@ CreditCard* cards[] = {
 };
 
 void initCreditscreen(void) {
-	nuAuSeqPlayerStop(0);
-	nuAuSeqPlayerSetNo(0, 0);
-	nuAuSeqPlayerPlay(0);
+	// nuAuSeqPlayerStop(0);
+	// nuAuSeqPlayerSetNo(0, 0);
+	// nuAuSeqPlayerPlay(0);
+
+	currentLevel = 0;
 
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;

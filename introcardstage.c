@@ -119,7 +119,7 @@ void updateIntroScreen(void) {
 		firedLaser = 1;
 
 		nuAuSeqPlayerStop(0);
-		nuAuSeqPlayerSetNo(0, 5 + currentLevel);
+		nuAuSeqPlayerSetNo(0, 5 + (currentLevel % (NUMBER_OF_LEVELS - 1)));
 		nuAuSeqPlayerPlay(0);
 	}
 

@@ -46,7 +46,7 @@ DialogueLine prologueIntro5 = { "1. HOLD THE LEFT AND\nMIDDLE HANDLES OF THE\nN6
 DialogueLine prologueIntro4 = { "I'm just going to\nreview the controls\nfirst:", &prologueIntro5, JUST_PROTAG_THERE };
 DialogueLine prologueIntro3 = { "How about a round on\nthe simulator to\npractice?", &prologueIntro4, JUST_PROTAG_THERE };
 DialogueLine prologueIntro2 = { "I'm so excited, but\nI'm a little nervous\nas well.", &prologueIntro3, JUST_PROTAG_THERE };
-DialogueLine prologueIntro1 = { "Alright, I start my\nfirst day tomorrow\nas a lunar spotter!", &prologueIntro2, JUST_PROTAG_THERE };
+DialogueLine prologueIntro1 = { "Alright, I start my\nfirst day tomorrow\nas a Lunar Spotter!", &prologueIntro2, JUST_PROTAG_THERE };
 DialogueLine prologueIntro0 = { "June 10\nLunar Residence 14", &prologueIntro1, NOBODY_THERE };
 
 DialogueLine level01Intro18 = { "Okay, then go get it.", &closing, BOSS_SPEAKING };
@@ -113,11 +113,26 @@ DialogueLine level03Intro02 = { "Whew, it's cold on\nthe moon at this time\nof y
 DialogueLine level03Intro01 = { "...", &level03Intro02, JUST_PROTAG_THERE };
 DialogueLine level03Intro00 = { "December 22nd\nLunar Fufillment Site", &level03Intro01, NOBODY_THERE };
 
+DialogueLine finale11 = { "       < FIN >       ", NULL, NOBODY_THERE };
+DialogueLine finale10 = { "I think what gives\nme joy in it was with\nme all along.", &finale11, JUST_PROTAG_THERE };
+DialogueLine finale09 = { "But what I love about\nspotting, I don't re-\nally need the job.", &finale10, JUST_PROTAG_THERE };
+DialogueLine finale08 = { "I thought I would\nhave been a great\nfit. I really did.", &finale09, JUST_PROTAG_THERE };
+DialogueLine finale07 = { "And it's so cool to\ntry the simulator.", &finale08, JUST_PROTAG_THERE };
+DialogueLine finale06 = { "I love learning about\nthe Lunarbeasts and\nthe Laser Array.", &finale07, JUST_PROTAG_THERE };
+DialogueLine finale05b = { "I thought I wanted to\nbe a Lunar Spotter.", &finale06, JUST_PROTAG_THERE };
+DialogueLine finale05a = { "...", &finale05b, JUST_PROTAG_THERE };
+DialogueLine finale04 = { "It's odd, now that\nI think about it...", &finale05a, JUST_PROTAG_THERE };
+DialogueLine finale03 = { "Wow, that was a\nreally cool design\nfor the weak spot!", &finale04, JUST_PROTAG_THERE };
+DialogueLine finale02 = { "...", &finale03, NOBODY_THERE };
+DialogueLine finale01 = { "(after Wren's session\non the simulator)", &finale02, NOBODY_THERE };
+DialogueLine finale00 = { "April 16th\nLunar Residence 16", &finale01, NOBODY_THERE };
+
 DialogueLine* stageDialogues[NUMBER_OF_LEVELS] = {
 	&prologueIntro0,
 	&level01Intro0,
 	&level02Intro0,
-	&level03Intro00
+	&level03Intro00,
+	&finale00
 };
 
 
@@ -159,11 +174,30 @@ DialogueLine level02Outro03 = { "I didn't expect the\nbeam signal to affect\nme 
 DialogueLine level02Outro02 = { "Ugh that was intense!", &level02Outro03, JUST_PROTAG_THERE };
 DialogueLine level02Outro01 = { "(after the Mark II)", &level02Outro02, NOBODY_THERE };
 
+DialogueLine level03Outro17 = { "(Wren went home)", NULL, NOBODY_THERE };
+DialogueLine level03Outro16 = { "...what was your name\nagain?", &level03Outro17, BOSS_SPEAKING };
+DialogueLine level03Outro15 = { "Ohhhh-kay, well, I\nbetter get your forms\nfor an exit inteview.", &level03Outro16, BOSS_SPEAKING };
+DialogueLine level03Outro14 = { "(what a weirdo)", &level03Outro15, JUST_BOSS_THERE };
+DialogueLine level03Outro13 = { "(oh geez)", &level03Outro14, JUST_BOSS_THERE };
+DialogueLine level03Outro12 = { "I thought this was\nthe only thing I was\ngeniuinely good at.", &level03Outro13, PROTAG_SPEAKING };
+DialogueLine level03Outro11 = { "I don't know what's\nchanged. It's hard\nto care.", &level03Outro12, PROTAG_SPEAKING };
+DialogueLine level03Outro10 = { "I thought I was, but,\n...I just feel so ex-\nhausted now.", &level03Outro11, PROTAG_SPEAKING };
+DialogueLine level03Outro09 = { "Aren't you\npassionate?", &level03Outro10, BOSS_SPEAKING };
+DialogueLine level03Outro08 = { "...", &level03Outro09, PROTAG_SPEAKING };
+DialogueLine level03Outro07 = { "I thought you loved\nthis stuff. The\nLunarbeasts and all.", &level03Outro08, BOSS_SPEAKING };
+DialogueLine level03Outro06 = { "What?\n...\nYou're quitting?", &level03Outro07, BOSS_SPEAKING };
+DialogueLine level03Outro05 = { "I wanted to give you\na physical copy too.", &level03Outro06, PROTAG_SPEAKING };
+DialogueLine level03Outro04 = { "Oh, I've sent in my\nresignation letter.", &level03Outro05, PROTAG_SPEAKING };
+DialogueLine level03Outro03 = { "No, I haven't had the\nchance to yet. What\nis it?", &level03Outro04, BOSS_SPEAKING };
+DialogueLine level03Outro02 = { "Hey, did you check\nyour e-mail?", &level03Outro03, PROTAG_SPEAKING };
+DialogueLine level03Outro01 = { "December 22nd\nLunar Fufillment Site\n(after a shitty day)", &level03Outro02, NOBODY_THERE };
+
 DialogueLine* stagePostDialogues[NUMBER_OF_LEVELS] = {
 	&prologueOutro1,
 	&level01Outro0,
 	&level02Outro01,
-	&level01Outro17
+	&level03Outro01,
+	&finale00
 };
 
 #define FADE_IN_OUT_DURATION 1.3f
@@ -230,7 +264,7 @@ void initDialogue(void) {
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;
 
-	if (currentLevel == 0) {
+	if ((currentLevel == 0) || ((currentLevel == (NUMBER_OF_LEVELS - 1)))) {
 		nuPiReadRom((u32)_player_room_bgSegmentRomStart, lab_bg_bin, lab_bg_bin_len);
 	} else {
 		nuPiReadRom((u32)_base_bgSegmentRomStart, lab_bg_bin, lab_bg_bin_len);
@@ -242,9 +276,15 @@ void initDialogue(void) {
 	portratPositions[1].y = 240;
 	refreshTargetSpots(currentLine->speakerIndex);
 
-	nuAuSeqPlayerStop(0);
-	nuAuSeqPlayerSetNo(0, 4);
-	nuAuSeqPlayerPlay(0);
+	if (currentLevel != (NUMBER_OF_LEVELS - 1)) {
+		nuAuSeqPlayerStop(0);
+		nuAuSeqPlayerSetNo(0, 4);
+		nuAuSeqPlayerPlay(0);
+	} else {
+		nuAuSeqPlayerStop(0);
+		nuAuSeqPlayerSetNo(0, 0);
+		nuAuSeqPlayerPlay(0);
+	}
 }
 
 void getCharST(const char* character, int* s, int* t) {
@@ -483,7 +523,10 @@ void updateDialogue(void) {
 			isFading = 0;
 
 			if (isFadingOut) {
-				if (finishedLevel) {
+				if (currentLevel == (NUMBER_OF_LEVELS - 1)) {
+					screenType = CreditsScreen;
+				}
+				else if (finishedLevel) {
 					finishedLevel = 0;
 					screenType = IntroCardScreen;
 	      			currentLevel++;
@@ -492,7 +535,9 @@ void updateDialogue(void) {
 				}
 				
 				changeScreensFlag = 1;
-				nuAuSeqPlayerStop(0);
+				if (currentLevel != (NUMBER_OF_LEVELS - 1)) {
+					nuAuSeqPlayerStop(0);
+				}
 			}
 		}
 	} else {
