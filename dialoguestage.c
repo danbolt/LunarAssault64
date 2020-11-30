@@ -85,7 +85,7 @@ DialogueLine level02Intro8 = { "I thought the plant\nwas retired to stop\nthe Mo
 DialogueLine level02Intro7 = { "Power's gone down at\nthe geothermal energy\nplant in the south.", &level02Intro8, BOSS_SPEAKING };
 DialogueLine level02Intro6 = { "Okay, good. Let's get\ndown to it.", &level02Intro7, BOSS_SPEAKING };
 DialogueLine level02Intro5 = { "Umm... it's fine!", &level02Intro6, PROTAG_SPEAKING };
-DialogueLine level02Intro4 = { "Where you waiting\nlong?", &level02Intro5, BOSS_SPEAKING };
+DialogueLine level02Intro4 = { "Were you waiting\nlong?", &level02Intro5, BOSS_SPEAKING };
 DialogueLine level02Intro3 = { "Hey, sorry I'm late.\nThe last meeting went\novertime.", &level02Intro4, BOSS_SPEAKING };
 DialogueLine level02Intro2 = { "I'm still sore from\nthe array's positron\nannealing.", &level02Intro3, JUST_PROTAG_THERE };
 DialogueLine level02Intro1 = { "Ugh, that last\nLunarbeast was a\ndoozy!", &level02Intro2, JUST_PROTAG_THERE };
@@ -121,11 +121,25 @@ DialogueLine level01Outro2 = { "You could really feel\nthe agony of a video\ncal
 DialogueLine level01Outro1 = { "Wow. That was\nsomething else. I'm\nglad it's over with.", &level01Outro2, JUST_PROTAG_THERE };
 DialogueLine level01Outro0 = { "June 11\nLunar Fufillment Site\n(post-slaying)", &level01Outro1, NOBODY_THERE };
 
+DialogueLine level02Outro14 = { "(everyone went home)", NULL, NOBODY_THERE };
+DialogueLine level02Outro13 = { "Anyway, we're done\nfor today.", &level02Outro14, BOSS_SPEAKING };
+DialogueLine level02Outro12 = { "Right.", &level02Outro13, PROTAG_SPEAKING };
+DialogueLine level02Outro11 = { "You should feel lucky\ntoo. Back in the day,\nMark IIs were common.", &level02Outro12, BOSS_SPEAKING };
+DialogueLine level02Outro10 = { "Aren't you a nerd on\nthis stuff? You know\nits part of the life.", &level02Outro11, BOSS_SPEAKING };
+DialogueLine level02Outro09 = { "Are Mark IIs always\nso straining like\nthat?", &level02Outro10, PROTAG_SPEAKING };
+DialogueLine level02Outro08 = { "What?", &level02Outro09, BOSS_SPEAKING };
+DialogueLine level02Outro07 = { "Uh, it was really\nrough out there\ntoday.", &level02Outro08, PROTAG_SPEAKING };
+DialogueLine level02Outro06 = { "That should cover our\nasses for funding\nthis quarter.", &level02Outro07, BOSS_SPEAKING };
+DialogueLine level02Outro05 = { "They're still behind\nschedule, but it\nwon't look as bad.", &level02Outro06, BOSS_SPEAKING };
+DialogueLine level02Outro04 = { "Looks like the render\ngroup was able to get\nthe plant online.", &level02Outro05, BOSS_SPEAKING };
+DialogueLine level02Outro03 = { "I didn't expect the\nbeam signal to affect\nme this much.", &level02Outro04, PROTAG_SPEAKING };
+DialogueLine level02Outro02 = { "Ugh that was intense!", &level02Outro03, JUST_PROTAG_THERE };
+DialogueLine level02Outro01 = { "(after the Mark II)", &level02Outro02, NOBODY_THERE };
 
 DialogueLine* stagePostDialogues[NUMBER_OF_LEVELS] = {
 	&prologueOutro1,
 	&level01Outro0,
-	&closing
+	&level02Outro01
 };
 
 #define FADE_IN_OUT_DURATION 1.3f
