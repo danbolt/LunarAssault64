@@ -91,10 +91,33 @@ DialogueLine level02Intro2 = { "I'm still sore from\nthe array's positron\nannea
 DialogueLine level02Intro1 = { "Ugh, that last\nLunarbeast was a\ndoozy!", &level02Intro2, JUST_PROTAG_THERE };
 DialogueLine level02Intro0 = { "September 26\nLunar Fufillment Site\n(a long Tuesday)", &level02Intro1, NOBODY_THERE };
 
+DialogueLine level03Intro20 = { "Okay, then.", &closing, BOSS_SPEAKING };
+DialogueLine level03Intro19 = { "...sure.", &level03Intro20, PROTAG_SPEAKING };
+DialogueLine level03Intro18 = { "Are you passionate\nabout it?", &level03Intro19, BOSS_SPEAKING };
+DialogueLine level03Intro17 = { "Yeah, whatever.", &level03Intro18, PROTAG_SPEAKING };
+DialogueLine level03Intro16 = { "We need you to nip\nthis one in the bud.", &level03Intro17, BOSS_SPEAKING };
+DialogueLine level03Intro15 = { "Intel thinks it might\nhave been there a\nwhile.", &level03Intro16, BOSS_SPEAKING };
+DialogueLine level03Intro14 = { "Alright. Um, there's\na Mark VII just at\nthe north sector.", &level03Intro15, BOSS_SPEAKING };
+DialogueLine level03Intro13 = { "...yeah.", &level03Intro14, PROTAG_SPEAKING };
+DialogueLine level03Intro12 = { "...long meeting.", &level03Intro13, BOSS_SPEAKING };
+DialogueLine level03Intro11 = { "Hey, sorry I'm late.", &level03Intro12, BOSS_SPEAKING };
+DialogueLine level03Intro10 = { "I end up having to\nsort out their crap.", &level03Intro11, JUST_BOSS_THERE };
+DialogueLine level03Intro09 = { "I just wish someone\nat C-Suite gave a\ndamn.", &level03Intro10, JUST_BOSS_THERE };
+DialogueLine level03Intro08 = { "These meetings go on\nforever but nothing\never gets decided.", &level03Intro09, JUST_BOSS_THERE };
+DialogueLine level03Intro07 = { "(across the building)", &level03Intro08, NOBODY_THERE };
+DialogueLine level03Intro06 = { "He's late again,\nisn't he?", &level03Intro07, JUST_PROTAG_THERE };
+DialogueLine level03Intro05 = { "...huh.", &level03Intro06, JUST_PROTAG_THERE };
+DialogueLine level03Intro04 = { "...", &level03Intro05, JUST_PROTAG_THERE };
+DialogueLine level03Intro03 = { "I guess it's cold on\nthe moon all the time\nthough.", &level03Intro04, JUST_PROTAG_THERE };
+DialogueLine level03Intro02 = { "Whew, it's cold on\nthe moon at this time\nof year.", &level03Intro03, JUST_PROTAG_THERE };
+DialogueLine level03Intro01 = { "...", &level03Intro02, JUST_PROTAG_THERE };
+DialogueLine level03Intro00 = { "December 22nd\nLunar Fufillment Site", &level03Intro01, NOBODY_THERE };
+
 DialogueLine* stageDialogues[NUMBER_OF_LEVELS] = {
 	&prologueIntro0,
 	&level01Intro0,
-	&level02Intro0
+	&level02Intro0,
+	&level03Intro00
 };
 
 
@@ -139,7 +162,8 @@ DialogueLine level02Outro01 = { "(after the Mark II)", &level02Outro02, NOBODY_T
 DialogueLine* stagePostDialogues[NUMBER_OF_LEVELS] = {
 	&prologueOutro1,
 	&level01Outro0,
-	&level02Outro01
+	&level02Outro01,
+	&level01Outro17
 };
 
 #define FADE_IN_OUT_DURATION 1.3f
@@ -185,9 +209,12 @@ void refreshTargetSpots(int speakerIndex) {
 		portratTargetSpots[0].y = 240;
 		portratTargetSpots[1].x = (320 - (PROTAG_PORTRAIT_WIDTH - 0));
 		portratTargetSpots[1].y = (240 - (PROTAG_PORTRAIT_HEIGHT - 32));
+	} else if (speakerIndex == JUST_BOSS_THERE) {
+		portratTargetSpots[0].x = 0;
+		portratTargetSpots[0].y = (240 - (BOSS_PORTRAIT_HEIGHT - 32));
+		portratTargetSpots[1].x = 320;
+		portratTargetSpots[1].y = 240;
 	}
-
-
 }
 
 void initDialogue(void) {
@@ -396,6 +423,8 @@ void updateText(float deltaSeconds) {
 		currentSpeakerSound = SOUND_PLAYER_BIP;
 	} else if (currentLine->speakerIndex == JUST_PROTAG_THERE) {
 		currentSpeakerSound = SOUND_PLAYER_BIP;
+	} else if (currentLine->speakerIndex == JUST_BOSS_THERE) {
+		currentSpeakerSound = SOUND_BOSS_BIP;
 	}
 
 	if (tickingText) {

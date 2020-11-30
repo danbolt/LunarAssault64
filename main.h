@@ -15,7 +15,7 @@ typedef enum {
 	CreditsScreen
 } ScreenSetting;
 
-#define NUMBER_OF_LEVELS 3
+#define NUMBER_OF_LEVELS 4
 
 extern volatile int changeScreensFlag;
 extern volatile ScreenSetting screenType;

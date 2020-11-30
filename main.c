@@ -67,6 +67,9 @@ void loadInStageState(int levelNumber) {
   } else if (levelNumber == 2) {
     terrainROMAddress = (u32)_level2_terrainSegmentRomStart;
     topographyROMAddress = (u32)_level2_topographySegmentRomStart;
+  } else if (levelNumber == 3) {
+    terrainROMAddress = (u32)_level2_terrainSegmentRomStart;
+    topographyROMAddress = (u32)_level2_topographySegmentRomStart;
   }
 
   nuPiReadRomOverlay(&segment);
@@ -105,6 +108,16 @@ void loadInKaiju(int levelNumber) {
     segment.dataEnd   = _kaiju2SegmentDataEnd;
     segment.bssStart  = _kaiju2SegmentBssStart;
     segment.bssEnd    = _kaiju2SegmentBssEnd;
+  } else if (levelNumber == 3) {
+    segment.romStart  = _kaiju2SegmentRomStart;
+    segment.romEnd    = _kaiju2SegmentRomEnd;
+    segment.ramStart  = _kaiju2SegmentStart;
+    segment.textStart = _kaiju2SegmentTextStart;
+    segment.textEnd   = _kaiju2SegmentTextEnd;
+    segment.dataStart = _kaiju2SegmentDataStart;
+    segment.dataEnd   = _kaiju2SegmentDataEnd;
+    segment.bssStart  = _kaiju2SegmentBssStart;
+    segment.bssEnd    = _kaiju2SegmentBssEnd;
   }
 
   nuPiReadRomOverlay(&segment);
@@ -118,6 +131,10 @@ void loadInKaiju(int levelNumber) {
     updateKaijuCallback = &updateKaiju1;
     renderKaijuCallback = &renderKaiju1;
   } else if (levelNumber == 2) {
+    initKaijuCallback = &initKaiju2;
+    updateKaijuCallback = &updateKaiju2;
+    renderKaijuCallback = &renderKaiju2;
+  } else if (levelNumber == 3) {
     initKaijuCallback = &initKaiju2;
     updateKaijuCallback = &updateKaiju2;
     renderKaijuCallback = &renderKaiju2;
