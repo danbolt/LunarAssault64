@@ -69,24 +69,62 @@ DialogueLine level01Intro2 = { "...whew,\nalright.\n...okay.", &level01Intro3, B
 DialogueLine level01Intro1 = { "...", &level01Intro2, JUST_PROTAG_THERE };
 DialogueLine level01Intro0 = { "June 11\nLunar Fufillment Site\n(post-orientation)", &level01Intro1, NOBODY_THERE };
 
-DialogueLine dSecondStage2 = { "Whew, okay!", &closing, PROTAG_SPEAKING };
-DialogueLine dSecondStage1 = { "Don't mess it up\nkid.", &dSecondStage2, BOSS_SPEAKING };
-DialogueLine dSecondStage0 = { "Okay, this is the\nsecond piece of dia-\nlogue.", &dSecondStage1, BOSS_SPEAKING };
-DialogueLine dSecondStageIntro = { "Lunar Fufillment Centre\n08:15 Earth Time, CST", &dSecondStage0, NOBODY_THERE };
+DialogueLine level02Intro20 = { "Got it.", &closing, PROTAG_SPEAKING };
+DialogueLine level02Intro19 = { "Then please go kill\nit.", &level02Intro20, BOSS_SPEAKING };
+DialogueLine level02Intro18 = { "Yeah, um, for sure.", &level02Intro19, PROTAG_SPEAKING };
+DialogueLine level02Intro17 = { "Okay, whatever. Are\nyou passionate about\nthe job?", &level02Intro18, BOSS_SPEAKING };
+DialogueLine level02Intro16 = { "I read that their\ntrue form exists only\nin infrared shadows.", &level02Intro17, PROTAG_SPEAKING };
+DialogueLine level02Intro15 = { "Uhh...\nI guess not?", &level02Intro16, BOSS_SPEAKING };
+DialogueLine level02Intro14 = { "A Mark II!? I thought\nthose were all gone\nnow.", &level02Intro15, PROTAG_SPEAKING };
+DialogueLine level02Intro13 = { "Anyway, intel found\nthat it's caused by\na Mark II's rampage.", &level02Intro14, BOSS_SPEAKING };
+DialogueLine level02Intro12 = { "Huh.", &level02Intro13, PROTAG_SPEAKING };
+DialogueLine level02Intro11 = { "I guess. Gotta get\nasses back in theatre\nseats on Earth.", &level02Intro12, BOSS_SPEAKING };
+DialogueLine level02Intro10 = { "Another one? Like for\nmovie production?", &level02Intro11, PROTAG_SPEAKING };
+DialogueLine level02Intro9 = { "I think they neeeded\nthe power for another\nCG render farm.", &level02Intro10, BOSS_SPEAKING };
+DialogueLine level02Intro8 = { "I thought the plant\nwas retired to stop\nthe Moonquakes.", &level02Intro9, PROTAG_SPEAKING };
+DialogueLine level02Intro7 = { "Power's gone down at\nthe geothermal energy\nplant in the south.", &level02Intro8, BOSS_SPEAKING };
+DialogueLine level02Intro6 = { "Okay, good. Let's get\ndown to it.", &level02Intro7, BOSS_SPEAKING };
+DialogueLine level02Intro5 = { "Umm... it's fine!", &level02Intro6, PROTAG_SPEAKING };
+DialogueLine level02Intro4 = { "Where you waiting\nlong?", &level02Intro5, BOSS_SPEAKING };
+DialogueLine level02Intro3 = { "Hey, sorry I'm late.\nThe last meeting went\novertime.", &level02Intro4, BOSS_SPEAKING };
+DialogueLine level02Intro2 = { "I'm still sore from\nthe array's positron\nannealing.", &level02Intro3, JUST_PROTAG_THERE };
+DialogueLine level02Intro1 = { "Ugh, that last\nLunarbeast was a\ndoozy!", &level02Intro2, JUST_PROTAG_THERE };
+DialogueLine level02Intro0 = { "September 26\nLunar Fufillment Site\n(a long Tuesday)", &level02Intro1, NOBODY_THERE };
 
 DialogueLine* stageDialogues[NUMBER_OF_LEVELS] = {
 	&prologueIntro0,
 	&level01Intro0,
-	&dSecondStageIntro
+	&level02Intro0
 };
 
 
 DialogueLine prologueOutro2 = { "I feel like I'm in a\ngood spot for my\nfirst day tomorrow.", NULL, JUST_PROTAG_THERE };
 DialogueLine prologueOutro1 = { "Whew!\nThat was tricky,\nbut fun!", &prologueOutro2, JUST_PROTAG_THERE };
 
+DialogueLine level01Outro17 = { "(everyone went home)", NULL, NOBODY_THERE };
+DialogueLine level01Outro16 = { "Oh, yeah, sure thing!", &level01Outro17, JUST_PROTAG_THERE };
+DialogueLine level01Outro15 = { "From here on out, be\nback here 9AM every\nmorning. Earth time.", &level01Outro16, BOSS_SPEAKING };
+DialogueLine level01Outro14 = { "I dunno.", &level01Outro15, BOSS_SPEAKING };
+DialogueLine level01Outro13 = { "...", &level01Outro14, BOSS_SPEAKING };
+DialogueLine level01Outro12 = { "Do you know how it\ncan do that?", &level01Outro13, PROTAG_SPEAKING };
+DialogueLine level01Outro11 = { "Especially given how\nit ionizes the weak\nspot's outer shell.", &level01Outro12, PROTAG_SPEAKING };
+DialogueLine level01Outro10 = { "The Satellite Array\nis so precise!", &level01Outro11, PROTAG_SPEAKING };
+DialogueLine level01Outro9 = { "Thanks! It was inter-\nesting!", &level01Outro10, PROTAG_SPEAKING };
+DialogueLine level01Outro8 = { "Good work kid.", &level01Outro9, BOSS_SPEAKING };
+DialogueLine level01Outro7 = { "DLC revenue should\ngo up by 0.3% if\nestimates are right.", &level01Outro8, BOSS_SPEAKING };
+DialogueLine level01Outro6 = { "That should keep the\nhousing supply up for\nwhen we hit Q3.", &level01Outro7, BOSS_SPEAKING };
+DialogueLine level01Outro5 = { "...it felt a little\nunnerving at times.", &level01Outro6, PROTAG_SPEAKING };
+DialogueLine level01Outro4 = { "I've never seen a\nLunarbeast so close\nbefore!", &level01Outro5, PROTAG_SPEAKING };
+DialogueLine level01Outro3a = { "Okay, nice. Looks\nlike the thing's been\nkilled.", &level01Outro4, BOSS_SPEAKING };
+DialogueLine level01Outro3 = { "(..yeah, I'll call\nyou back)\n*CLICK*", &level01Outro3a, BOSS_SPEAKING };
+DialogueLine level01Outro2 = { "You could really feel\nthe agony of a video\ncall over bad Wi-Fi.", &level01Outro3, JUST_PROTAG_THERE };
+DialogueLine level01Outro1 = { "Wow. That was\nsomething else. I'm\nglad it's over with.", &level01Outro2, JUST_PROTAG_THERE };
+DialogueLine level01Outro0 = { "June 11\nLunar Fufillment Site\n(post-slaying)", &level01Outro1, NOBODY_THERE };
+
+
 DialogueLine* stagePostDialogues[NUMBER_OF_LEVELS] = {
 	&prologueOutro1,
-	&closing,
+	&level01Outro0,
 	&closing
 };
 
@@ -169,7 +207,6 @@ void initDialogue(void) {
 }
 
 void getCharST(const char* character, int* s, int* t) {
-	// Use a question mark if we have a strange ASCII character
 	if (*character < ASCII_SPACE) {
 		*s = 120;
 		*t = 8;
