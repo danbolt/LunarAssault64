@@ -224,7 +224,7 @@ void loadInFMVScreenState() {
 }
 
 // Coped from nuAuInit
-#define SMALLER_AU_HEAP_SIZE 200000
+#define SMALLER_AU_HEAP_SIZE (200000 - 4150)
 #define SMALLER_AU_HEAP_ADDR (NU_GFX_FRAMEBUFFER_ADDR - 200000)
 s32 smallerHeapAuinit(void)
 {

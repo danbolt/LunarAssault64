@@ -63,7 +63,7 @@ float timeBetweenPoints;
 
 int bufferTickCount;
 
-vec2 walkPoints2[] = {
+vec2 walkPoints3[] = {
   { 50.f, 16.f },
   { 50.f, 64.f },
   { 40.f, 70.f },
@@ -72,7 +72,7 @@ vec2 walkPoints2[] = {
   { 30.f, 64.f },
   { 50.f, 16.f },
 };
-#define NUMBER_OF_WALK_POINTS (sizeof(walkPoints2)/sizeof(walkPoints2[0]))
+#define NUMBER_OF_WALK_POINTS (sizeof(walkPoints3)/sizeof(walkPoints3[0]))
 #define LOOPED_WALK_POINT(index) ((index + NUMBER_OF_WALK_POINTS) % NUMBER_OF_WALK_POINTS)
 
 extern vec3 playerPos;
@@ -98,7 +98,7 @@ void initKaiju3() {
   hitboxes[0].alive = 1;
   hitboxes[0].destroyable = 0;
   hitboxes[0].isTransformDirty = 1;
-  hitboxes[0].position = (vec3){ walkPoints2[0].x, walkPoints2[0].y, 45.5f };
+  hitboxes[0].position = (vec3){ walkPoints3[0].x, walkPoints3[0].y, 45.5f };
   hitboxes[0].rotation = (vec3){ 0.f, 0.f, 0.f };
   hitboxes[0].scale = (vec3){ 12.f, 12.f, 12.f };
   guMtxIdentF(hitboxes[0].computedTransform.data);
@@ -264,8 +264,8 @@ void updateKaiju3(float deltaSeconds) {
 
   tVal = kaijuTime / timeBetweenPoints;
 
-	hitboxes[0].position.x = catmullRom(tVal, walkPoints2[LOOPED_WALK_POINT(pointIndex - 1)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex + 1)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex + 2)].x);
-  hitboxes[0].position.y = catmullRom(tVal, walkPoints2[LOOPED_WALK_POINT(pointIndex - 1)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex + 1)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex + 2)].y);
+	hitboxes[0].position.x = catmullRom(tVal, walkPoints3[LOOPED_WALK_POINT(pointIndex - 1)].x, walkPoints3[LOOPED_WALK_POINT(pointIndex)].x, walkPoints3[LOOPED_WALK_POINT(pointIndex + 1)].x, walkPoints3[LOOPED_WALK_POINT(pointIndex + 2)].x);
+  hitboxes[0].position.y = catmullRom(tVal, walkPoints3[LOOPED_WALK_POINT(pointIndex - 1)].y, walkPoints3[LOOPED_WALK_POINT(pointIndex)].y, walkPoints3[LOOPED_WALK_POINT(pointIndex + 1)].y, walkPoints3[LOOPED_WALK_POINT(pointIndex + 2)].y);
   hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 20.f;
   hitboxes[0].isTransformDirty = 1;
 

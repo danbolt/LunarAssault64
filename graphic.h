@@ -14,13 +14,12 @@
 
 typedef struct {
   Mtx     camera;
+  Mtx     cameraLocal;
   Mtx     projection;
 
   Mtx     playerTranslation;
   Mtx     playerScale;
   Mtx     playerRotation;
-
-  Mtx     mapScale;
 
   int     hitboxTransformCount;
   Mtx     hitboxTransform[NUMBER_OF_KAIJU_HITBOXES];

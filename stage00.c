@@ -16,6 +16,8 @@
 #include "protaggeo.h"
 #include "kaiju1.h"
 
+#include "debug.h"
+
 #define SCISSOR_HIGH 64
 #define SCISSOR_LOW 24
 #define SCISSOR_SIDES 22
@@ -475,6 +477,17 @@ static float explosionTime = 0;
 
 void initStage00(void) {
   int i;
+  u32 status;
+
+  //  asm volatile("cfc1 %0, $31"
+  //                : "=r"(status));
+
+  // status &= ~(0x1F << 7);
+
+  // asm volatile("ctc1 %0, $31"
+  //                :: "r"(status));
+
+  // debug_initialize();
 
   cameraPos = (vec3){4, 0, 20};
   cameraTarget = (vec3){10.f, 10.f, 10.f};
@@ -532,8 +545,8 @@ void renderDivineLine(DisplayData* dynamicp) {
   guScale(&(dynamicp->divineLineScale), 0.32f, 0.32f, 1.f);
   guTranslate(&(dynamicp->divineLineTransform), divineLineStartSpot.x, divineLineStartSpot.y, divineLineStartSpot.z);
 
-  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->divineLineTransform)), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->divineLineScale)), G_MTX_MODELVIEW | G_MTX_NOPUSH); 
+  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->divineLineTransform)), G_MTX_MODELVIEW | G_MTX_PUSH);
+  gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->divineLineScale)), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH); 
 
   gSPDisplayList(glistp++, divine_line_commands);
 
@@ -601,8 +614,10 @@ void makeDL00(void) {
   {
     guPerspective(&dynamicp->projection, &perspNorm, CAMERA_BASE_FOV + (CAMERA_ZOOM_FOV_CHANGE * playerZoomFactor), (float)SCREEN_WD/(float)SCREEN_HT, 0.90f, 1000.0f, 1.0f);
     gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->projection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-    guLookAt(&dynamicp->camera, cameraPos.x ,cameraPos.y, cameraPos.z, cameraTarget.x, cameraTarget.y, cameraTarget.z, 0, 0, 1);
+    guLookAt(&dynamicp->camera, cameraPos.x * 100.f, cameraPos.y * 100.f, cameraPos.z * 100.f, cameraTarget.x * 100.f, cameraTarget.y * 100.f, cameraTarget.z * 100.f, 0, 0, 1);
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    guLookAt(&dynamicp->cameraLocal, cameraPos.x, cameraPos.y, cameraPos.z, cameraTarget.x, cameraTarget.y, cameraTarget.z, 0, 0, 1);
+    
   }
 
   if (!cinemaMode) {
@@ -623,8 +638,6 @@ void makeDL00(void) {
     flatCamDir.x *= invFlatCamDistSq;
     flatCamDir.y *= invFlatCamDistSq;
 
-    guScale(&dynamicp->mapScale, 0.01f, 0.01f, 0.01f);
-    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
     gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(mapSetionsPreable));
 
     if (flatCamDir.x < 0.f) {
@@ -656,9 +669,9 @@ void makeDL00(void) {
 
           // If we're on the same spot as the kaiju, render it
           if (((int)(hitboxes[0].position.x / 4.f) == x) && ((int)(hitboxes[0].position.y / 4.f) == y)) {
-            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->cameraLocal)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
             renderKaijuCallback(dynamicp);
-            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
           }
 
           if (dotProductFromCamera < 0.5f && (distanceToSectionSq > 16.f)) {
@@ -672,10 +685,9 @@ void makeDL00(void) {
           }
 
           if (((int)(divineLineEndSpot.x / 4.f) == x) && ((int)(divineLineEndSpot.y / 4.f) == y)) {
-            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->cameraLocal)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
             renderDivineLine(dynamicp);
-            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
-            
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
           }
         }
       }
@@ -689,9 +701,9 @@ void makeDL00(void) {
  
           // If we're on the same spot as the kaiju, render it
           if (((int)(hitboxes[0].position.x / 4.f) == x) && ((int)(hitboxes[0].position.y / 4.f) == y)) {
-            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->cameraLocal)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
             renderKaijuCallback(dynamicp);
-            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
           }
 
           if (dotProductFromCamera < 0.5f && (distanceToSectionSq > 16.f)) {
@@ -705,16 +717,15 @@ void makeDL00(void) {
           }
 
           if (((int)(divineLineEndSpot.x / 4.f) == x) && ((int)(divineLineEndSpot.y / 4.f) == y)) {
-            gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->cameraLocal)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
             renderDivineLine(dynamicp);
-            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->mapScale)), G_MTX_MODELVIEW | G_MTX_PUSH);
+            gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->camera)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
           }
         }
       }
     }
 
     gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(mapSectionsPostamble));
-    gSPPopMatrix(glistp++, G_MTX_MODELVIEW);
   }
 
   gDPPipeSync(glistp++);
@@ -726,6 +737,7 @@ void makeDL00(void) {
   // The player
   if (zoomState != ZOOMED_IN) {
     const float st = sinf(time * 0.000005f) * 0.5f + 0.5f;
+    gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->cameraLocal)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
 
     gSPMatrix(glistp++, OS_K0_TO_PHYSICAL(&(dynamicp->playerTranslation)), G_MTX_MODELVIEW | G_MTX_PUSH);
 
