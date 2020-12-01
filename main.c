@@ -223,9 +223,36 @@ void loadInFMVScreenState() {
   nuPiReadRomOverlay(&segment);
 }
 
+// Coped from nuAuInit
+#define SMALLER_AU_HEAP_SIZE 200000
+#define SMALLER_AU_HEAP_ADDR (NU_GFX_FRAMEBUFFER_ADDR - 200000)
+s32 smallerHeapAuinit(void)
+{
+    /* Initialize the Audio Manager.  */
+    nuAuMgrInit((void*)SMALLER_AU_HEAP_ADDR, SMALLER_AU_HEAP_SIZE, &nuAuSynConfig);
+
+    /* Initialize the Sequence Player.  */
+    nuAuSeqPlayerInit(&nuAuSeqpConfig, 0x8000, NU_AU_SEQ_PLAYER0);
+
+    /* Initialize the Sequence Player.  */
+    nuAuSeqPlayerInit(&nuAuSeqpConfig, 0x8000, NU_AU_SEQ_PLAYER1);
+
+    /* Initialize the Sound Player. */
+    nuAuSndPlayerInit(&nuAuSndpConfig);
+
+    /* Initialize the audio control callback function. */
+    nuAuMgrFuncSet(nuAuSeqPlayerControl);
+
+    /* Register the PRE NMI processing function.  */
+    nuAuPreNMIFuncSet(nuAuPreNMIProc);
+
+    /* Return the size of the heap area used. */
+    return nuAuHeapGetUsed();
+}
+
 void initAudio(void)
 {
-  nuAuInit();
+  smallerHeapAuinit();
 
   nuAuSeqPlayerBankSet(_audiobank_controlSegmentRomStart, _audiobank_controlSegmentRomEnd - _audiobank_controlSegmentRomStart, _audiobank_tableSegmentRomStart);
   nuAuSeqPlayerSeqSet(_songsSegmentRomStart);
