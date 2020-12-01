@@ -250,15 +250,6 @@ void mainproc(void)
 
   loadInFMVScreenState();
   initFMVStage();
-  #if HVQM_CFB_FORMAT == 1
-      osViSetMode(&osViModeNtscLan1);
-  #else 
-      osViSetMode(&osViModeNtscLan2);
-  #endif 
-  osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON
-     | OS_VI_GAMMA_OFF
-     | OS_VI_GAMMA_DITHER_OFF
-     | OS_VI_DIVOT_ON);
   nuGfxFuncSet((NUGfxFunc)fmvtick);
 
   nuGfxDisplayOn();
@@ -266,16 +257,6 @@ void mainproc(void)
   while(!changeScreensFlag);
 
   nuGfxFuncRemove();
-
-  // osViSetMode(&osViModeNtscLan1);
-  /* Turn OFF again because executing osViSetMode
-     enables View Screen. */
-  // nuGfxDisplayOff();
-  /* Needs to reset other settings */
-  // osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON
-  //      | OS_VI_GAMMA_OFF
-  //      | OS_VI_GAMMA_DITHER_OFF
-  //      | OS_VI_DIVOT_ON);
 
   initAudio();
 
