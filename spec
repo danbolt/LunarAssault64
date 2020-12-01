@@ -33,7 +33,6 @@ beginseg
 	name "stage"
 	flags OBJECT
 	after "code"
-	align 32
 	include "stage00.o"
 	include "hitboxes.o"
 	include "map.o"
@@ -45,7 +44,6 @@ beginseg
 	name "dialogue"
 	flags OBJECT
 	after "code"
-	align 32
 	include "dialoguestage.o"
 	include "labbg.o"
 endseg
@@ -54,7 +52,6 @@ beginseg
 	name "titlescreen"
 	flags OBJECT
 	after "code"
-	align 32
 	include "titlescreenstage.o"
 endseg
 
@@ -62,7 +59,6 @@ beginseg
 	name "creditsscreen"
 	flags OBJECT
 	after "code"
-	align 32
 	include "creditsscreen.o"
 endseg
 
@@ -70,7 +66,6 @@ beginseg
 	name "introcardstage"
 	flags OBJECT
 	after "code"
-	align 32
 	include "introcardstage.o"
 	include "chapterimages.o"
 endseg
