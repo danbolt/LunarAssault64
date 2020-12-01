@@ -14,6 +14,7 @@
 #include "kaiju0.h"
 #include "kaiju1.h"
 #include "kaiju2.h"
+#include "kaiju3.h"
 
 void stage00(int);
 void dialogue(int);
@@ -109,15 +110,15 @@ void loadInKaiju(int levelNumber) {
     segment.bssStart  = _kaiju2SegmentBssStart;
     segment.bssEnd    = _kaiju2SegmentBssEnd;
   } else if (levelNumber >= 3) {
-    segment.romStart  = _kaiju2SegmentRomStart;
-    segment.romEnd    = _kaiju2SegmentRomEnd;
-    segment.ramStart  = _kaiju2SegmentStart;
-    segment.textStart = _kaiju2SegmentTextStart;
-    segment.textEnd   = _kaiju2SegmentTextEnd;
-    segment.dataStart = _kaiju2SegmentDataStart;
-    segment.dataEnd   = _kaiju2SegmentDataEnd;
-    segment.bssStart  = _kaiju2SegmentBssStart;
-    segment.bssEnd    = _kaiju2SegmentBssEnd;
+    segment.romStart  = _kaiju3SegmentRomStart;
+    segment.romEnd    = _kaiju3SegmentRomEnd;
+    segment.ramStart  = _kaiju3SegmentStart;
+    segment.textStart = _kaiju3SegmentTextStart;
+    segment.textEnd   = _kaiju3SegmentTextEnd;
+    segment.dataStart = _kaiju3SegmentDataStart;
+    segment.dataEnd   = _kaiju3SegmentDataEnd;
+    segment.bssStart  = _kaiju3SegmentBssStart;
+    segment.bssEnd    = _kaiju3SegmentBssEnd;
   }
 
   nuPiReadRomOverlay(&segment);
@@ -135,9 +136,9 @@ void loadInKaiju(int levelNumber) {
     updateKaijuCallback = &updateKaiju2;
     renderKaijuCallback = &renderKaiju2;
   } else if (levelNumber >= 3) {
-    initKaijuCallback = &initKaiju2;
-    updateKaijuCallback = &updateKaiju2;
-    renderKaijuCallback = &renderKaiju2;
+    initKaijuCallback = &initKaiju3;
+    updateKaijuCallback = &updateKaiju3;
+    renderKaijuCallback = &renderKaiju3;
   }
 
 }

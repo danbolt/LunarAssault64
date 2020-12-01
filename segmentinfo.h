@@ -14,7 +14,7 @@ extern u8 _kaiju0SegmentDataEnd[];
 extern u8 _kaiju0SegmentBssStart[];
 extern u8 _kaiju0SegmentBssEnd[];
 
-// First kaiju
+// kaijus
 extern u8 _kaiju1SegmentStart[];
 extern u8 _kaiju1SegmentEnd[];
 extern u8 _kaiju1SegmentRomStart[];
@@ -26,7 +26,6 @@ extern u8 _kaiju1SegmentDataEnd[];
 extern u8 _kaiju1SegmentBssStart[];
 extern u8 _kaiju1SegmentBssEnd[];
 
-// Second kaiju
 extern u8 _kaiju2SegmentStart[];
 extern u8 _kaiju2SegmentEnd[];
 extern u8 _kaiju2SegmentRomStart[];
@@ -37,6 +36,17 @@ extern u8 _kaiju2SegmentDataStart[];
 extern u8 _kaiju2SegmentDataEnd[];
 extern u8 _kaiju2SegmentBssStart[];
 extern u8 _kaiju2SegmentBssEnd[];
+
+extern u8 _kaiju3SegmentStart[];
+extern u8 _kaiju3SegmentEnd[];
+extern u8 _kaiju3SegmentRomStart[];
+extern u8 _kaiju3SegmentRomEnd[];
+extern u8 _kaiju3SegmentTextStart[];
+extern u8 _kaiju3SegmentTextEnd[];
+extern u8 _kaiju3SegmentDataStart[];
+extern u8 _kaiju3SegmentDataEnd[];
+extern u8 _kaiju3SegmentBssStart[];
+extern u8 _kaiju3SegmentBssEnd[];
 
 extern u8 _simulator_geoSegmentRomStart[];
 extern u8 _moon_geoSegmentRomStart[];

@@ -96,6 +96,12 @@ beginseg
 	include "kaiju2.o"
 endseg
 
+beginseg
+	name "kaiju3"
+	flags OBJECT
+	after "stage"
+	include "kaiju3.o"
+endseg
 
 beginseg
 	name "title_screen_bg"
@@ -255,6 +261,13 @@ beginwave
 	include	"code"
 	include	"stage"
 	include	"kaiju2"
+endwave
+
+beginwave
+	name	"gameplay_wave_stage3"
+	include	"code"
+	include	"stage"
+	include	"kaiju3"
 endwave
 
 beginwave
