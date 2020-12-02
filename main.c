@@ -69,8 +69,8 @@ void loadInStageState(int levelNumber) {
     terrainROMAddress = (u32)_level2_terrainSegmentRomStart;
     topographyROMAddress = (u32)_level2_topographySegmentRomStart;
   } else if (levelNumber >= 3) {
-    terrainROMAddress = (u32)_level2_terrainSegmentRomStart;
-    topographyROMAddress = (u32)_level2_topographySegmentRomStart;
+    terrainROMAddress = (u32)_level3_terrainSegmentRomStart;
+    topographyROMAddress = (u32)_level3_topographySegmentRomStart;
   }
 
   nuPiReadRomOverlay(&segment);

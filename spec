@@ -165,6 +165,18 @@ beginseg
 endseg
 
 beginseg
+	name "level3_terrain"
+	flags "RAW"
+	include "terrain/level3.bin"
+endseg
+
+beginseg
+	name "level3_topography"
+	flags "RAW"
+	include "topography/level3.bin"
+endseg
+
+beginseg
 	name "sfxbank_table"
 	flags "RAW"
 	include "audio/sfx/sfx.tbl"

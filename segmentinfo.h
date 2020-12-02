@@ -63,6 +63,10 @@ extern u8 _level1_topographySegmentRomStart[];
 extern u8 _level2_terrainSegmentRomStart[];
 extern u8 _level2_topographySegmentRomStart[];
 
+// Third stage data
+extern u8 _level3_terrainSegmentRomStart[];
+extern u8 _level3_topographySegmentRomStart[];
+
 // The gameplay stage
 extern u8 _stageSegmentStart[];
 extern u8 _stageSegmentEnd[];
