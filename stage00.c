@@ -410,8 +410,6 @@ static Gfx portrait_commands[] = {
   gsDPSetRenderMode(G_RM_TEX_EDGE, G_RM_TEX_EDGE),
   gsDPSetTextureFilter(G_TF_POINT),
   gsDPSetTexturePersp(G_TP_NONE),
-  gsDPLoadTextureTile(portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 48, 0, 0, 48 - 1, 42 - 1, 0, G_TX_NOMIRROR, G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD ),
-  gsSPTextureRectangle((SCREEN_WD - SCISSOR_SIDES - 48) << 2, (SCREEN_HT - SCISSOR_HIGH) << 2, (SCREEN_WD - SCISSOR_SIDES) << 2, (SCREEN_HT - SCISSOR_HIGH + 42) << 2, 0, 0 << 5, 0 << 5, 1 << 10, 1 << 10),
   gsSPEndDisplayList()
 };
 
@@ -811,6 +809,8 @@ void makeDL00(void) {
 
 
     gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(portrait_commands));
+    gDPLoadTextureTile(glistp++, portrait_bin, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 48, 0, 0, 48 - 1, 42 - 1, 0, G_TX_NOMIRROR, G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD );
+    gSPTextureRectangle(glistp++, (SCREEN_WD - SCISSOR_SIDES - 48 + 4) << 2, (SCREEN_HT - SCISSOR_HIGH + 3) << 2, (SCREEN_WD - SCISSOR_SIDES - 4) << 2, (SCREEN_HT - SCISSOR_HIGH + 42 - 4) << 2, 0, 4 << 5, (3 + (int)(2 * MAX(-1.f, MIN(1.f, playerVelocity.z * 0.3333f)))) << 5, 1 << 10, 1 << 10);
 
     // Show the remaining time in seconds
     {
