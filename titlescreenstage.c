@@ -124,13 +124,6 @@ void makeDLTitleScreen(void) {
 	nuDebConTextColor(0, NU_DEB_CON_TEXT_BLACK);
 	if(contPattern & 0x1)
     {
-		nuDebConTextPos(0,2,0);
-		sprintf(conbuf, "audio heap used %d", nuAuHeapGetUsed());
-		nuDebConCPuts(0, conbuf);
-		nuDebConTextPos(0,2,1);
-		sprintf(conbuf, "audio heap free %d", nuAuHeapGetFree());
-		nuDebConCPuts(0, conbuf);
-
 		if (!isFading && !isFadingOut) {
 			for (i = 0; i < NUMBER_OF_MENU_ITEMS; i++) {
 				nuDebConTextPos(0, 20 - 6,20 + i);
@@ -142,18 +135,18 @@ void makeDLTitleScreen(void) {
 				nuDebConCPuts(0, conbuf);
 			}
 
-			nuDebConTextPos(0,2,27);
+			nuDebConTextPos(0,3,25);
 			sprintf(conbuf, "N64Brew Game Jam Submission");
 			nuDebConCPuts(0, conbuf);
 
-			nuDebConTextPos(0,2,28);
+			nuDebConTextPos(0,3,26);
 			sprintf(conbuf, "http://danbolt.itch.io/");
 			nuDebConCPuts(0, conbuf);
 		}
 	}
 	else
 	{
-		nuDebConTextPos(0,4,4);
+		nuDebConTextPos(0,3,30);
 		nuDebConCPuts(0, "Connect controller #1, kid!");
 	}
 
