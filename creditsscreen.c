@@ -61,16 +61,16 @@ CreditCard extraspecialthanks = {
 			"Natsha Miner"
 		},
 		{
+			"The N64Brew Jam Team"
+		},
+		{
 			"Alyssa Savage"
 		},
 		{
 			"Rose-Lynne Savage"
 		},
 		{
-			"My Mom and Dad!"
-		},
-		{
-			"The N64Brew Jam Organizers!"
+			"my Mom and Dad"
 		}
 	}
 };
@@ -136,6 +136,32 @@ CreditCard specialThanks = {
 		{
 			"manfried"
 		}
+	}
+};
+CreditCard testing = {
+	7,
+	{
+		{
+			"Quality Assurance"
+		},
+		{
+			""
+		},
+		{
+			"Adrian Spetz"
+		},
+		{
+			"Pocket Racer"
+		},
+		{
+			"networkfusion"
+		},
+		{
+			"Rocky"
+		},
+		{
+			"Vanadium"
+		},
 	}
 };
 CreditCard hqvmSupport = {
@@ -262,6 +288,7 @@ CreditCard* cards[] = {
 	&Intro,
 	&Development,
 	&VoiceActing,
+	&testing,
 	&AudioTracks,
 	&hqvmSupport,
 	&UNFLoader,
