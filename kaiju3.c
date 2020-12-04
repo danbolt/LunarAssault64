@@ -73,12 +73,33 @@ static Gfx leg_commands[] = {
   gsSPEndDisplayList()
 };
 
-float kaijuTime;
-float legTime;
-int pointIndex;
-float timeBetweenPoints;
+static float isRunning;
 
-int bufferTickCount;
+static float kaijuTime;
+static float legTime;
+static int pointIndex;
+static float timeBetweenPoints;
+
+static int bufferTickCount;
+
+vec2 walkPoints3[] = {
+  { 112.f,  64.f },
+  {  64.f,  64.f },
+  {  64.f,  96.f },
+  {  64.f, 112.f },
+  {  32.f, 112.f },
+  {  16.f, 112.f },
+  {   8.f,  96.f },
+  {   8.f,  64.f },
+  {  32.f,  64.f },
+  {  64.f,  64.f },
+  {  64.f,  32.f },
+  {  64.f,  16.f },
+  {  96.f,   8.f },
+  {  96.f,  32.f },
+  { 112.f,  32.f },
+};
+
 
 #define NUMBER_OF_WALK_POINTS (sizeof(walkPoints3)/sizeof(walkPoints3[0]))
 #define LOOPED_WALK_POINT(index) ((index + NUMBER_OF_WALK_POINTS) % NUMBER_OF_WALK_POINTS)
@@ -92,11 +113,13 @@ void initKaiju3() {
   kaijuTime = 0.f;
   legTime = 0.f;
   pointIndex = 0;
-  timeBetweenPoints = 10.f;
+  timeBetweenPoints = 2.f;
+
+  isRunning = 1;
 
   bufferTickCount = 0;
 
-  playerPos = (vec3){48, 48, 0};
+  playerPos = (vec3){96, 96, 0};
   cameraRotation = (vec3){0, -0.2f, 170};
 
 	 for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
@@ -108,7 +131,7 @@ void initKaiju3() {
   hitboxes[0].destroyable = 0;
   hitboxes[0].isTransformDirty = 1;
   hitboxes[0].position = (vec3){ 64.f, 64.f, 10.5f };
-  hitboxes[0].rotation = (vec3){ 0.f, 0.f, 0.f };
+  hitboxes[0].rotation = (vec3){ 22.5f, 0.f, 0.f };
   hitboxes[0].scale = (vec3){ 3.f, 7.f, 2.0f };
   guMtxIdentF(hitboxes[0].computedTransform.data);
   hitboxes[0].displayCommands = blue_box_commands;
@@ -206,7 +229,9 @@ void initKaiju3() {
 
 void updateKaiju3(float deltaSeconds) {
   float tVal = 0.f;
+  const vec3 oldPos = hitboxes[0].position;
   int remainingHitboxes = 0;
+  float oldAngle;
   int i;
 
   if (bufferTickCount < 5) {
@@ -215,21 +240,45 @@ void updateKaiju3(float deltaSeconds) {
   }
 
   kaijuTime += deltaSeconds;
-  legTime += deltaSeconds * 4.f;
 
-  hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 7.f;
-  hitboxes[0].isTransformDirty = 1;
+  if (isRunning) {
+    if (kaijuTime > timeBetweenPoints) {
+      isRunning = 0;
+      pointIndex = LOOPED_WALK_POINT(pointIndex + 1);
+      kaijuTime = 0.f;
+    }
 
-  hitboxes[1].rotation.y = sinf(legTime) * 20.f + 5.f;
-  hitboxes[1].isTransformDirty = 1;
-  hitboxes[2].rotation.y = 30.f + sinf(2.f * legTime + sinf(legTime)) * 4.f;
-  hitboxes[2].isTransformDirty = 1;
+    tVal = kaijuTime / timeBetweenPoints;
 
+    legTime += deltaSeconds * 4.f;
 
-  hitboxes[1 + 3].rotation.y = sinf(legTime) * 20.f + 5.f;
-  hitboxes[1 + 3].isTransformDirty = 1;
-  hitboxes[2 + 3].rotation.y = 30.f + sinf(2.f * legTime + sinf(legTime)) * 4.f;
-  hitboxes[2 + 3].isTransformDirty = 1;
+    hitboxes[0].position.x = catmullRom(tVal, walkPoints3[LOOPED_WALK_POINT(pointIndex - 1)].x, walkPoints3[LOOPED_WALK_POINT(pointIndex)].x, walkPoints3[LOOPED_WALK_POINT(pointIndex + 1)].x, walkPoints3[LOOPED_WALK_POINT(pointIndex + 2)].x);
+    hitboxes[0].position.y = catmullRom(tVal, walkPoints3[LOOPED_WALK_POINT(pointIndex - 1)].y, walkPoints3[LOOPED_WALK_POINT(pointIndex)].y, walkPoints3[LOOPED_WALK_POINT(pointIndex + 1)].y, walkPoints3[LOOPED_WALK_POINT(pointIndex + 2)].y);
+    hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 2.f;
+    oldAngle = nu_atan2(oldPos.y - hitboxes[0].position.y, oldPos.x - hitboxes[0].position.x);
+    hitboxes[0].rotation.z = RAD_TO_DEG * (oldAngle + (M_PI * 0.5f));
+    hitboxes[0].isTransformDirty = 1;
+
+    hitboxes[1].rotation.y = sinf(legTime) * 20.f + 5.f;
+    hitboxes[1].isTransformDirty = 1;
+    hitboxes[2].rotation.y = 30.f + sinf(2.f * legTime + sinf(legTime)) * 4.f;
+    hitboxes[2].isTransformDirty = 1;
+
+    hitboxes[1 + 3].rotation.y = sinf(legTime) * 20.f + 5.f;
+    hitboxes[1 + 3].isTransformDirty = 1;
+    hitboxes[2 + 3].rotation.y = 30.f + sinf(2.f * legTime + sinf(legTime)) * 4.f;
+    hitboxes[2 + 3].isTransformDirty = 1;
+  } else {
+    if (kaijuTime > 7.f) {
+      kaijuTime = 0.f;
+      isRunning = 1;
+      hitboxes[0].rotation.x = 22.5f;
+      hitboxes[0].isTransformDirty = 1;
+    } else {
+      hitboxes[0].rotation.x = 22.5f + (sinf(M_PI * (kaijuTime / 7.f)) * 20.f);
+      hitboxes[0].isTransformDirty = 1;
+    }
+  }
 }
 
 void renderKaiju3(DisplayData* dynamicp) {
