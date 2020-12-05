@@ -138,6 +138,11 @@ static Vtx divine_line_geo[] = {
 
 
 static Gfx divine_line_commands[] = {
+  gsSPClearGeometryMode(0xFFFFFFFF),
+  gsSPSetGeometryMode(G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK),
+  gsDPSetCombineLERP(NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE),
+  gsDPPipeSync(),
+  gsSPTexture(0x8000, 0x8000, 0, 0, G_OFF),
   gsSPVertex(&divine_line_geo, 63, 0),
   gsSPClipRatio(FRUSTRATIO_6),
   gsSP2Triangles(0, 1, 4, 0, 0, 4, 3, 0),
@@ -205,6 +210,11 @@ static Gfx divine_line_commands[] = {
   gsSP2Triangles(1 + 57, 2 + 57, 4 + 57, 0, 2 + 57, 5 + 57, 4 + 57, 0),
   gsSP2Triangles(2 + 57, 0 + 57, 5 + 57, 0, 5 + 57, 0 + 57, 3 + 57, 0),
   gsSPClipRatio(FRUSTRATIO_2),
+  gsSPTexture(0x8000, 0x8000, 0, 0, G_ON),
+  gsSPClearGeometryMode(0xFFFFFFFF),
+  gsSPSetGeometryMode(G_CULL_BACK),
+  gsDPSetCombineLERP(NOISE, 0, ENVIRONMENT, TEXEL0, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, TEXEL0, 0, 0, 0, SHADE),
+  gsDPPipeSync(),
   gsSPEndDisplayList()
 };
 
