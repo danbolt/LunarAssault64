@@ -23,7 +23,7 @@
 #define SCISSOR_SIDES 22
 
 #define CAMERA_BASE_FOV 60
-#define CAMERA_ZOOM_FOV_CHANGE -35
+#define CAMERA_ZOOM_FOV_CHANGE -10
 #define CAMERA_MOVE_SPEED 10.f
 #define CAMERA_TURN_SPEED_X 4.373f
 #define CAMERA_TURN_SPEED_Y 5.373f
@@ -992,12 +992,21 @@ void updatePlayer(float deltaSeconds) {
     playerIsOnTheGround = 0;
   }
 
-  cameraTarget.x =/* lerp( cameraTarget.x, */playerPos.x;/*, 0.12f);*/
-  cameraTarget.y =/* lerp( cameraTarget.y, */playerPos.y;/*, 0.12f);*/
-  cameraTarget.z =/* lerp( cameraTarget.z, */playerPos.z + CAMERA_LIFT_FRONT;/*, 0.12f);*/
+  cameraTarget.x = playerPos.x;
+  cameraTarget.y = playerPos.y;
+  cameraTarget.z = playerPos.z + CAMERA_LIFT_FRONT;
   cameraPos.x = cameraTarget.x + (cosf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y));
   cameraPos.y = cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y));
   cameraPos.z = cameraTarget.z + (CAMERA_DISTANCE * sinf(cameraRotation.y)) + CAMERA_LIFT_BACK;
+
+  if (zoomState == ZOOMED_IN) {
+    cameraTarget.x = lerp(cameraTarget.x, playerPos.x + (cosf(cameraRotation.z) * cosf(cameraRotation.y) * -15.f), playerZoomFactor);
+    cameraTarget.y = lerp(cameraTarget.y, playerPos.y + (sinf(cameraRotation.z) * cosf(cameraRotation.y) * -15.f), playerZoomFactor);
+    cameraTarget.z = lerp(cameraTarget.z, CAMERA_LIFT_FRONT +  playerPos.z + (sinf(cameraRotation.y) * -10.f), playerZoomFactor);
+    cameraPos.x = lerp(cameraPos.x, playerPos.x + (cosf(cameraRotation.z) * cosf(cameraRotation.y) * -14.f), playerZoomFactor);
+    cameraPos.y = lerp(cameraPos.y, playerPos.y + (sinf(cameraRotation.z) * cosf(cameraRotation.y) * -14.f), playerZoomFactor);
+    cameraPos.z = lerp(cameraPos.z, CAMERA_LIFT_BACK +  playerPos.z + (sinf(cameraRotation.y) * -9.f), playerZoomFactor);
+  }
 
   if ((zoomState == NOT_ZOOMED_IN) && ((contdata->trigger & L_TRIG))) {
     zoomState = ZOOMED_IN;
