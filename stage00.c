@@ -1220,7 +1220,7 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
 
     if (ending == 1) {
       nuAuSeqPlayerStop(0);
-      screenType = DialogueScreen;
+      screenType = RetryScreen;
       changeScreensFlag = 1;
       return;
     } else {

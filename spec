@@ -63,6 +63,13 @@ beginseg
 endseg
 
 beginseg
+	name "retryscreen"
+	flags OBJECT
+	after "code"
+	include "retryscreen.o"
+endseg
+
+beginseg
 	name "introcardstage"
 	flags OBJECT
 	after "code"
@@ -293,6 +300,12 @@ beginwave
 	name	"creditsscreen_wave"
 	include	"code"
 	include	"creditsscreen"
+endwave
+
+beginwave
+	name	"retryscreen_wave"
+	include	"code"
+	include	"retryscreen"
 endwave
 
 beginwave

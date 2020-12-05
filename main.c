@@ -10,6 +10,7 @@
 #include "titlescreenstage.h"
 #include "introcardstage.h"
 #include "creditsscreen.h"
+#include "retryscreen.h"
 
 #include "kaiju0.h"
 #include "kaiju1.h"
@@ -22,6 +23,7 @@ void titlescreen(int);
 void introcard(int);
 void fmvtick(int);
 void credits(int);
+void retry(int);
 
 volatile int changeScreensFlag;
 volatile ScreenSetting screenType;
@@ -207,6 +209,22 @@ void loadInCreditsState() {
   nuPiReadRomOverlay(&segment);
 }
 
+void loadInRetryState() {
+  NUPiOverlaySegment segment;
+
+  segment.romStart  = _retryscreenSegmentRomStart;
+  segment.romEnd    = _retryscreenSegmentRomEnd;
+  segment.ramStart  = _retryscreenSegmentStart;
+  segment.textStart = _retryscreenSegmentTextStart;
+  segment.textEnd   = _retryscreenSegmentTextEnd;
+  segment.dataStart = _retryscreenSegmentDataStart;
+  segment.dataEnd   = _retryscreenSegmentDataEnd;
+  segment.bssStart  = _retryscreenSegmentBssStart;
+  segment.bssEnd    = _retryscreenSegmentBssEnd;
+
+  nuPiReadRomOverlay(&segment);
+}
+
 void loadInFMVScreenState() {
   NUPiOverlaySegment segment;
 
@@ -314,6 +332,10 @@ void mainproc(void)
       loadInCreditsState();
       initCreditscreen();
       nuGfxFuncSet((NUGfxFunc)credits);
+    } else if (screenType == RetryScreen) {
+      loadInRetryState();
+      initRetryScreen();
+      nuGfxFuncSet((NUGfxFunc)retry);
     }
 
     nuGfxDisplayOn();
@@ -411,5 +433,18 @@ void credits(int pendingGfx)
   }
 
   updateCreditsScreen(); 
+}
+
+void retry(int pendingGfx)
+{
+  if (changeScreensFlag != 0) {
+    return;
+  }
+
+  if(pendingGfx < 3) {
+    makeDLRetryScreen();   
+  }
+
+  updateRetryScreen(); 
 }
 
