@@ -552,15 +552,36 @@ void renderDivineLine(DisplayData* dynamicp) {
 }
 
 static Vtx horizon_geo[] = {
-  {  SCREEN_WD, SCREEN_HT * 3,  5, 0, 8 << 6, 0 << 6, 0x00, 0, 0x00, 0xff },
-  {   0, SCREEN_HT * 3,         5, 0, 0 << 6, 0 << 6, 0x00, 0, 0x00, 0xff },
-  {   0,             SCREEN_HT / 2,         5, 0, 0 << 6, 8 << 6, 0x04, 0, 0x1C, 0xff },
-  {  SCREEN_WD,             SCREEN_HT / 2,  5, 0, 8 << 6, 8 << 6, 0x04, 0, 0x1C, 0xff },
+  {  SCREEN_WD, SCREEN_HT * 3,  5, 0, 8 << 6, 0 << 6, 0x04, 0x02, 0x01, 0x00 },
+  {   0, SCREEN_HT * 3,         5, 0, 0 << 6, 0 << 6, 0x04, 0x02, 0x01, 0x00 },
+  {   0,             SCREEN_HT / 2 - 6,         5, 0, 0 << 6, 8 << 6, 0x14, 0x34, 0x54, 0xff },
+  {  SCREEN_WD,             SCREEN_HT / 2 - 10,  5, 0, 8 << 6, 8 << 6, 0x14, 0x34, 0x54, 0xff },
 
-  {  SCREEN_WD, SCREEN_HT / 2,  5, 0, 8 << 6, 0 << 6, 0x80, 0x80, 0x80, 0xff },
+  {  SCREEN_WD / 3, SCREEN_HT / 2 + 2,  5, 0, 8 << 6, 0 << 6, 0x88, 0x88, 0x88, 0xff },
   {   0, SCREEN_HT / 2,         5, 0, 0 << 6, 0 << 6, 0x88, 0x88, 0x88, 0xff },
-  {   0,             -SCREEN_HT * 2,         5, 0, 0 << 6, 8 << 6, 0x8a, 0x8a, 0x8a, 0xff },
-  {  SCREEN_WD,             -SCREEN_HT * 2,  5, 0, 8 << 6, 8 << 6, 0x88, 0x88, 0x88, 0xff },
+  {   0,             -SCREEN_HT / 2,         5, 0, 0 << 6, 8 << 6, 0x2a, 0x2a, 0x2a, 0xff },
+  {  SCREEN_WD / 3,             -SCREEN_HT / 2,  5, 0, 8 << 6, 8 << 6, 0x28, 0x28, 0x28, 0xff },
+
+  {  SCREEN_WD / 3 * 2, SCREEN_HT / 2 - 2,  5, 0, 8 << 6, 0 << 6, 0x88, 0x88, 0x88, 0xff },
+  {  SCREEN_WD / 3, SCREEN_HT / 2 + 4,         5, 0, 0 << 6, 0 << 6, 0x88, 0x88, 0x88, 0xff },
+  {  SCREEN_WD / 3,             -SCREEN_HT / 2,         5, 0, 0 << 6, 8 << 6, 0x2a, 0x2a, 0x2a, 0xff },
+  {  SCREEN_WD / 3 * 2,             -SCREEN_HT / 2,  5, 0, 8 << 6, 8 << 6, 0x28, 0x28, 0x28, 0xff },
+
+  {  SCREEN_WD, SCREEN_HT / 2,  5, 0, 8 << 6, 0 << 6, 0x88, 0x88, 0x88, 0xff },
+  {  SCREEN_WD / 3 * 2, SCREEN_HT / 2 - 2,         5, 0, 0 << 6, 0 << 6, 0x88, 0x88, 0x88, 0xff },
+  {  SCREEN_WD / 3 * 2,             -SCREEN_HT / 2,         5, 0, 0 << 6, 8 << 6, 0x2a, 0x2a, 0x2a, 0xff },
+  {  SCREEN_WD,             -SCREEN_HT / 2,  5, 0, 8 << 6, 8 << 6, 0x28, 0x28, 0x28, 0xff },
+
+
+  {  240, 162, 5, 0, 8 << 6, 0 << 6, 0xFF, 0xFF, 0xFF, 0x00 },
+  {  239, 162, 5, 0, 0 << 6, 0 << 6, 0xFF, 0xFF, 0xFF, 0x00 },
+  {  239, 161, 5, 0, 0 << 6, 8 << 6, 0xFF, 0xFF, 0xFF, 0xff },
+  {  240, 161, 5, 0, 8 << 6, 8 << 6, 0xFF, 0xFF, 0xFF, 0xff },
+
+  {  39, 151, 5, 0, 8 << 6, 0 << 6, 0xFF, 0xFF, 0xFF, 0x00 },
+  {  37, 151, 5, 0, 0 << 6, 0 << 6, 0xFF, 0xFF, 0xFF, 0x00 },
+  {  36, 150, 5, 0, 0 << 6, 8 << 6, 0xFF, 0xFF, 0xFF, 0xff },
+  {  39, 150, 5, 0, 8 << 6, 8 << 6, 0xFF, 0xFF, 0xFF, 0xff },
 };
 
 void makeDL00(void) {
@@ -602,9 +623,13 @@ void makeDL00(void) {
     gSPClipRatio(glistp++, FRUSTRATIO_6);
     gDPPipeSync(glistp++);
     gDPSetCombineLERP(glistp++, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE, NOISE, 0, ENVIRONMENT, SHADE, 0, 0, 0, SHADE);
-    gSPVertex(glistp++, OS_K0_TO_PHYSICAL(horizon_geo), 8, 0);
+    gSPVertex(glistp++, OS_K0_TO_PHYSICAL(horizon_geo), 24, 0);
     gSP2Triangles(glistp++, 0, 1, 2, 0, 0, 2, 3, 0);
     gSP2Triangles(glistp++, 4, 5, 6, 0, 4, 6, 7, 0);
+    gSP2Triangles(glistp++, 8, 9, 10, 0, 8, 10, 11, 0);
+    gSP2Triangles(glistp++, 12, 13, 14, 0, 12, 14, 15, 0);
+    gSP2Triangles(glistp++, 16, 17, 18, 0, 16, 18, 19, 0);
+    gSP2Triangles(glistp++, 20, 21, 22, 0, 20, 22, 23, 0);
     gSPClipRatio(glistp++, FRUSTRATIO_2);
   }
 
