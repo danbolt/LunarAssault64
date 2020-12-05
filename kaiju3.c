@@ -5,8 +5,6 @@
 #include "gamemath.h"
 #include "map.h"
 
-#define ORBIT_ROTATION_SPEED 14.4f
-
 static Vtx red_octahedron_geo[] = {
   {  1,  0,  0, 0, 16 << 6, 24 << 6, 0xaa, 0, 0x00, 0xff },
   { -1,  0,  0, 0, 16 << 6, 24 << 6, 0xaa, 0, 0x00, 0xff },
@@ -176,22 +174,6 @@ void initKaiju3() {
   hitboxes[2].parent = NULL;
   parentHitboxes(&(hitboxes[2]), &(hitboxes[1]));
 
-  hitboxes[3].alive = 1;
-  hitboxes[3].destroyable = 1;
-  hitboxes[3].isTransformDirty = 1;
-  hitboxes[3].position = (vec3){ 1.f, 0.75f, 1.8f };
-  hitboxes[3].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[3].scale = (vec3){ 1.4f * (1.f / hitboxes[0].scale.x), 1.4f * (1.f / hitboxes[0].scale.y), 1.4f * (1.f / hitboxes[0].scale.z) };
-  guMtxIdentF(hitboxes[3].computedTransform.data);
-  hitboxes[3].displayCommands = red_octahedron_commands;
-  hitboxes[3].check = sdOctahedron;
-  hitboxes[3].numberOfChildren = 0;
-  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
-    hitboxes[3].children[i] = NULL;
-  }
-  hitboxes[3].parent = NULL;
-  parentHitboxes(&(hitboxes[3]), &(hitboxes[0]));
-
   // leg 2
   hitboxes[1 + 3].alive = 1;
   hitboxes[1 + 3].destroyable = 0;
@@ -225,6 +207,39 @@ void initKaiju3() {
   }
   hitboxes[2 + 3].parent = NULL;
   parentHitboxes(&(hitboxes[2 + 3]), &(hitboxes[1 + 3]));
+
+  // hitboxes
+  hitboxes[3].alive = 1;
+  hitboxes[3].destroyable = 1;
+  hitboxes[3].isTransformDirty = 1;
+  hitboxes[3].position = (vec3){ 1.2f, 0.95f, 1.f };
+  hitboxes[3].rotation = (vec3){ 0.f, 0.f, 0.f };
+  hitboxes[3].scale = (vec3){ 1.4f * (1.f / hitboxes[0].scale.x), 1.4f * (1.f / hitboxes[0].scale.y), 1.4f * (1.f / hitboxes[0].scale.z) };
+  guMtxIdentF(hitboxes[3].computedTransform.data);
+  hitboxes[3].displayCommands = red_octahedron_commands;
+  hitboxes[3].check = sdOctahedron;
+  hitboxes[3].numberOfChildren = 0;
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
+    hitboxes[3].children[i] = NULL;
+  }
+  hitboxes[3].parent = NULL;
+  parentHitboxes(&(hitboxes[3]), &(hitboxes[0]));
+
+  hitboxes[6].alive = 1;
+  hitboxes[6].destroyable = 1;
+  hitboxes[6].isTransformDirty = 1;
+  hitboxes[6].position = (vec3){ -1.2f, 0.95f, 1.f };
+  hitboxes[6].rotation = (vec3){ 0.f, 0.f, 0.f };
+  hitboxes[6].scale = (vec3){ 1.4f * (1.f / hitboxes[0].scale.x), 1.4f * (1.f / hitboxes[0].scale.y), 1.4f * (1.f / hitboxes[0].scale.z) };
+  guMtxIdentF(hitboxes[6].computedTransform.data);
+  hitboxes[6].displayCommands = red_octahedron_commands;
+  hitboxes[6].check = sdOctahedron;
+  hitboxes[6].numberOfChildren = 0;
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
+    hitboxes[6].children[i] = NULL;
+  }
+  hitboxes[6].parent = NULL;
+  parentHitboxes(&(hitboxes[6]), &(hitboxes[0]));
 }
 
 void updateKaiju3(float deltaSeconds) {
