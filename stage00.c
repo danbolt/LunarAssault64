@@ -1220,7 +1220,6 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
 
     if (ending == 1) {
       nuAuSeqPlayerStop(0);
-      screenType = RetryScreen;
       changeScreensFlag = 1;
       return;
     } else {
@@ -1242,6 +1241,7 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
     }
 
     if (defeatedAllHitboxes && (!cinemaMode)) {
+      screenType = DialogueScreen;
       ending = 1;
       sinking = 1;
       finishedLevel = 1;
@@ -1261,6 +1261,7 @@ void checkIfPlayerHasWonOrLost(float deltaSeconds) {
     u32 timeLeft;
     timeRemaining -= deltaSeconds;
     if (timeRemaining < 0.f) {
+      screenType = RetryScreen;
       ending = 1;
       cinemaMode = 1;
       explosionTime = -9999.f;
