@@ -23,10 +23,6 @@ static Gfx red_octahedron_commands[] = {
   gsSPEndDisplayList()
 };
 
-static Gfx hidden_joint_commands[] = {
-  gsSPEndDisplayList()
-};
-
 static Vtx blue_box_geo[] = {
   {  1,  1,  1, 0,  7 << 6, 24 << 6, 0, 0, 0xff, 0xff },
   { -1,  1,  1, 0,  0 << 6, 24 << 6, 0, 0, 0xff, 0xff },
@@ -80,27 +76,28 @@ static float timeBetweenPoints;
 
 static int bufferTickCount;
 
-vec2 walkPoints3[] = {
-  { 112.f,  64.f },
-  {  64.f,  64.f },
-  {  64.f,  96.f },
-  {  64.f, 112.f },
-  {  32.f, 112.f },
-  {  16.f, 112.f },
-  {   8.f,  96.f },
-  {   8.f,  64.f },
-  {  32.f,  64.f },
-  {  64.f,  64.f },
-  {  64.f,  32.f },
-  {  64.f,  16.f },
-  {  96.f,   8.f },
-  {  96.f,  32.f },
-  { 112.f,  32.f },
+#define FIRST_STATE 0
+#define SECOND_STATE 1
+
+static u8 k3State;
+
+vec2 firstStateWalkPoints[] = {
+  {  12.f,  12.f },
+  {  12.f,  32.f },
+  {  32.f,  32.f },
+  {  32.f,  12.f },
+};
+
+vec2 secondStateJumpPoints[] = {
+  {          32.f,          32.f },
+  {          32.f,  128.f - 32.f },
+  {  128.f - 32.f,  128.f - 32.f },
+  {  128.f - 32.f,          32.f },
 };
 
 
-#define NUMBER_OF_WALK_POINTS (sizeof(walkPoints3)/sizeof(walkPoints3[0]))
-#define LOOPED_WALK_POINT(index) ((index + NUMBER_OF_WALK_POINTS) % NUMBER_OF_WALK_POINTS)
+#define NUMBER_OF_WALK_POINTS(pts) (sizeof(pts)/sizeof(pts[0]))
+#define LOOPED_WALK_POINT(pts, index) ((index + NUMBER_OF_WALK_POINTS(pts)) % NUMBER_OF_WALK_POINTS(pts))
 
 extern vec3 playerPos;
 extern vec3 cameraRotation;
@@ -115,9 +112,11 @@ void initKaiju3() {
 
   isRunning = 1;
 
+  k3State = FIRST_STATE;
+
   bufferTickCount = 0;
 
-  playerPos = (vec3){96, 96, 0};
+  playerPos = (vec3){96, 48, 0};
   cameraRotation = (vec3){0, -0.2f, 170};
 
 	 for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
@@ -212,7 +211,7 @@ void initKaiju3() {
   hitboxes[3].alive = 1;
   hitboxes[3].destroyable = 1;
   hitboxes[3].isTransformDirty = 1;
-  hitboxes[3].position = (vec3){ 1.2f, 0.95f, 1.f };
+  hitboxes[3].position = (vec3){ 1.2f, 0.95f, 1.1f };
   hitboxes[3].rotation = (vec3){ 0.f, 0.f, 0.f };
   hitboxes[3].scale = (vec3){ 1.4f * (1.f / hitboxes[0].scale.x), 1.4f * (1.f / hitboxes[0].scale.y), 1.4f * (1.f / hitboxes[0].scale.z) };
   guMtxIdentF(hitboxes[3].computedTransform.data);
@@ -228,7 +227,7 @@ void initKaiju3() {
   hitboxes[6].alive = 1;
   hitboxes[6].destroyable = 1;
   hitboxes[6].isTransformDirty = 1;
-  hitboxes[6].position = (vec3){ -1.2f, 0.95f, 1.f };
+  hitboxes[6].position = (vec3){ -1.2f, 0.95f, 1.1f };
   hitboxes[6].rotation = (vec3){ 0.f, 0.f, 0.f };
   hitboxes[6].scale = (vec3){ 1.4f * (1.f / hitboxes[0].scale.x), 1.4f * (1.f / hitboxes[0].scale.y), 1.4f * (1.f / hitboxes[0].scale.z) };
   guMtxIdentF(hitboxes[6].computedTransform.data);
@@ -240,6 +239,22 @@ void initKaiju3() {
   }
   hitboxes[6].parent = NULL;
   parentHitboxes(&(hitboxes[6]), &(hitboxes[0]));
+
+  hitboxes[7].alive = 1;
+  hitboxes[7].destroyable = 1;
+  hitboxes[7].isTransformDirty = 1;
+  hitboxes[7].position = (vec3){ 0.f, 0.5f, -1.f };
+  hitboxes[7].rotation = (vec3){ 0.f, 0.f, 0.f };
+  hitboxes[7].scale = (vec3){ 1.4f * (1.f / hitboxes[0].scale.x), 1.4f * (1.f / hitboxes[0].scale.y), 1.4f * (1.f / hitboxes[0].scale.z) };
+  guMtxIdentF(hitboxes[7].computedTransform.data);
+  hitboxes[7].displayCommands = red_octahedron_commands;
+  hitboxes[7].check = sdOctahedron;
+  hitboxes[7].numberOfChildren = 0;
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
+    hitboxes[7].children[i] = NULL;
+  }
+  hitboxes[7].parent = NULL;
+  parentHitboxes(&(hitboxes[7]), &(hitboxes[0]));
 }
 
 void updateKaiju3(float deltaSeconds) {
@@ -254,45 +269,78 @@ void updateKaiju3(float deltaSeconds) {
     return;
   }
 
+  for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
+    if (hitboxes[i].alive && hitboxes[i].destroyable) {
+      remainingHitboxes++;
+    }
+  }
+
   kaijuTime += deltaSeconds;
 
-  if (isRunning) {
-    if (kaijuTime > timeBetweenPoints) {
+  if (k3State == FIRST_STATE) {
+    if (remainingHitboxes < 3) {
+      kaijuTime = 0.f;
+      k3State = SECOND_STATE;
       isRunning = 0;
-      pointIndex = LOOPED_WALK_POINT(pointIndex + 1);
-      kaijuTime = 0.f;
+      pointIndex = 1;
+      return;
     }
 
-    tVal = kaijuTime / timeBetweenPoints;
+    if (isRunning) {
+      if (kaijuTime > timeBetweenPoints) {
+        isRunning = 0;
+        pointIndex = LOOPED_WALK_POINT(firstStateWalkPoints, pointIndex + 1);
+        kaijuTime = 0.f;
+      }
 
-    legTime += deltaSeconds * 4.f;
+      tVal = kaijuTime / timeBetweenPoints;
 
-    hitboxes[0].position.x = catmullRom(tVal, walkPoints3[LOOPED_WALK_POINT(pointIndex - 1)].x, walkPoints3[LOOPED_WALK_POINT(pointIndex)].x, walkPoints3[LOOPED_WALK_POINT(pointIndex + 1)].x, walkPoints3[LOOPED_WALK_POINT(pointIndex + 2)].x);
-    hitboxes[0].position.y = catmullRom(tVal, walkPoints3[LOOPED_WALK_POINT(pointIndex - 1)].y, walkPoints3[LOOPED_WALK_POINT(pointIndex)].y, walkPoints3[LOOPED_WALK_POINT(pointIndex + 1)].y, walkPoints3[LOOPED_WALK_POINT(pointIndex + 2)].y);
-    hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 2.f;
-    oldAngle = nu_atan2(oldPos.y - hitboxes[0].position.y, oldPos.x - hitboxes[0].position.x);
-    hitboxes[0].rotation.z = RAD_TO_DEG * (oldAngle + (M_PI * 0.5f));
-    hitboxes[0].isTransformDirty = 1;
+      legTime += deltaSeconds * 4.f;
 
-    hitboxes[1].rotation.y = sinf(legTime) * 20.f + 5.f;
-    hitboxes[1].isTransformDirty = 1;
-    hitboxes[2].rotation.y = 30.f + sinf(2.f * legTime + sinf(legTime)) * 4.f;
-    hitboxes[2].isTransformDirty = 1;
-
-    hitboxes[1 + 3].rotation.y = sinf(legTime) * 20.f + 5.f;
-    hitboxes[1 + 3].isTransformDirty = 1;
-    hitboxes[2 + 3].rotation.y = 30.f + sinf(2.f * legTime + sinf(legTime)) * 4.f;
-    hitboxes[2 + 3].isTransformDirty = 1;
-  } else {
-    if (kaijuTime > 7.f) {
-      kaijuTime = 0.f;
-      isRunning = 1;
-      hitboxes[0].rotation.x = 22.5f;
+      hitboxes[0].position.x = catmullRom(tVal, firstStateWalkPoints[LOOPED_WALK_POINT(firstStateWalkPoints, pointIndex - 1)].x, firstStateWalkPoints[LOOPED_WALK_POINT(firstStateWalkPoints, pointIndex)].x, firstStateWalkPoints[LOOPED_WALK_POINT(firstStateWalkPoints, pointIndex + 1)].x, firstStateWalkPoints[LOOPED_WALK_POINT(firstStateWalkPoints, pointIndex + 2)].x);
+      hitboxes[0].position.y = catmullRom(tVal, firstStateWalkPoints[LOOPED_WALK_POINT(firstStateWalkPoints, pointIndex - 1)].y, firstStateWalkPoints[LOOPED_WALK_POINT(firstStateWalkPoints, pointIndex)].y, firstStateWalkPoints[LOOPED_WALK_POINT(firstStateWalkPoints, pointIndex + 1)].y, firstStateWalkPoints[LOOPED_WALK_POINT(firstStateWalkPoints, pointIndex + 2)].y);
+      hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 2.f;
+      oldAngle = nu_atan2(oldPos.y - hitboxes[0].position.y, oldPos.x - hitboxes[0].position.x);
+      hitboxes[0].rotation.z = RAD_TO_DEG * (oldAngle + (M_PI * 0.5f));
       hitboxes[0].isTransformDirty = 1;
+
+      hitboxes[1].rotation.y = sinf(legTime) * 20.f + 5.f;
+      hitboxes[1].isTransformDirty = 1;
+      hitboxes[2].rotation.y = 30.f + sinf(2.f * legTime + sinf(legTime)) * 4.f;
+      hitboxes[2].isTransformDirty = 1;
+
+      hitboxes[1 + 3].rotation.y = sinf(legTime) * 20.f + 5.f;
+      hitboxes[1 + 3].isTransformDirty = 1;
+      hitboxes[2 + 3].rotation.y = 30.f + sinf(2.f * legTime + sinf(legTime)) * 4.f;
+      hitboxes[2 + 3].isTransformDirty = 1;
     } else {
-      hitboxes[0].rotation.x = 22.5f + (sinf(M_PI * (kaijuTime / 7.f)) * 20.f);
-      hitboxes[0].isTransformDirty = 1;
+      if (kaijuTime > 7.f) {
+        kaijuTime = 0.f;
+        isRunning = 1;
+        hitboxes[0].rotation.x = 12.5f;
+        hitboxes[0].isTransformDirty = 1;
+      } else {
+        hitboxes[0].rotation.x = 12.5f + (sinf(M_PI * (kaijuTime / 7.f)) * 8.f);
+        hitboxes[0].isTransformDirty = 1;
+      }
     }
+  } else if (k3State = SECOND_STATE) {
+    float dx = hitboxes[0].position.x - secondStateJumpPoints[pointIndex].x;
+    float dy = hitboxes[0].position.y - secondStateJumpPoints[pointIndex].y;
+
+    dx = dx * dx;
+    dy = dy * dy;
+
+    if (dx + dy < 0.8f) {
+      pointIndex = (pointIndex + 1) % 4;
+    }
+
+    hitboxes[0].position.x = lerp(hitboxes[0].position.x, secondStateJumpPoints[pointIndex].x, deltaSeconds * 0.5f);
+    hitboxes[0].position.y = lerp(hitboxes[0].position.y, secondStateJumpPoints[pointIndex].y, deltaSeconds * 0.5f);
+    hitboxes[0].position.z = MAX(getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 2.f, sinf((dx + dy) / 4096 * M_PI) * 34.f);
+    hitboxes[0].rotation.x = 30.f;
+    hitboxes[0].rotation.z = RAD_TO_DEG * (nu_atan2(64 - hitboxes[0].position.y, 64 - hitboxes[0].position.x) - (M_PI * 0.5f));
+    hitboxes[0].isTransformDirty = 1;
   }
 }
 
