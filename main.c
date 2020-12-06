@@ -279,11 +279,28 @@ void initAudio(void)
   nuAuSndPlayerBankSet(_sfxbank_controlSegmentRomStart, _sfxbank_controlSegmentRomEnd - _sfxbank_controlSegmentRomStart, _sfxbank_tableSegmentRomStart);
 }
 
+// #define PAL_ROM
+
+#ifdef PAL_ROM
+void callback_prenmi()
+{
+    nuGfxDisplayOff();
+    osViSetYScale(1);
+}
+
+#endif
+
 /*------------------------
 	Main
 --------------------------*/
 void mainproc(void)
 {
+#ifdef PAL_ROM
+  osViSetMode(&osViModeTable[OS_VI_FPAL_LAN1]);
+  osViSetYScale(0.833); // Dirty but works
+  nuPreNMIFuncSet((NUScPreNMIFunc)callback_prenmi);
+#endif
+
   /* The initialization of graphic  */
   // nuGfxInit();
   hvqmGfxInit();
