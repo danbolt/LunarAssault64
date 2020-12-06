@@ -31,7 +31,7 @@
 #define BOSS_PORTRAIT_WIDTH 132
 #define BOSS_PORTRAIT_HEIGHT 206
 
-extern unsigned char lab_bg_bin[];
+extern unsigned char lab_bg_bin[] __attribute__((aligned(8)));
 extern unsigned int lab_bg_bin_len;
 
 DialogueLine closing = { "And the work began.", NULL, NOBODY_THERE };

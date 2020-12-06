@@ -12,7 +12,7 @@
 
 #define STICK_Y_DEADZONE 20
 
-u8 titleScreenBackgroundBuffer[153600];
+u8 titleScreenBackgroundBuffer[153600] __attribute__((aligned(8)));
 float fadeTimePassed;
 u32 isFading = 0;
 u32 isFadingOut = 0;

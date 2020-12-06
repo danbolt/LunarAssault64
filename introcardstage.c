@@ -6,7 +6,7 @@
 #include "main.h"
 #include "soundid.h"
 
-extern unsigned char doc_gimp_chapter_images_bin[];
+extern unsigned char doc_gimp_chapter_images_bin[]  __attribute__((aligned(8)));
 extern unsigned int doc_gimp_chapter_images_bin_len;
 
 #define FADE_TIME 0.6f
