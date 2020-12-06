@@ -30,9 +30,9 @@ APP =		jam.out
 
 TARGETS =	jam.n64
 
-HFILES =	main.h font.h stage00.h graphic.h gamemath.h segmentinfo.h terraintex.h map.h hitboxes.h portraittex.h protaggeo.h kaiju0.h kaiju1.h kaiju2.h kaiju3.h dialoguestage.h hvqm.h fmvstage.h introcardstage.h creditsscreen.h retryscreen.h
+HFILES =	main.h font.h stage00.h graphic.h gamemath.h segmentinfo.h terraintex.h map.h hitboxes.h portraittex.h protaggeo.h kaiju0.h kaiju1.h kaiju2.h kaiju3.h dialoguestage.h hvqm.h fmvstage.h introcardstage.h creditsscreen.h retryscreen.h smallfont.c
 
-CODEFILES   = 	main.c graphic.c gfxinit.c gamemath.c hvqmgfxinit.c hvqmmain.c hvqmaudio.c hvqmcopyframebuffer.c
+CODEFILES   = 	main.c graphic.c gfxinit.c gamemath.c hvqmgfxinit.c hvqmmain.c hvqmaudio.c hvqmcopyframebuffer.c smallfont.c
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
 

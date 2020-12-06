@@ -6,11 +6,14 @@
 #include "main.h"
 #include "soundid.h"
 #include "segmentinfo.h"
+#include "smallfont.h"
 
 #define FADE_IN_TIME 1.2f
 #define FADE_OUT_TIME 1.2f
 
 #define STICK_Y_DEADZONE 20
+
+char testBuf[128];
 
 u8 titleScreenBackgroundBuffer[153600] __attribute__((aligned(8)));
 float fadeTimePassed;
@@ -110,47 +113,45 @@ void makeDLTitleScreen(void) {
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
 	gDPPipeSync(glistp++);
 
-	for (i = 0; i < (240 / 5); i++) {
-		gDPLoadTextureTile(glistp++, titleScreenBackgroundBuffer, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, 240, 0, (i * 5), 320 - 1, ((i + 1) * 5) - 1, 0, G_TX_WRAP, G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD );
-		gSPScisTextureRectangle(glistp++, 0 << 2, (0 + (i * 5)) << 2, (0 + 320) << 2, (0 + ((i + 1) * 5)) << 2, 0, 0 << 5, (i * 5) << 5, 1 << 10, 1 << 10);
+	for (i = 0; i < (240 / 6); i++) {
+		gDPLoadTextureTile(glistp++, titleScreenBackgroundBuffer, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, 240, 0, (i * 6), 320 - 1, ((i + 1) * 6) - 1, 0, G_TX_WRAP, G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD );
+		gSPScisTextureRectangle(glistp++, 0 << 2, (0 + (i * 6)) << 2, (0 + 320) << 2, (0 + ((i + 1) * 6)) << 2, 0, 0 << 5, (i * 6) << 5, 1 << 10, 1 << 10);
 	}
+
+	if (!isFading && !isFadingOut) {
+		for (i = 0; i < NUMBER_OF_MENU_ITEMS; i++) {
+			if (i == menuIndex) {
+				sprintf(testBuf, ">> %s <<", menuStrings[i]);
+			} else {
+				sprintf(testBuf, "   %s   ", menuStrings[i]);
+			}
+			
+			drawSmallStringCol( (20 - 6) * 8, (20 + i) * 8, testBuf, 0, 0, 0);
+		}
+		
+		drawSmallStringCol( 3 * 8, 25 * 8, "N64Brew Game Jam Submission", 0, 0, 0);
+		drawSmallStringCol( 3 * 8, 26 * 8, "https://danbolt.itch.io/", 0, 0, 0);
+	}
+	
 
 	gDPFullSync(glistp++);
 	gSPEndDisplayList(glistp++);
 
-	nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0], (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx), NU_GFX_UCODE_F3DLP_REJ , NU_SC_NOSWAPBUFFER);
+	nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0], (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx), NU_GFX_UCODE_F3DLP_REJ , NU_SC_SWAPBUFFER);
 
-	nuDebConClear(0);
-	nuDebConTextColor(0, NU_DEB_CON_TEXT_BLACK);
-	if(contPattern & 0x1)
-    {
-		if (!isFading && !isFadingOut) {
-			for (i = 0; i < NUMBER_OF_MENU_ITEMS; i++) {
-				nuDebConTextPos(0, 20 - 6,20 + i);
-				if (i == menuIndex) {
-					sprintf(conbuf, ">> %s <<", menuStrings[i]);
-				} else {
-					sprintf(conbuf, "   %s   ", menuStrings[i]);
-				}
-				nuDebConCPuts(0, conbuf);
-			}
+	// nuDebConClear(0);
+	// nuDebConTextColor(0, NU_DEB_CON_TEXT_BLACK);
+	// if(contPattern & 0x1)
+ //    {
+		
+	// }
+	// else
+	// {
+	// 	nuDebConTextPos(0,3,30);
+	// 	nuDebConCPuts(0, "Connect controller #1, kid!");
+	// }
 
-			nuDebConTextPos(0,3,25);
-			sprintf(conbuf, "N64Brew Game Jam Submission");
-			nuDebConCPuts(0, conbuf);
-
-			nuDebConTextPos(0,3,26);
-			sprintf(conbuf, "http://danbolt.itch.io/");
-			nuDebConCPuts(0, conbuf);
-		}
-	}
-	else
-	{
-		nuDebConTextPos(0,3,30);
-		nuDebConCPuts(0, "Connect controller #1, kid!");
-	}
-
-	nuDebConDisp(NU_SC_SWAPBUFFER);
+	// nuDebConDisp(NU_SC_SWAPBUFFER);
 
 	gfx_gtask_no = (gfx_gtask_no + 1) % 3;
 }
