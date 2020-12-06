@@ -22,6 +22,9 @@
 
 #define TIME_PER_LETTER 0.055f
 
+#define SPEAK_ARC_AMPLITUDE 3.2f
+#define SPEAK_ARC_DISTANCE 0.2f
+
 #define PROTAG_PORTRAIT_WIDTH 98
 #define PROTAG_PORTRAIT_HEIGHT 211
 
@@ -214,6 +217,8 @@ static DialogueLine* currentLine = NULL;
 static int tickingText = 0;
 static float textTime;
 
+static float speakTime;
+
 vec2 portratPositions[2];
 vec2 portratTargetSpots[2];
 
@@ -256,6 +261,8 @@ void initDialogue(void) {
 	currentLine = finishedLevel ? stagePostDialogues[currentLevel] : stageDialogues[currentLevel];
 	tickingText = 1;
 	textTime = 0.f;
+
+	speakTime = 0;
 
 	isFading = 1;
 	fadeTime = 0.f;
@@ -435,8 +442,17 @@ void makeDLDialogue(void) {
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
 
 	drawLabBackground(0, 0);
-	drawBosss(portratPositions[0].x, portratPositions[0].y);
-	drawProtagonist(portratPositions[1].x, portratPositions[1].y);
+	if ((currentLine->speakerIndex == BOSS_SPEAKING) || (currentLine->speakerIndex == JUST_BOSS_THERE)) {
+		drawBosss(portratPositions[0].x, portratPositions[0].y + (int)(SPEAK_ARC_AMPLITUDE * sinf((speakTime / SPEAK_ARC_DISTANCE * M_PI))));
+	} else {
+		drawBosss(portratPositions[0].x, portratPositions[0].y);
+	}
+
+	if ((currentLine->speakerIndex == PROTAG_SPEAKING) || (currentLine->speakerIndex == JUST_PROTAG_THERE)) {
+		drawProtagonist(portratPositions[1].x, portratPositions[1].y + (int)(SPEAK_ARC_AMPLITUDE * sinf((speakTime / SPEAK_ARC_DISTANCE * M_PI))));
+	} else {
+		drawProtagonist(portratPositions[1].x, portratPositions[1].y);
+	}
 
 	if (!isFading) {
 	    drawString(72, 138, currentLine->data, letterIndex);
@@ -468,6 +484,11 @@ void updateText(float deltaSeconds) {
 	}
 
 	if (tickingText) {
+		speakTime += deltaSeconds;
+		if (speakTime >= SPEAK_ARC_DISTANCE) {
+			speakTime = 0;
+		}
+
 		textTime += deltaSeconds;
 		if (textTime > TIME_PER_LETTER) {
 			textTime = 0;
@@ -478,6 +499,7 @@ void updateText(float deltaSeconds) {
 
 			if (currentLine->data[letterIndex] == '\0') {
 				tickingText = 0;
+				speakTime = 0;
 			}
 		}
 	}
