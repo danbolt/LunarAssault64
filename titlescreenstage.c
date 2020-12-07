@@ -66,7 +66,6 @@ void makeDLTitleScreen(void) {
 	gfxClearCfb();
 
 	if (!isFadingOut) {
-		gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD, osVirtualToPhysical(nuGfxCfb_ptr));
 		gDPSetFillColor(glistp++, (GPACK_RGBA5551(255, 255, 255, 1) << 16 | GPACK_RGBA5551(255, 255, 255, 1)));
 		gDPFillRectangle(glistp++, 0, 0, SCREEN_WD-1, SCREEN_HT-1);
 		gDPPipeSync(glistp++);
@@ -128,7 +127,7 @@ void makeDLTitleScreen(void) {
 			
 			drawSmallStringCol( (20 - 6) * 8, (20 + i) * 8, testBuf, 0, 0, 0);
 		}
-		
+
 		drawSmallStringCol( 3 * 8, 25 * 8, "N64Brew Game Jam Submission", 0, 0, 0);
 		drawSmallStringCol( 3 * 8, 26 * 8, "https://danbolt.itch.io/", 0, 0, 0);
 	}
