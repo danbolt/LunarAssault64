@@ -5,6 +5,7 @@
 #include <nualsgi_n.h>
 #include "main.h"
 #include "soundid.h"
+#include "smallfont.h"
 
 #define NUMBER_OF_MENU_ITEMS 2
 #define STICK_Y_DEADZONE 20
@@ -21,6 +22,8 @@ static int stickPressed = 0;
 
 static float titleScreenFadeTime;
 static int isFadingToTitle;
+
+static char formattingBuffer[128];
 
 void initRetryScreen(void) {
 	currentLevel = 0;
@@ -42,6 +45,7 @@ void makeDLRetryScreen(void) {
 	char conbuf[20];
 	int i;
 	u32 len;
+	u8 col = 255;
 
 	dynamicp = &gfx_dynamic[gfx_gtask_no];
 	glistp = &gfx_glist[gfx_gtask_no][0];
@@ -55,57 +59,59 @@ void makeDLRetryScreen(void) {
   		gDPFillRectangle(glistp++, 0, 0, SCREEN_WD-1, SCREEN_HT-1);
 	}
 
-	gDPFullSync(glistp++);
-	gSPEndDisplayList(glistp++);
+	gDPSetCycleType(glistp++, G_CYC_1CYCLE);
+    gDPSetCombineMode(glistp++, G_CC_SHADE, G_CC_SHADE);
+    gDPSetScissor(glistp++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
+    gDPSetTextureFilter(glistp++, G_TF_BILERP);
+	gDPSetRenderMode(glistp++, G_RM_XLU_SURF, G_RM_XLU_SURF);
+	gDPSetTexturePersp(glistp++, G_TP_NONE);
+	gDPPipeSync(glistp++);
+	gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_ON);
+    gSPClearGeometryMode(glistp++,0xFFFFFFFF);
+    gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
 
-	nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0], (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx), NU_GFX_UCODE_F3DLP_REJ , NU_SC_NOSWAPBUFFER);
-
-	nuDebConClear(0);
-	if (!isFadingToTitle) {
-		nuDebConTextColor(0, NU_DEB_CON_TEXT_WHITE);
-		
+    if (!isFadingToTitle) {
 		if (timePassed > 1.2f) {
-			nuDebConTextPos(0, 12, 8);
-			sprintf(conbuf, "You too too long!");
-			nuDebConCPuts(0, conbuf);
+			sprintf(formattingBuffer, "You too too long!");
+			drawSmallStringCol(12 * 8, 8 * 8, formattingBuffer, col, col, col);
 		}
 
 		if (timePassed > 2.4f) {
-			nuDebConTextPos(0, 10, 10);
-			sprintf(conbuf, "You're likely fired.");
-			nuDebConCPuts(0, conbuf);
+			sprintf(formattingBuffer, "You're likely fired.");
+			drawSmallStringCol(10 * 8, 10 * 8, formattingBuffer, col, col, col);
 		}
 
 		if (timePassed > 3.8f) {
-			nuDebConTextPos(0, 10, 12);
-			sprintf(conbuf, "Give it another try?");
-			nuDebConCPuts(0, conbuf);
+			sprintf(formattingBuffer, "Give it another try?");
+			drawSmallStringCol(10 * 8, 12 * 8, formattingBuffer, col, col, col);
 		}
 
 
 		if (timePassed > 4.2f) {
 			if (menuIndex == 0) {
-				nuDebConTextPos(0, 13, 20);
-				sprintf(conbuf, "> Of course! < ");
+				sprintf(formattingBuffer, "> Of course! < ");
+				drawSmallStringCol(13 * 8, 20 * 8, formattingBuffer, col, col, col);
 			}
 			else {
-				nuDebConTextPos(0, 15, 20);
-				sprintf(conbuf, "Of course!");
+				sprintf(formattingBuffer, "Of course!");
+				drawSmallStringCol(15 * 8, 20 * 8, formattingBuffer, col, col, col);
 			}
 			nuDebConCPuts(0, conbuf);
 
 			if (menuIndex == 0) {
-				nuDebConTextPos(0, 11, 21);
-				sprintf(conbuf, "Ugh, another time.");
+				sprintf(formattingBuffer, "Ugh, another time.");
+				drawSmallStringCol(11 * 8, 21 * 8, formattingBuffer, col, col, col);
 			} else {
-				nuDebConTextPos(0, 9, 21);
-				sprintf(conbuf, "> Ugh, another time. <");
+				sprintf(formattingBuffer, "> Ugh, another time. <");
+				drawSmallStringCol(9 * 8, 21 * 8, formattingBuffer, col, col, col);
 			}
-			nuDebConCPuts(0, conbuf);
 		}
 	}
 
-	nuDebConDisp(NU_SC_SWAPBUFFER);
+	gDPFullSync(glistp++);
+	gSPEndDisplayList(glistp++);
+
+	nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0], (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx), NU_GFX_UCODE_F3DLP_REJ , NU_SC_SWAPBUFFER);
 
 	gfx_gtask_no = (gfx_gtask_no + 1) % 3;
 }
