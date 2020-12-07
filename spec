@@ -253,7 +253,7 @@ endseg
 beginseg
 	name	"hvqmdata"
 	flags	RAW
-	include "fmv/intro.hvqm"
+	include "fmv/render15fps.hvqm"
 endseg
 
 beginwave
