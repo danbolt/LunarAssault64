@@ -12,7 +12,7 @@ static OSTime delta = 0;
 static float timePassed = 0.f;
 
 #define BLACK_TIME 1.21626f
-#define MINIMUM_ON_TIME 4.f
+#define MINIMUM_ON_TIME 4.9f
 #define WHITE_FADE_OUT_TIME 5.f
 
 static int showingCard = 0;
@@ -336,26 +336,37 @@ void makeDLCreditsScreen(void) {
 		gDPPipeSync(glistp++);
 	}
 
+	gDPSetCycleType(glistp++, G_CYC_1CYCLE);
+    gDPSetCombineMode(glistp++, G_CC_SHADE, G_CC_SHADE);
+    gDPSetScissor(glistp++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
+    gDPSetTextureFilter(glistp++, G_TF_BILERP);
+	gDPSetRenderMode(glistp++, G_RM_XLU_SURF, G_RM_XLU_SURF);
+	gDPSetTexturePersp(glistp++, G_TP_NONE);
+	gDPPipeSync(glistp++);
+	gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_ON);
+    gSPClearGeometryMode(glistp++,0xFFFFFFFF);
+    gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
+
+	if (showingCard) {
+		float t = 1.f;
+		u8 col = 255;
+		if (timePassed < 0.3f) {
+			t = timePassed / 0.3f;
+		} else if (timePassed > (MINIMUM_ON_TIME - 0.28f)) {
+			t = 1.f - ((timePassed - (MINIMUM_ON_TIME - 0.28f)) / 0.28f);
+		}
+		col = t * 255;
+
+		for (i = 0; i < cards[currentCardIndex]->quantity; i++) {
+			my_strlen(cards[currentCardIndex]->items[i].data, &len);
+			drawSmallStringCol( ((40 - len) / 2) * 8, (((30 - (cards[currentCardIndex]->quantity * 2)) / 2) + (i * 2)) * 8, cards[currentCardIndex]->items[i].data, col, col, col);
+		}
+	}
+
 	gDPFullSync(glistp++);
 	gSPEndDisplayList(glistp++);
 
-	nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0], (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx), NU_GFX_UCODE_F3DLP_REJ , NU_SC_NOSWAPBUFFER);
-
-	nuDebConClear(0);
-	if (showingCard) {
-		nuDebConTextColor(0, NU_DEB_CON_TEXT_WHITE);
-		
-		for (i = 0; i < cards[currentCardIndex]->quantity; i++) {
-			my_strlen(cards[currentCardIndex]->items[i].data, &len);
-
-			nuDebConTextPos(0, (40 - len) / 2, ((30 - (cards[currentCardIndex]->quantity * 2)) / 2) + (i * 2));
-			sprintf(conbuf, cards[currentCardIndex]->items[i].data);
-			nuDebConCPuts(0, conbuf);
-		}
-	}
-	
-
-	nuDebConDisp(NU_SC_SWAPBUFFER);
+	nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0], (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx), NU_GFX_UCODE_F3DLP_REJ , NU_SC_SWAPBUFFER);
 
 	gfx_gtask_no = (gfx_gtask_no + 1) % 3;
 }
