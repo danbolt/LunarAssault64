@@ -161,6 +161,8 @@ void updateTitleScreen(void) {
 
 	nuContDataGetEx(contdata,0);
 
+	guRandom();
+
 	delta = newTime - time;
 	time = newTime;
 	deltaSeconds = delta * 0.000001f;

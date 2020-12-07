@@ -15,6 +15,7 @@
 #include "portraittex.h"
 #include "protaggeo.h"
 #include "kaiju1.h"
+#include "smallfont.h"
 
 #include "debug.h"
 
@@ -483,6 +484,20 @@ static u8 ending = 0;
 static u8 sinking = 0;
 static float explosionTime = 0;
 
+static char angleValsText[64];
+
+static char gibberishBuffer[33];
+
+static float missTime;
+static u8 hasMissed;
+
+static const char* messages[] = {
+  "SIM TEST\nTRAINING",
+  "   Mk.04\n  WALKER",
+  "   Mk.02\n   ANGER",
+  "   Mk.07\n   CRAWL",
+};
+
 void initStage00(void) {
   int i;
   u32 status;
@@ -508,6 +523,19 @@ void initStage00(void) {
   zoomState = NOT_ZOOMED_IN;
 
   laserChargeFactor = 0.f;
+
+  hasMissed = 0;
+  missTime = 0.f;
+
+  angleValsText[0] = '\0';
+  gibberishBuffer[16] = '\0';
+  for (i = 0; i < 16; i++) {
+    gibberishBuffer[i] = 32 + (guRandom() % 50);
+  }
+  gibberishBuffer[23] = '\0';
+  for (i = 17; i < 23; i++) {
+    gibberishBuffer[i] = 32 + (guRandom() % 50);
+  }
 
   divineLineState = DIVINE_LINE_OFF;
   divineLineTimePassed = 0.f;
@@ -854,6 +882,20 @@ void makeDL00(void) {
       gSPTextureRectangle(glistp++, (211 +  8 + 4) << 2, (200) << 2, (211 + 16 + 4) << 2, (200 + 8) << 2, 0, s0 << 5, t0 << 5, 1 << 10, 1 << 10);
       gSPTextureRectangle(glistp++, (211 + 16 + 4) << 2, (200) << 2, (211 + 24 + 4) << 2, (200 + 8) << 2, 0, s1 << 5, t1 << 5, 1 << 10, 1 << 10);
     }
+
+    drawSmallStringCol(SCISSOR_SIDES + 96 + 20, (SCREEN_HT - SCISSOR_HIGH + 6) + 8, messages[currentLevel], 240, 240, 255);
+
+    if (zoomState == ZOOMED_IN) {
+      drawSmallStringCol(32, 32, angleValsText, 2, 2, 2);
+      drawSmallStringCol(32, (SCREEN_HT - SCISSOR_HIGH - 2 - 16), &(gibberishBuffer[17]), 2, 2, 2);
+      drawSmallStringCol(32, (SCREEN_HT - SCISSOR_HIGH - 2 - 8), gibberishBuffer, 2, 2, 2);
+
+      if (hasMissed && (((int)(missTime / 0.25f)) % 2 == 0)) {
+        drawSmallStringCol(SCREEN_WD / 2 + 23, SCREEN_HT / 2 + 9, "MISS", 2, 2, 2);
+        drawSmallStringCol(SCREEN_WD / 2 + 22, SCREEN_HT / 2 + 9, "MISS", 2, 2, 2);
+        drawSmallStringCol(SCREEN_WD / 2 + 22, SCREEN_HT / 2 + 8, "MISS", 240, 10, 2);
+      }
+    }
   }
 
   gDPFullSync(glistp++);
@@ -941,6 +983,13 @@ void updatePlayer(float deltaSeconds) {
 
   cameraRotation.z -= inputDirectionX * (CAMERA_TURN_SPEED_X + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds;
   cameraRotation.y = MAX(-M_PI * 0.35f, MIN(M_PI * 0.35f, cameraRotation.y + ((CAMERA_TURN_SPEED_Y + (CAMERA_TURN_SPEED_ADJUSTMENT_WHILE_ZOOMED * playerZoomFactor)) * deltaSeconds * cameraYInvert * inputDirectionY)));
+
+  if (cameraRotation.z >= (M_PI * 2.f)) {
+    cameraRotation.z -= (M_PI * 2.f);
+  } else if (cameraRotation.z < 0.f) {
+    cameraRotation.z += (M_PI * 2.f);
+  }
+  sprintf(angleValsText, "%3.2frad\n%3.2f%s", fabs_d(cameraRotation.z), fabs_d(cameraRotation.y), (cameraRotation.y < 0.f) ? "u" : "d");
 
   cosCameraRot = cosf(cameraRotation.z + M_PI * 0.5f);
   sinCameraRot = sinf(cameraRotation.z + M_PI * 0.5f);
@@ -1040,6 +1089,17 @@ void updatePlayer(float deltaSeconds) {
   } else {
     laserChargeFactor = clamp(laserChargeFactor + (LASER_CHARGE_SPEED * deltaSeconds * -1), 0.f, 1.f);
   }
+
+  if (hasMissed) {
+    missTime += deltaSeconds;
+
+    if (missTime > 1.f) {
+      hasMissed = 0;
+    }
+  }
+
+  gibberishBuffer[guRandom() % 16] = 33 + (guRandom() % 50);
+  gibberishBuffer[17 + (guRandom() % 5)] = 32 + (guRandom() % 50);
 }
 
 void updateCinemaMode(float deltaSeconds) {
@@ -1191,6 +1251,9 @@ void raymarchAimLineAgainstHitboxes() {
     laserChargeFactor = 0.f;
     noiseFactor = 0.f;
     nuAuSndPlayerPlay(SOUND_NO_TARGET);
+
+    hasMissed = 1;
+    missTime = 0.f;
   }
 }
 
