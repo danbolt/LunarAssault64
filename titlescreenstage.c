@@ -184,6 +184,9 @@ void updateTitleScreen(void) {
 				currentLevel = 0;
 			} else if (menuIndex == 1) {
 				screenType = CreditsScreen;
+				nuAuSeqPlayerStop(0);
+				nuAuSeqPlayerSetNo(0, 0);
+				nuAuSeqPlayerPlay(0);
 			}
 		}
 	} else {
@@ -213,8 +216,6 @@ void updateTitleScreen(void) {
 		}
 
 		if ((contdata->trigger & A_BUTTON) || ((contdata->trigger & START_BUTTON))) {
-			
-
 			isFadingOut = 1;
 			fadeTimePassed = 0.f;
 
