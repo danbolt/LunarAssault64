@@ -921,9 +921,9 @@ void makeDL00(void) {
     gSPClearGeometryMode(glistp++,0xFFFFFFFF);
     gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
 
-    drawSmallStringCol(33, 33, introTextBuffer, 0, 0, 0);
-    drawSmallStringCol(33, 32, introTextBuffer, 0, 0, 0);
-    drawSmallStringCol(32, 32, introTextBuffer, 240, 240, 255);
+    drawSmallStringCol(33, 65, introTextBuffer, 0, 0, 0);
+    drawSmallStringCol(33, 64, introTextBuffer, 0, 0, 0);
+    drawSmallStringCol(32, 64, introTextBuffer, 240, 240, 255);
   }
 
   gDPFullSync(glistp++);
