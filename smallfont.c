@@ -353,6 +353,13 @@ unsigned char font_8px_bin[] __attribute__((aligned(8))) = {
 };
 unsigned int font_8px_bin_len = 4096;
 
+// Naive strlen copied from
+// https://stackoverflow.com/questions/22520413/c-strlen-implementation-in-one-line-of-code
+void my_strlen(const char *str, u32 *len)
+{
+    for (*len = 0; str[*len]; (*len)++);
+}
+
 void computeST(u8* s, u8* t, unsigned char letter) {
   const unsigned char offsetLetter = letter - TEX_ASCII_START;
 

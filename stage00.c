@@ -68,7 +68,7 @@
 
 #define TIME_PER_CHARGE_BIP 0.10161f
 
-#define CINEMA_DURATION 5.f
+#define CINEMA_DURATION 7.f
 #define CINEMA_LONG_DURATION 8.7f
 
 static Vtx divine_line_geo[] = {
@@ -488,6 +488,17 @@ static char angleValsText[64];
 
 static char gibberishBuffer[33];
 
+const char* introMessages[] = {
+  "SIMULATION #13: Target Test\n\n\n- Aim the sattelites\n\n- Strike the weak spots\n\n- Be effective",
+  "LUNARBEAST MARK IV\n  WALK TYPE\n\n\n- Survey for weak spots\n\n- Follow the beast\n\n- Be altitude for gains",
+  "LUNARBEAST MARK II\n  ANGER TYPE\n\n\n- Note the rotation\n\n- Go around the beast\n\n- Have no fear",
+  "LUNARBEAST MARK VII\n  CRAWL TYPE\n\n\n- Watch for patterns\n\n- Note the underbelly\n\n- Change is natural",
+  "You shouldn't be seeing this!!"
+};
+
+static char introTextBuffer[128];
+const char* testIntroText = NULL;
+
 static float missTime;
 static u8 hasMissed;
 
@@ -523,6 +534,9 @@ void initStage00(void) {
   zoomState = NOT_ZOOMED_IN;
 
   laserChargeFactor = 0.f;
+
+  introTextBuffer[0] = '\0';
+  testIntroText = introMessages[currentLevel];
 
   hasMissed = 0;
   missTime = 0.f;
@@ -896,6 +910,20 @@ void makeDL00(void) {
         drawSmallStringCol(SCREEN_WD / 2 + 22, SCREEN_HT / 2 + 8, "MISS", 240, 10, 2);
       }
     }
+  } else if ((!ending) && (cinemaTime < (CINEMA_DURATION - 1.f))) {
+    gDPSetCombineMode(glistp++, G_CC_DECALRGBA, G_CC_DECALRGBA);
+    gDPSetScissor(glistp++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
+    gDPSetRenderMode(glistp++, G_RM_TEX_EDGE, G_RM_TEX_EDGE);
+    gDPSetTextureFilter(glistp++, G_TF_POINT);
+    gDPSetTexturePersp(glistp++, G_TP_NONE);
+    gDPPipeSync(glistp++);
+    gSPTexture(glistp++, 0x8000, 0x8000, 0, 0, G_ON);
+    gSPClearGeometryMode(glistp++,0xFFFFFFFF);
+    gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
+
+    drawSmallStringCol(33, 33, introTextBuffer, 0, 0, 0);
+    drawSmallStringCol(33, 32, introTextBuffer, 0, 0, 0);
+    drawSmallStringCol(32, 32, introTextBuffer, 240, 240, 255);
   }
 
   gDPFullSync(glistp++);
@@ -1109,16 +1137,30 @@ void updateCinemaMode(float deltaSeconds) {
     cameraTarget.x = lerp( hitboxes[0].position.x, playerPos.x, t);
     cameraTarget.y = lerp( hitboxes[0].position.y, playerPos.y, t);
     cameraTarget.z = lerp( hitboxes[0].position.z, playerPos.z + CAMERA_LIFT_FRONT, t);
-    cameraPos.x = lerp(hitboxes[0].position.x + (20 * cosf(0.05f * cinemaTime)), cameraTarget.x + (cosf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y)), t);
-    cameraPos.y = lerp(hitboxes[0].position.y + (20 * sinf(0.05f * cinemaTime)), cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y)), t);
+    cameraPos.x = lerp(hitboxes[0].position.x + (30 * cosf(0.15f * cinemaTime)), cameraTarget.x + (cosf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y)), t);
+    cameraPos.y = lerp(hitboxes[0].position.y + (30 * sinf(0.15f * cinemaTime)), cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y)), t);
     cameraPos.z = lerp(hitboxes[0].position.z + 10, cameraTarget.z + (CAMERA_DISTANCE * sinf(cameraRotation.y)) + CAMERA_LIFT_BACK, t);
   } else {
+    if (!ending) {
+      const float t = MIN(1.f, cinemaTime / (CINEMA_DURATION - 3.f));
+      u32 len = 0;
+      int i;
+      my_strlen(testIntroText, &len);
+      len = len * t;
+      for (i = 0; i < len; i++) {
+        introTextBuffer[i] = testIntroText[i];
+      }
+      introTextBuffer[i] = '\0';
+    } else {
+      introTextBuffer[0] = '\0';
+    }
+
     cameraTarget.x = hitboxes[0].position.x;
     cameraTarget.y = hitboxes[0].position.y;
     cameraTarget.z = hitboxes[0].position.z;
 
-    cameraPos.x = hitboxes[0].position.x + (20 * cosf(0.05f * cinemaTime));
-    cameraPos.y = hitboxes[0].position.y + (20 * sinf(0.05f * cinemaTime));
+    cameraPos.x = hitboxes[0].position.x + (30 * cosf(0.15f * cinemaTime));
+    cameraPos.y = hitboxes[0].position.y + (30 * sinf(0.15f * cinemaTime));
     cameraPos.z = MAX(20, hitboxes[0].position.z + 10);
   }
 }

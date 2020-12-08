@@ -18,13 +18,6 @@ static float timePassed = 0.f;
 static int showingCard = 0;
 static int currentCardIndex = 0;
 
-// Naive strlen copied from
-// https://stackoverflow.com/questions/22520413/c-strlen-implementation-in-one-line-of-code
-void my_strlen(const char *str, u32 *len)
-{
-    for (*len = 0; str[*len]; (*len)++);
-}
-
 typedef struct {
 	const char* data;
 } CreditItem;
