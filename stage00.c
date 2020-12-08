@@ -490,7 +490,7 @@ static char gibberishBuffer[33];
 
 const char* introMessages[] = {
   "SIMULATION #13: Target Test\n\n\n- Aim the sattelites\n\n- Strike the weak spots\n\n- Be effective",
-  "LUNARBEAST MARK IV\n  WALK TYPE\n\n\n- Survey for weak spots\n\n- Follow the beast\n\n- Be altitude for gains",
+  "LUNARBEAST MARK IV\n  WALK TYPE\n\n\n- Survey for weak spots\n\n- Follow the beast\n\n- Be attitude for gains",
   "LUNARBEAST MARK II\n  ANGER TYPE\n\n\n- Note the rotation\n\n- Go around the beast\n\n- Have no fear",
   "LUNARBEAST MARK VII\n  CRAWL TYPE\n\n\n- Watch for patterns\n\n- Note the underbelly\n\n- Change is natural",
   "You shouldn't be seeing this!!"
