@@ -23,40 +23,100 @@ static Gfx red_octahedron_commands[] = {
   gsSPEndDisplayList()
 };
 
-float kaijuTime;
-float kaijuTotalTime;
+static Gfx hidden_joint_commands[] = {
+  gsSPEndDisplayList()
+};
+
+float sdHidden(const vec3* point) {
+  return 100.f;
+}
+
+static float kaijuTime;
 
 void initKaiju0() {
   int i;
 
   kaijuTime = 0.f;
-  kaijuTotalTime = 0.f;
 
 	 for (i = 0; i < NUMBER_OF_KAIJU_HITBOXES; i++) {
     hitboxes[0].alive = 0;
   }
 
-  // Create a "body piece"
+  // Root piece
   hitboxes[0].alive = 1;
-  hitboxes[0].destroyable = 1;
+  hitboxes[0].destroyable = 0;
   hitboxes[0].isTransformDirty = 1;
   hitboxes[0].position = (vec3){ 64.5f ,64.5f , 10.5f };
   hitboxes[0].rotation = (vec3){ 0.f, 0.f, 0.f };
   hitboxes[0].scale = (vec3){ 1.f, 1.f, 1.f  };
   guMtxIdentF(hitboxes[0].computedTransform.data);
-  hitboxes[0].displayCommands = red_octahedron_commands;
-  hitboxes[0].check = sdOctahedron;
+  hitboxes[0].displayCommands = hidden_joint_commands;
+  hitboxes[0].check = sdHidden;
   hitboxes[0].numberOfChildren = 0;
   for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
     hitboxes[0].children[i] = NULL;
   }
   hitboxes[0].parent = NULL;
 
+  hitboxes[1].alive = 1;
+  hitboxes[1].destroyable = 1;
+  hitboxes[1].isTransformDirty = 1;
+  hitboxes[1].position = (vec3){ 0.f, 0.f, 0.f };
+  hitboxes[1].rotation = (vec3){ 0.f, 0.f, 0.f };
+  hitboxes[1].scale = (vec3){ 1.f, 1.f, 1.f  };
+  guMtxIdentF(hitboxes[1].computedTransform.data);
+  hitboxes[1].displayCommands = red_octahedron_commands;
+  hitboxes[1].check = sdOctahedron;
+  hitboxes[1].numberOfChildren = 0;
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
+    hitboxes[1].children[i] = NULL;
+  }
+  hitboxes[1].parent = NULL;
+  parentHitboxes(&(hitboxes[1]), &(hitboxes[0]));
+
+  hitboxes[2].alive = 1;
+  hitboxes[2].destroyable = 1;
+  hitboxes[2].isTransformDirty = 1;
+  hitboxes[2].position = (vec3){ 10.f, 0.f, 0.f };
+  hitboxes[2].rotation = (vec3){ 0.f, 0.f, 0.f };
+  hitboxes[2].scale = (vec3){ 1.f, 1.f, 1.f  };
+  guMtxIdentF(hitboxes[2].computedTransform.data);
+  hitboxes[2].displayCommands = red_octahedron_commands;
+  hitboxes[2].check = sdOctahedron;
+  hitboxes[2].numberOfChildren = 0;
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
+    hitboxes[2].children[i] = NULL;
+  }
+  hitboxes[2].parent = NULL;
+  parentHitboxes(&(hitboxes[2]), &(hitboxes[0]));
+
+  hitboxes[3].alive = 1;
+  hitboxes[3].destroyable = 1;
+  hitboxes[3].isTransformDirty = 1;
+  hitboxes[3].position = (vec3){ -10.f, 0.f, 0.f };
+  hitboxes[3].rotation = (vec3){ 0.f, 0.f, 0.f };
+  hitboxes[3].scale = (vec3){ 1.f, 1.f, 1.f  };
+  guMtxIdentF(hitboxes[3].computedTransform.data);
+  hitboxes[3].displayCommands = red_octahedron_commands;
+  hitboxes[3].check = sdOctahedron;
+  hitboxes[3].numberOfChildren = 0;
+  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
+    hitboxes[3].children[i] = NULL;
+  }
+  hitboxes[3].parent = NULL;
+  parentHitboxes(&(hitboxes[3]), &(hitboxes[0]));
+
 }
 
 void updateKaiju0(float deltaSeconds) {
   kaijuTime += deltaSeconds;
-  kaijuTotalTime += deltaSeconds;
+
+  hitboxes[2].position.y = sinf(kaijuTime * 0.45f) * 10.f;
+  hitboxes[2].isTransformDirty = 1;
+
+  hitboxes[3].position.y = cosf(kaijuTime * 0.25f + M_PI) * 10.f;
+  hitboxes[3].position.z = sinf(kaijuTime * 0.25f + M_PI) * 10.f;
+  hitboxes[3].isTransformDirty = 1;
 }
 
 void renderKaiju0(DisplayData* dynamicp) {
