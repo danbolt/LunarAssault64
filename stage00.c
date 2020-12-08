@@ -1109,16 +1109,16 @@ void updateCinemaMode(float deltaSeconds) {
     cameraTarget.x = lerp( hitboxes[0].position.x, playerPos.x, t);
     cameraTarget.y = lerp( hitboxes[0].position.y, playerPos.y, t);
     cameraTarget.z = lerp( hitboxes[0].position.z, playerPos.z + CAMERA_LIFT_FRONT, t);
-    cameraPos.x = lerp(hitboxes[0].position.x + 20, cameraTarget.x + (cosf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y)), t);
-    cameraPos.y = lerp(hitboxes[0].position.y + 20, cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y)), t);
+    cameraPos.x = lerp(hitboxes[0].position.x + (20 * cosf(0.05f * cinemaTime)), cameraTarget.x + (cosf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y)), t);
+    cameraPos.y = lerp(hitboxes[0].position.y + (20 * sinf(0.05f * cinemaTime)), cameraTarget.y + (sinf(cameraRotation.z) * (CAMERA_DISTANCE) * cosf(cameraRotation.y)), t);
     cameraPos.z = lerp(hitboxes[0].position.z + 10, cameraTarget.z + (CAMERA_DISTANCE * sinf(cameraRotation.y)) + CAMERA_LIFT_BACK, t);
   } else {
     cameraTarget.x = hitboxes[0].position.x;
     cameraTarget.y = hitboxes[0].position.y;
     cameraTarget.z = hitboxes[0].position.z;
 
-    cameraPos.x = hitboxes[0].position.x + 20;
-    cameraPos.y = hitboxes[0].position.y + 20;
+    cameraPos.x = hitboxes[0].position.x + (20 * cosf(0.05f * cinemaTime));
+    cameraPos.y = hitboxes[0].position.y + (20 * sinf(0.05f * cinemaTime));
     cameraPos.z = MAX(20, hitboxes[0].position.z + 10);
   }
 }
