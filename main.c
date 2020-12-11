@@ -295,15 +295,15 @@ void callback_prenmi()
 --------------------------*/
 void mainproc(void)
 {
+  /* The initialization of graphic  */
+  // nuGfxInit();
+  hvqmGfxInit();
+
 #ifdef PAL_ROM
   osViSetMode(&osViModeTable[OS_VI_FPAL_LAN1]);
   osViSetYScale(0.833); // Dirty but works
   nuPreNMIFuncSet((NUScPreNMIFunc)callback_prenmi);
 #endif
-
-  /* The initialization of graphic  */
-  // nuGfxInit();
-  hvqmGfxInit();
 
   /* The initialization of the controller manager  */
   contPattern = nuContInit();
