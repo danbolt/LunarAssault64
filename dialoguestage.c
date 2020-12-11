@@ -455,6 +455,16 @@ void makeDLDialogue(void) {
 	}
 
 	if (!isFading) {
+		gDPSetRenderMode(glistp++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    	gDPSetCombineLERP(glistp++,  0, 0, 0, PRIMITIVE, 0, 0, 0, PRIMITIVE, 0, 0, 0, PRIMITIVE, 0, 0, 0, PRIMITIVE);
+    	gDPSetPrimColor(glistp++, 0, 0, 10, 10, 10, 128);
+    	gDPPipeSync(glistp++);
+    	gDPFillRectangle(glistp++, 72 - 4, 138 - 4, 72 + 168 + 4, 190 + 16 + 4);
+    	// gDPFillRectangle(glistp++, 72 - 4, 138 - 4, 72 + 168 + 4, 186);
+
+		gDPSetRenderMode(glistp++, G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE);
+		gDPSetCombineMode(glistp++,G_CC_DECALRGBA, G_CC_DECALRGBA);
+		gDPPipeSync(glistp++);
 	    drawString(72, 138, currentLine->data, letterIndex);
 	    if ((!tickingText) && (currentLine->data[letterIndex] == '\0')) {
 	    	drawString(208, 190, "(A)", -1);
