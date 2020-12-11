@@ -23,6 +23,8 @@ u32 isFadingOut = 0;
 static OSTime time = 0;
 static OSTime delta = 0;
 
+static int playedSound = 0;
+
 #define NUMBER_OF_MENU_ITEMS 2
 u32 menuIndex = 0;
 
@@ -44,7 +46,7 @@ void initTitleScreen(void) {
 	isFading = 1;
 	isFadingOut = 0;
 
-	nuAuSndPlayerPlay(SOUND_INTRO);
+	playedSound = 0;
 
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;
@@ -162,6 +164,11 @@ void updateTitleScreen(void) {
 	nuContDataGetEx(contdata,0);
 
 	guRandom();
+
+	if (playedSound == 0) {
+		playedSound = 1;
+		nuAuSndPlayerPlay(SOUND_INTRO);
+	}
 
 	delta = newTime - time;
 	time = newTime;
