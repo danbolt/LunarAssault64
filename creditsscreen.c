@@ -132,7 +132,7 @@ CreditCard specialThanks = {
 	}
 };
 CreditCard testing = {
-	7,
+	8,
 	{
 		{
 			"Quality Assurance"
@@ -154,6 +154,9 @@ CreditCard testing = {
 		},
 		{
 			"Vanadium"
+		},
+		{
+			"korgeaux"
 		},
 	}
 };
