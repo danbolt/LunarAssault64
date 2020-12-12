@@ -190,22 +190,6 @@ void initKaiju2() {
   hitboxes[5].parent = NULL;
   parentHitboxes(&(hitboxes[5]), &(hitboxes[1]));
 
-  hitboxes[6].alive = 1;
-  hitboxes[6].destroyable = 1;
-  hitboxes[6].isTransformDirty = 1;
-  hitboxes[6].position = (vec3){ 0.f, -9.5f, 0.f };
-  hitboxes[6].rotation = (vec3){ 0.f, 0.f, 0.f };
-  hitboxes[6].scale = (vec3){ 1.4f, 1.4f, 1.4f };
-  guMtxIdentF(hitboxes[6].computedTransform.data);
-  hitboxes[6].displayCommands = red_octahedron_commands;
-  hitboxes[6].check = sdOctahedron;
-  hitboxes[6].numberOfChildren = 0;
-  for (i = 0; i < MAX_CHILDREN_PER_HITBOX; i++) {
-    hitboxes[6].children[i] = NULL;
-  }
-  hitboxes[6].parent = NULL;
-  parentHitboxes(&(hitboxes[6]), &(hitboxes[1]));
-
   hitboxes[7].alive = 1;
   hitboxes[7].destroyable = 1;
   hitboxes[7].isTransformDirty = 1;
@@ -264,8 +248,16 @@ void updateKaiju2(float deltaSeconds) {
 
   tVal = kaijuTime / timeBetweenPoints;
 
-	hitboxes[0].position.x = catmullRom(tVal, walkPoints2[LOOPED_WALK_POINT(pointIndex - 1)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex + 1)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex + 2)].x);
-  hitboxes[0].position.y = catmullRom(tVal, walkPoints2[LOOPED_WALK_POINT(pointIndex - 1)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex + 1)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex + 2)].y);
+  if (remainingHitboxes >= 4) {
+  	hitboxes[0].position.x = catmullRom(tVal, walkPoints2[LOOPED_WALK_POINT(pointIndex - 1)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex + 1)].x, walkPoints2[LOOPED_WALK_POINT(pointIndex + 2)].x);
+    hitboxes[0].position.y = catmullRom(tVal, walkPoints2[LOOPED_WALK_POINT(pointIndex - 1)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex + 1)].y, walkPoints2[LOOPED_WALK_POINT(pointIndex + 2)].y);
+  } else if (remainingHitboxes == 3) {
+    hitboxes[0].position.x = lerp(hitboxes[0].position.x,  32.f, deltaSeconds * 0.5f);
+    hitboxes[0].position.y = lerp(hitboxes[0].position.y, 110.f, deltaSeconds * 0.5f);
+  } else if (remainingHitboxes < 3) {
+    hitboxes[0].position.x = lerp(hitboxes[0].position.x, 110.f, deltaSeconds * 0.25f);
+    hitboxes[0].position.y = lerp(hitboxes[0].position.y,  64.f, deltaSeconds * 0.25f);
+  }
   hitboxes[0].position.z = getHeight(hitboxes[0].position.x, hitboxes[0].position.y) + 20.f;
   hitboxes[0].isTransformDirty = 1;
 
