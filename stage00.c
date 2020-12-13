@@ -707,6 +707,7 @@ void makeDL00(void) {
     int yStart, yEnd;
     int xStep;
     int yStep;
+    int switchedToLowDetail = 0;
     const vec3 cameraDirection = { cameraTarget.x - cameraPos.x, cameraTarget.y - cameraPos.y, cameraTarget.z - cameraPos.z };
     vec2 flatCamDir = { cameraTarget.x - cameraPos.x, cameraTarget.y - cameraPos.y };
     float invFlatCamDistSq = Q_rsqrt((flatCamDir.x * flatCamDir.x) + (flatCamDir.y * flatCamDir.y));
@@ -736,6 +737,11 @@ void makeDL00(void) {
 
     if (fabs_d(flatCamDir.x) > fabs_d(flatCamDir.y)) {
       for (x = xStart; x != xEnd; x += xStep) {
+        if ((switchedToLowDetail == 0) && (fabs_d(playerPos.x - x) < 12)) {
+          switchedToLowDetail = 1;
+          gSPClipRatio(glistp++, FRUSTRATIO_6);
+        }
+
         for (y = yStart; y != yEnd; y += yStep) {
           int sectionIndex = x + (y * 32);
           const vec3 centroidDirection = { sections[sectionIndex].centroid.x - cameraPos.x, sections[sectionIndex].centroid.y - cameraPos.y, sections[sectionIndex].centroid.z - cameraPos.z };
@@ -768,6 +774,11 @@ void makeDL00(void) {
       }
     } else {
       for (y = yStart; y != yEnd; y += yStep) {
+        if ((switchedToLowDetail == 0) && (fabs_d(playerPos.y - y) < 12)) {
+          switchedToLowDetail = 1;
+          gSPClipRatio(glistp++, FRUSTRATIO_6);
+        }
+
         for (x = xStart; x != xEnd; x += xStep) {
           int sectionIndex = x + (y * 32);
           const vec3 centroidDirection = { sections[sectionIndex].centroid.x - cameraPos.x, sections[sectionIndex].centroid.y - cameraPos.y, sections[sectionIndex].centroid.z - cameraPos.z };
