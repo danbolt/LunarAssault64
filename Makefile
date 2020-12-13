@@ -125,4 +125,4 @@ $(CODESEGMENT):	$(CODEOBJECTS) Makefile
 		$(LD) $(FORCELINK) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
 $(TARGETS):	$(OBJECTS)
-		$(MAKEROM) -o spec -I$(NUSYSINCDIR) -r $(TARGETS) -e $(APP)
+		$(MAKEROM) -s 64 -f 0x0 -o spec -I$(NUSYSINCDIR) -r $(TARGETS) -e $(APP)
