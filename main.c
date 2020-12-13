@@ -247,7 +247,7 @@ void loadInFMVScreenState() {
 s32 smallerHeapAuinit(void)
 {
     /* Initialize the Audio Manager.  */
-    nuAuMgrInit((void*)SMALLER_AU_HEAP_ADDR, SMALLER_AU_HEAP_SIZE, &nuAuSynConfig);
+    nuAuMgrInitEx((void*)SMALLER_AU_HEAP_ADDR, SMALLER_AU_HEAP_SIZE, &nuAuSynConfig);
 
     /* Initialize the Sequence Player.  */
     nuAuSeqPlayerInit(&nuAuSeqpConfig, 0x8000, NU_AU_SEQ_PLAYER0);
@@ -284,8 +284,8 @@ void initAudio(void)
 #ifdef PAL_ROM
 void callback_prenmi()
 {
-    nuGfxDisplayOff();
     osViSetYScale(1);
+    nuGfxDisplayOff();
 }
 
 #endif
@@ -377,12 +377,9 @@ void stage00(int pendingGfx)
     return;
   }
 
-  /* Provide the display process if 2 or less RCP tasks are processing or
-	waiting for the process.  */
   if(pendingGfx < 3)
     makeDL00();		
 
-  /* The process of game progress  */
   updateGame00(); 
 }
 
