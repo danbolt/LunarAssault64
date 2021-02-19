@@ -164,7 +164,7 @@ CreditCard hqvmSupport = {
 	3,
 	{
 		{
-			"Answered my HQVM questions"
+			"Answered my HVQM questions"
 		},
 		{
 			""
