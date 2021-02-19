@@ -26,8 +26,6 @@ static int isFadingToTitle;
 static char formattingBuffer[128];
 
 void initRetryScreen(void) {
-	currentLevel = 0;
-
     time = OS_CYCLES_TO_USEC(osGetTime());
 	delta = 0;
 
