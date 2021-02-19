@@ -444,7 +444,6 @@ static Gfx zoomed_in_dl[] = {
 vec3 cameraPos = { 0.f, 0.f, 0.f };
 vec3 cameraTarget = { 0.f, 0.f, 0.f };
 vec3 cameraRotation = { 0.f, 0.f, 0.f };
-static const s8 cameraYInvert = -1;
 
 vec3 playerPos = { 0.f, 0.f, 0.f };
 vec3 playerVelocity = { 0.f, 0.f, 0.f };

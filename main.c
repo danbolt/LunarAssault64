@@ -30,6 +30,8 @@ volatile ScreenSetting screenType;
 volatile int currentLevel;
 volatile u8 finishedLevel;
 
+s8 cameraYInvert = -1;
+
 NUContData	contdata[1];
 u8 contPattern;
 

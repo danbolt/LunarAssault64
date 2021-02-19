@@ -23,6 +23,8 @@ extern volatile ScreenSetting screenType;
 extern volatile int currentLevel;
 extern volatile u8 finishedLevel;
 
+extern s8 cameraYInvert;
+
 extern NUContData	contdata[1];
 extern u8 contPattern;
 
