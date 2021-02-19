@@ -25,21 +25,21 @@ static OSTime delta = 0;
 
 static int playedSound = 0;
 
-#define NUMBER_OF_MENU_ITEMS 2
+#define NUMBER_OF_MENU_ITEMS 3
 u32 menuIndex = 0;
 
+const char* yInvOffMessage = "Invert Y: OFF";
+const char* yInvOnMessage = "Invert Y: ON";
+
 const char* menuStrings[] = {
-	" Start ",
-	"Credits"
+	"    Start    ",
+	"   Credits   ",
+	"Invert Y: OFF"
 };
 
 u32 stickPressed = 0;
 
 void initTitleScreen(void) {
-	// nuAuSeqPlayerStop(0);
-	// nuAuSeqPlayerSetNo(0, 0);
-	// nuAuSeqPlayerPlay(0);
-
 	nuPiReadRom((u32)_title_screen_bgSegmentRomStart, titleScreenBackgroundBuffer, 153600);
 
 	fadeTimePassed = 0.f;
@@ -53,6 +53,12 @@ void initTitleScreen(void) {
 
 	menuIndex = 0;
 	stickPressed = 0;
+
+	if (cameraYInvert == 1) {
+		menuStrings[2] = yInvOnMessage;
+	} else {
+		menuStrings[2] = yInvOffMessage;
+	}
 }
 
 
@@ -127,10 +133,10 @@ void makeDLTitleScreen(void) {
 				sprintf(testBuf, "   %s   ", menuStrings[i]);
 			}
 			
-			drawSmallStringCol( (20 - 6) * 8, (20 + i) * 8, testBuf, 0, 0, 0);
+			drawSmallStringCol( (20 - 9) * 8, (20 + i) * 8, testBuf, 0, 0, 0);
 		}
 
-		drawSmallStringCol( 3 * 8, 25 * 8, "N64Brew Game Jam Submission", 0, 0, 0);
+		drawSmallStringCol( 3 * 8, 25 * 8, "Version 1.1", 0, 0, 0);
 		drawSmallStringCol( 3 * 8, 26 * 8, "https://danbolt.itch.io/", 0, 0, 0);
 	}
 	
@@ -139,20 +145,6 @@ void makeDLTitleScreen(void) {
 	gSPEndDisplayList(glistp++);
 
 	nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0], (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx), NU_GFX_UCODE_F3DLP_REJ , NU_SC_SWAPBUFFER);
-
-	// nuDebConClear(0);
-	// nuDebConTextColor(0, NU_DEB_CON_TEXT_BLACK);
-	// if(contPattern & 0x1)
- //    {
-		
-	// }
-	// else
-	// {
-	// 	nuDebConTextPos(0,3,30);
-	// 	nuDebConCPuts(0, "Connect controller #1, kid!");
-	// }
-
-	// nuDebConDisp(NU_SC_SWAPBUFFER);
 
 	gfx_gtask_no = (gfx_gtask_no + 1) % 3;
 }
@@ -214,21 +206,37 @@ void updateTitleScreen(void) {
 			}
 		} else {
 			if (contdata->stick_y > STICK_Y_DEADZONE) {
-				menuIndex = (menuIndex + 1) % NUMBER_OF_MENU_ITEMS;
+				menuIndex = (menuIndex - 1 + NUMBER_OF_MENU_ITEMS) % NUMBER_OF_MENU_ITEMS;
 				nuAuSndPlayerPlay(SOUND_PLAYER_BIP);
 				stickPressed = 1;
 			} else if (contdata->stick_y < -STICK_Y_DEADZONE) {
-				menuIndex = (menuIndex - 1 + NUMBER_OF_MENU_ITEMS) % NUMBER_OF_MENU_ITEMS;
+				menuIndex = (menuIndex + 1) % NUMBER_OF_MENU_ITEMS;
 				nuAuSndPlayerPlay(SOUND_PLAYER_BIP);
 				stickPressed = 1;
 			}
 		}
 
 		if ((contdata->trigger & A_BUTTON) || ((contdata->trigger & START_BUTTON))) {
-			isFadingOut = 1;
-			fadeTimePassed = 0.f;
+			if (menuIndex < 2) {
+				isFadingOut = 1;
+				fadeTimePassed = 0.f;
 
-			nuAuSndPlayerPlay(SOUND_LASER1);
+				nuAuSndPlayerPlay(SOUND_LASER1);
+			} else if (menuIndex == 2) {
+				nuAuSndPlayerPlay(SOUND_JUMP1);
+
+				if (cameraYInvert == -1) {
+					cameraYInvert = 1;
+				} else {
+					cameraYInvert = -1;
+				}
+
+				if (cameraYInvert == 1) {
+					menuStrings[2] = yInvOnMessage;
+				} else {
+					menuStrings[2] = yInvOffMessage;
+				}
+			}
 		}
 	}
 }
