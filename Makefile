@@ -22,7 +22,7 @@ NUAUDIOLIB = -lnualsgi_n -lgn_audio
 LCDEFS =	-DNU_DEBUG -DF3DEX_GBI_2
 LCINCS =	-I. -I$(NUSYSINCDIR) -I$(HVQMLIBDIR) -I$(ROOT)/usr/include/PR
 LCOPTS =	-G 0
-LDFLAGS = $(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) -L$(HVQMLIBDIR) $(NUAUDIOLIB) -lhvqm2 -lnusys -lgultra -L$(GCCDIR)/mipse/lib -lkmc
+LDFLAGS = $(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) -L$(HVQMLIBDIR) $(NUAUDIOLIB) -lhvqm2 -lnusys -lgultra_rom -L$(GCCDIR)/mipse/lib -lkmc
 
 OPTIMIZER = -O2
 
