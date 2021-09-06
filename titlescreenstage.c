@@ -136,7 +136,7 @@ void makeDLTitleScreen(void) {
 			drawSmallStringCol( (20 - 9) * 8, (20 + i) * 8, testBuf, 0, 0, 0);
 		}
 
-		drawSmallStringCol( 3 * 8, 25 * 8, "Version 1.1", 0, 0, 0);
+		drawSmallStringCol( 3 * 8, 25 * 8, "Version 1.2", 0, 0, 0);
 		drawSmallStringCol( 3 * 8, 26 * 8, "https://danbolt.itch.io/", 0, 0, 0);
 	}
 	
