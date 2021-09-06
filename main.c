@@ -306,10 +306,11 @@ static u32 splashDeltaMS = 0;
 #define LOGO_X_POS ((SCREEN_WD - LOGOTYPE_TEX_WIDTH) / 2)
 #define LOGO_Y_POS ((SCREEN_HT - LOGOTYPE_TEX_HEIGHT) / 2)
 
+#define SPLASH_INITIAL_HOLD 300
 #define SPLASH_LEAD_IN 700
-#define SPLASH_HOLD 1800
+#define SPLASH_HOLD 2300
 #define SPLASH_LEAD_OUT 400
-#define SPLASH_EXTRA 300
+#define SPLASH_EXTRA 910
 
 void initSplashScreen() {
   changeScreensFlag = 0;
@@ -342,14 +343,17 @@ void makeSplashDL(void) {
   gDPSetTexturePersp(glistp++, G_TP_NONE);
 
 
-  if (splashDeltaMS < SPLASH_LEAD_IN) {
-    float t = (splashDeltaMS / (float)SPLASH_LEAD_IN);
+  if (splashDeltaMS < SPLASH_INITIAL_HOLD) {
+    gDPSetPrimColor(glistp++, 0, 0, (255), (255), (255), 0);
+    gDPSetCombineMode(glistp++, G_CC_MODULATEI_PRIM, G_CC_MODULATEI_PRIM);
+  } else if (splashDeltaMS < (SPLASH_LEAD_IN + SPLASH_INITIAL_HOLD)) {
+    float t = ((splashDeltaMS - SPLASH_INITIAL_HOLD) / (float)(SPLASH_LEAD_IN + SPLASH_INITIAL_HOLD));
     gDPSetPrimColor(glistp++, 0, 0, (255), (255), (255), (t * 255));
     gDPSetCombineMode(glistp++, G_CC_MODULATEI_PRIM, G_CC_MODULATEI_PRIM);
-  } else if (splashDeltaMS < (SPLASH_LEAD_IN + SPLASH_HOLD)) {
+  } else if (splashDeltaMS < (SPLASH_LEAD_IN + SPLASH_INITIAL_HOLD + SPLASH_HOLD)) {
     gDPSetCombineMode(glistp++, G_CC_DECALRGBA, G_CC_DECALRGBA);
-  } else if (splashDeltaMS < (SPLASH_LEAD_IN + SPLASH_HOLD + SPLASH_LEAD_OUT)) {
-    float t = 1.f - ((splashDeltaMS - (SPLASH_LEAD_IN + SPLASH_HOLD)) / (float)(SPLASH_LEAD_OUT));
+  } else if (splashDeltaMS < (SPLASH_LEAD_IN + SPLASH_INITIAL_HOLD + SPLASH_HOLD + SPLASH_LEAD_OUT)) {
+    float t = 1.f - ((splashDeltaMS - (SPLASH_LEAD_IN + SPLASH_INITIAL_HOLD + SPLASH_HOLD)) / (float)(SPLASH_LEAD_OUT));
     gDPSetPrimColor(glistp++, 0, 0, (255), (255), (255), (t * 255));
     gDPSetCombineMode(glistp++, G_CC_MODULATEI_PRIM, G_CC_MODULATEI_PRIM);
   } else {
