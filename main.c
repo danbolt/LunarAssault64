@@ -11,6 +11,7 @@
 #include "introcardstage.h"
 #include "creditsscreen.h"
 #include "retryscreen.h"
+#include "smallfont.h"
 
 #include "kaiju0.h"
 #include "kaiju1.h"
@@ -24,6 +25,7 @@ void introcard(int);
 void fmvtick(int);
 void credits(int);
 void retry(int);
+void splash(int);
 
 volatile int changeScreensFlag;
 volatile ScreenSetting screenType;
@@ -292,6 +294,91 @@ void callback_prenmi()
 
 #endif
 
+
+static u8 splashScreenBuffer[37520] __attribute__((aligned(8)));
+static OSTime splashTime = 0;
+
+#define LOGOTYPE_TEX_WIDTH 280
+#define LOGOTYPE_TEX_HEIGHT 134
+
+#define LOGO_X_POS ((SCREEN_WD - LOGOTYPE_TEX_WIDTH) / 2)
+#define LOGO_Y_POS ((SCREEN_HT - LOGOTYPE_TEX_HEIGHT) / 2)
+
+void initSplashScreen() {
+  changeScreensFlag = 0;
+
+  nuPiReadRom((u32)_logotype_rgbaSegmentRomStart, splashScreenBuffer, (u32)(37520));
+}
+
+
+void makeSplashDL(void) {
+  DisplayData* dynamicp;
+  char conbuf[20];
+  int i;
+  u32 len;
+
+  dynamicp = &gfx_dynamic[gfx_gtask_no];
+  glistp = &gfx_glist[gfx_gtask_no][0];
+
+  gfxRCPInit();
+  gfxClearCfb();
+
+
+  gDPSetCycleType(glistp++, G_CYC_1CYCLE);
+  gDPSetCombineMode(glistp++, G_CC_DECALRGBA, G_CC_DECALRGBA);
+  gDPSetScissor(glistp++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
+  gDPSetTextureFilter(glistp++, G_TF_BILERP);
+  gDPSetRenderMode(glistp++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF);
+  gDPSetTexturePersp(glistp++, G_TP_NONE);
+  gDPPipeSync(glistp++);
+  gSPClearGeometryMode(glistp++,0xFFFFFFFF);
+  gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
+
+  
+  guOrtho(&(dynamicp->orthoHudProjection), 0, SCREEN_WD - 1, 0, SCREEN_HT - 1, 0.f, 10.f, 1.f);
+  gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudProjection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+  guMtxIdent(&(dynamicp->orthoHudModelling));
+  gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudModelling)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+  gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_ON);
+  gDPPipeSync(glistp++);
+
+  for (i = 0; i < (LOGOTYPE_TEX_HEIGHT / 3); i++) {
+    gDPLoadTextureTile(glistp++, splashScreenBuffer, G_IM_FMT_IA, G_IM_SIZ_8b, LOGOTYPE_TEX_WIDTH, LOGOTYPE_TEX_HEIGHT, 0, (i * 3), LOGOTYPE_TEX_WIDTH - 1, ((i + 1) * 3) - 1, 0, G_TX_WRAP, G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD );
+    gSPTextureRectangle(glistp++, (LOGO_X_POS) << 2, (LOGO_Y_POS + (i * 3)) << 2, (LOGO_X_POS + LOGOTYPE_TEX_WIDTH) << 2, (LOGO_Y_POS + ((i + 1) * 3)) << 2, 0, 0 << 5, (i * 3) << 5, (1 << 10), (1 << 10));
+  }
+
+  // sprintf(conbuf, "%x", _logotype_rgbaSegmentRomStart);
+  // drawSmallString(10, 10, conbuf);
+
+  gDPFullSync(glistp++);
+  gSPEndDisplayList(glistp++);
+
+  nuGfxTaskStart(&gfx_glist[gfx_gtask_no][0], (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx), NU_GFX_UCODE_F3DLP_REJ , NU_SC_SWAPBUFFER);
+
+  gfx_gtask_no = (gfx_gtask_no + 1) % 3;
+}
+
+void updateSplashScreen(void) {
+  nuContDataGetEx(contdata,0);
+
+  if (contdata->trigger & A_BUTTON) {
+    changeScreensFlag = 1;
+  }
+}
+
+void splash(int pendingGfx)
+{
+  if (changeScreensFlag != 0) {
+    return;
+  }
+
+  if(pendingGfx < 3)
+    makeSplashDL();   
+
+  updateSplashScreen(); 
+}
+
+
 /*------------------------
 	Main
 --------------------------*/
@@ -309,6 +396,18 @@ void mainproc(void)
 
   /* The initialization of the controller manager  */
   contPattern = nuContInit();
+  changeScreensFlag = 0;
+
+  initSplashScreen();
+
+  nuGfxFuncSet((NUGfxFunc)splash);
+
+  nuGfxDisplayOn();
+
+  while (!changeScreensFlag);
+
+  nuGfxFuncRemove();
+
   changeScreensFlag = 0;
 
   screenType = FMVScreen;

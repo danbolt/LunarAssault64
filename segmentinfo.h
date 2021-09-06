@@ -105,8 +105,13 @@ extern u8 _dialogueSegmentBssEnd[];
 
 // backgrounds
 extern u8 _title_screen_bgSegmentRomStart[];
+extern u8 _title_screen_bgSegmentRomEnd[];
 extern u8 _base_bgSegmentRomStart[];
 extern u8 _player_room_bgSegmentRomStart[];
+
+// splash screen
+extern u8 _logotype_rgbaSegmentRomStart[];
+extern u8 _logotype_rgbaSegmentRomEnd[];
 
 // Title screen
 extern u8 _titlescreenSegmentStart[];

@@ -112,6 +112,12 @@ beginseg
 endseg
 
 beginseg
+	name "logotype_rgba"
+	flags "RAW"
+	include "doc/logotype_240p.bin"
+endseg
+
+beginseg
 	name "base_bg"
 	flags "RAW"
 	include "base_render_bg.bin"
