@@ -297,6 +297,8 @@ void callback_prenmi()
 
 static u8 splashScreenBuffer[37520] __attribute__((aligned(8)));
 static OSTime splashTime = 0;
+static OSTime splashStartTime = 0;
+static u32 splashDeltaMS = 0;
 
 #define LOGOTYPE_TEX_WIDTH 280
 #define LOGOTYPE_TEX_HEIGHT 134
@@ -304,8 +306,15 @@ static OSTime splashTime = 0;
 #define LOGO_X_POS ((SCREEN_WD - LOGOTYPE_TEX_WIDTH) / 2)
 #define LOGO_Y_POS ((SCREEN_HT - LOGOTYPE_TEX_HEIGHT) / 2)
 
+#define SPLASH_LEAD_IN 700
+#define SPLASH_HOLD 1800
+#define SPLASH_LEAD_OUT 400
+#define SPLASH_EXTRA 300
+
 void initSplashScreen() {
   changeScreensFlag = 0;
+  splashStartTime = OS_CYCLES_TO_USEC(osGetTime());
+  splashDeltaMS = 0;
 
   nuPiReadRom((u32)_logotype_rgbaSegmentRomStart, splashScreenBuffer, (u32)(37520));
 }
@@ -316,6 +325,8 @@ void makeSplashDL(void) {
   char conbuf[20];
   int i;
   u32 len;
+  int nudgeX = (guRandom() % 4);
+  int nudgeY = (guRandom() % 4);
 
   dynamicp = &gfx_dynamic[gfx_gtask_no];
   glistp = &gfx_glist[gfx_gtask_no][0];
@@ -325,30 +336,42 @@ void makeSplashDL(void) {
 
 
   gDPSetCycleType(glistp++, G_CYC_1CYCLE);
-  gDPSetCombineMode(glistp++, G_CC_DECALRGBA, G_CC_DECALRGBA);
   gDPSetScissor(glistp++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
   gDPSetTextureFilter(glistp++, G_TF_BILERP);
   gDPSetRenderMode(glistp++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF);
   gDPSetTexturePersp(glistp++, G_TP_NONE);
-  gDPPipeSync(glistp++);
-  gSPClearGeometryMode(glistp++,0xFFFFFFFF);
-  gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
+
+
+  if (splashDeltaMS < SPLASH_LEAD_IN) {
+    float t = (splashDeltaMS / (float)SPLASH_LEAD_IN);
+    gDPSetPrimColor(glistp++, 0, 0, (255), (255), (255), (t * 255));
+    gDPSetCombineMode(glistp++, G_CC_MODULATEI_PRIM, G_CC_MODULATEI_PRIM);
+  } else if (splashDeltaMS < (SPLASH_LEAD_IN + SPLASH_HOLD)) {
+    gDPSetCombineMode(glistp++, G_CC_DECALRGBA, G_CC_DECALRGBA);
+  } else if (splashDeltaMS < (SPLASH_LEAD_IN + SPLASH_HOLD + SPLASH_LEAD_OUT)) {
+    float t = 1.f - ((splashDeltaMS - (SPLASH_LEAD_IN + SPLASH_HOLD)) / (float)(SPLASH_LEAD_OUT));
+    gDPSetPrimColor(glistp++, 0, 0, (255), (255), (255), (t * 255));
+    gDPSetCombineMode(glistp++, G_CC_MODULATEI_PRIM, G_CC_MODULATEI_PRIM);
+  } else {
+    gDPSetPrimColor(glistp++, 0, 0, (255), (255), (255), 0);
+    gDPSetCombineMode(glistp++, G_CC_MODULATEI_PRIM, G_CC_MODULATEI_PRIM);
+  }
 
   
   guOrtho(&(dynamicp->orthoHudProjection), 0, SCREEN_WD - 1, 0, SCREEN_HT - 1, 0.f, 10.f, 1.f);
   gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudProjection)), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
   guMtxIdent(&(dynamicp->orthoHudModelling));
   gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&(dynamicp->orthoHudModelling)), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-  gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_ON);
   gDPPipeSync(glistp++);
+  gSPTexture(glistp++, 0xffff, 0xffff, 0, G_TX_RENDERTILE, G_ON);
+  gSPClearGeometryMode(glistp++,0xFFFFFFFF);
+  gSPSetGeometryMode(glistp++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
 
   for (i = 0; i < (LOGOTYPE_TEX_HEIGHT / 3); i++) {
     gDPLoadTextureTile(glistp++, splashScreenBuffer, G_IM_FMT_IA, G_IM_SIZ_8b, LOGOTYPE_TEX_WIDTH, LOGOTYPE_TEX_HEIGHT, 0, (i * 3), LOGOTYPE_TEX_WIDTH - 1, ((i + 1) * 3) - 1, 0, G_TX_WRAP, G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD );
-    gSPTextureRectangle(glistp++, (LOGO_X_POS) << 2, (LOGO_Y_POS + (i * 3)) << 2, (LOGO_X_POS + LOGOTYPE_TEX_WIDTH) << 2, (LOGO_Y_POS + ((i + 1) * 3)) << 2, 0, 0 << 5, (i * 3) << 5, (1 << 10), (1 << 10));
+    gSPTextureRectangle(glistp++, ((0 + LOGO_X_POS)) << 2, (LOGO_Y_POS + (i * 3)) << 2, ((0 + LOGO_X_POS) + LOGOTYPE_TEX_WIDTH) << 2, (LOGO_Y_POS + ((i + 1) * 3)) << 2, 0, ((0) << 5) | (nudgeX << 1), ((i * 3) << 5) | (nudgeY << 1), (1 << 10), (1 << 10));
   }
 
-  // sprintf(conbuf, "%x", _logotype_rgbaSegmentRomStart);
-  // drawSmallString(10, 10, conbuf);
 
   gDPFullSync(glistp++);
   gSPEndDisplayList(glistp++);
@@ -359,9 +382,16 @@ void makeSplashDL(void) {
 }
 
 void updateSplashScreen(void) {
-  nuContDataGetEx(contdata,0);
 
-  if (contdata->trigger & A_BUTTON) {
+  OSTime delta;
+  splashTime = OS_CYCLES_TO_USEC(osGetTime());
+
+  guRandom();
+
+  delta = splashTime - splashStartTime;
+  splashDeltaMS = delta / 1000;
+
+  if (splashDeltaMS > (SPLASH_LEAD_IN + SPLASH_HOLD + SPLASH_LEAD_OUT + SPLASH_EXTRA)) {
     changeScreensFlag = 1;
   }
 }
