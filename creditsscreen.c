@@ -204,7 +204,7 @@ CreditCard VoiceActing = {
 			"Clayton Savage"
 		},
 		{
-			"William Beltran"
+			"Natalia Beltran"
 		},
 	}
 };
